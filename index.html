@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>中文 · Mandarim para Viagem</title>
+<style>
+  :root{
+    --bg:#f5f4f2;
+    --card:#ffffff;
+    --ink:#2b2b2b;
+    --ink-soft:#6b6b6b;
+    --line:#e3e1dd;
+    --accent:#a6372f;
+    --accent-ink:#ffffff;
+    --good:#3f7a4f;
+    --bad:#b0473d;
+    --locked:#b8b5af;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    padding:20px 18px 40px;
+    display:flex;
+    flex-direction:column;
+  }
+  h1{
+    font-size:1.4rem;
+    margin:0 0 4px;
+    text-align:center;
+  }
+  .subtitle{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    margin-bottom:20px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:16px;
+  }
+  .btn{
+    display:block;
+    width:100%;
+    padding:16px 14px;
+    margin:8px 0;
+    font-size:1.05rem;
+    font-weight:600;
+    border-radius:14px;
+    border:none;
+    cursor:pointer;
+    text-align:center;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); }
+  .btn-secondary{ background:#eceae6; color:var(--ink); }
+  .btn-good{ background:var(--good); color:#fff; }
+  .btn-bad{ background:var(--bad); color:#fff; }
+  .btn-small{
+    padding:10px 12px;
+    font-size:0.9rem;
+    width:auto;
+    display:inline-block;
+    margin:4px 6px 4px 0;
+    background:#eceae6;
+    color:var(--ink);
+    border-radius:10px;
+  }
+  .btn[disabled]{ opacity:0.45; cursor:default; }
+  .row{ display:flex; gap:8px; }
+  .row .btn{ flex:1; }
+
+  .hanzi{
+    font-size:3.2rem;
+    text-align:center;
+    margin:6px 0 2px;
+    line-height:1.2;
+  }
+  .pinyin{
+    font-size:1.3rem;
+    text-align:center;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  .translation{
+    font-size:1.3rem;
+    text-align:center;
+    margin:14px 0;
+    padding:14px;
+    background:#f0efec;
+    border-radius:12px;
+  }
+  .response-block{
+    border-top:1px dashed var(--line);
+    margin-top:14px;
+    padding-top:14px;
+  }
+  .response-block .hanzi{ font-size:2rem; }
+  .response-block .pinyin{ font-size:1.05rem; margin-bottom:8px;}
+  .label{
+    font-size:0.8rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    text-align:center;
+  }
+
+  .group-list{ list-style:none; padding:0; margin:0; }
+  .group-list li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:0.98rem;
+  }
+  .group-list li:last-child{ border-bottom:none; }
+  .badge{
+    font-size:0.82rem;
+    padding:4px 10px;
+    border-radius:999px;
+    background:#eceae6;
+    color:var(--ink-soft);
+  }
+  .badge.done{ background:var(--good); color:#fff; }
+  .badge.locked{ background:var(--locked); color:#fff; }
+
+  .status-big{
+    text-align:center;
+    font-size:1.15rem;
+    margin-bottom:6px;
+  }
+  .status-sub{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:0.9rem;
+    margin-bottom:16px;
+  }
+  .hidden{ display:none !important; }
+  .center{ text-align:center; }
+  .muted{ color:var(--ink-soft); font-size:0.85rem; }
+  footer{
+    margin-top:auto;
+    padding-top:24px;
+    text-align:center;
+  }
+  .dialogue-choice{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:16px;
+    margin:8px 0;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:var(--card);
+    font-size:1rem;
+  }
+  .dialogue-choice[disabled]{ opacity:0.4; }
+  .progress-dots{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:0.9rem;
+    margin-bottom:8px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>中文 · Viagem à China</h1>
+  <div class="subtitle">Estudo com repetição espaçada</div>
+
+  <!-- HOME -->
+  <div id="view-home">
+    <div class="card">
+      <div class="status-big" id="home-status">—</div>
+      <div class="status-sub" id="home-sub"></div>
+      <button class="btn btn-primary" id="btn-start-study">Continuar estudo</button>
+      <button class="btn btn-secondary" id="btn-start-dialogue">Modo diálogo</button>
+    </div>
+
+    <div class="card">
+      <div class="label">Progresso por grupo</div>
+      <ul class="group-list" id="group-list"></ul>
+    </div>
+
+    <footer>
+      <button class="btn-small" id="btn-reset">Reiniciar progresso (teste)</button>
+    </footer>
+  </div>
+
+  <!-- STUDY -->
+  <div id="view-study" class="hidden">
+    <div class="progress-dots" id="study-progress"></div>
+    <div class="card" id="study-card"></div>
+    <button class="btn btn-secondary" id="btn-study-back">Voltar ao início</button>
+  </div>
+
+  <!-- DIALOGUE PICK -->
+  <div id="view-dialogue-pick" class="hidden">
+    <div class="card">
+      <div class="label">Escolha um diálogo</div>
+      <div id="dialogue-list"></div>
+    </div>
+    <button class="btn btn-secondary" id="btn-dialogue-back">Voltar ao início</button>
+  </div>
+
+  <!-- DIALOGUE PLAY -->
+  <div id="view-dialogue-play" class="hidden">
+    <div class="progress-dots" id="dialogue-progress"></div>
+    <div class="card" id="dialogue-card"></div>
+    <div class="row">
+      <button class="btn btn-secondary" id="btn-dialogue-stop">Parar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Dados ---------- */
+  var PHRASES = [
+    {id:1, group:1, hanzi:"你好", pinyin:"nǐ hǎo", pt:"olá", responses:[]},
+    {id:2, group:1, hanzi:"你好吗?", pinyin:"nǐ hǎo ma?", pt:"como você está?", responses:[
+      {hanzi:"我很好", pinyin:"wǒ hěn hǎo", pt:"estou bem"}
+    ]},
+    {id:3, group:1, hanzi:"我很好", pinyin:"wǒ hěn hǎo", pt:"estou bem", responses:[]},
+    {id:4, group:1, hanzi:"你呢?", pinyin:"nǐ ne?", pt:"e você?", responses:[]},
+    {id:5, group:1, hanzi:"再见", pinyin:"zàijiàn", pt:"tchau / até mais", responses:[]},
+
+    {id:6, group:2, hanzi:"谢谢", pinyin:"xièxie", pt:"obrigado", responses:[
+      {hanzi:"不客气", pinyin:"bú kèqi", pt:"de nada"}
+    ]},
+    {id:7, group:2, hanzi:"不客气", pinyin:"bú kèqi", pt:"de nada", responses:[]},
+    {id:8, group:2, hanzi:"对不起", pinyin:"duìbuqǐ", pt:"desculpa", responses:[
+      {hanzi:"没关系", pinyin:"méi guānxi", pt:"tudo bem / sem problema"}
+    ]},
+    {id:9, group:2, hanzi:"没关系", pinyin:"méi guānxi", pt:"tudo bem / sem problema", responses:[]},
+    {id:10, group:2, hanzi:"我叫...", pinyin:"wǒ jiào...", pt:"meu nome é...", responses:[]},
+
+    {id:11, group:3, hanzi:"你叫什么名字?", pinyin:"nǐ jiào shénme míngzi?", pt:"qual é seu nome?", responses:[
+      {hanzi:"我叫...", pinyin:"wǒ jiào...", pt:"meu nome é..."}
+    ]},
+    {id:12, group:3, hanzi:"我是巴西人", pinyin:"wǒ shì Bāxī rén", pt:"sou brasileiro", responses:[]},
+    {id:13, group:3, hanzi:"多少钱?", pinyin:"duōshao qián?", pt:"quanto custa?", responses:[]},
+    {id:14, group:3, hanzi:"太贵了", pinyin:"tài guì le", pt:"está muito caro", responses:[
+      {hanzi:"可以便宜一点吗?", pinyin:"kěyǐ piányi yìdiǎn ma?", pt:"dá pra baixar um pouco?"}
+    ]},
+    {id:15, group:3, hanzi:"可以便宜一点吗?", pinyin:"kěyǐ piányi yìdiǎn ma?", pt:"dá pra baixar um pouco?", responses:[]},
+
+    {id:16, group:4, hanzi:"这个", pinyin:"zhège", pt:"isto / este", responses:[]},
+    {id:17, group:4, hanzi:"...在哪里?", pinyin:"...zài nǎlǐ?", pt:"onde fica...?", responses:[]},
+    {id:18, group:4, hanzi:"洗手间在哪里?", pinyin:"xǐshǒujiān zài nǎlǐ?", pt:"onde fica o banheiro?", responses:[]},
+    {id:19, group:4, hanzi:"我需要帮助", pinyin:"wǒ xūyào bāngzhù", pt:"preciso de ajuda", responses:[]},
+    {id:20, group:4, hanzi:"我不懂", pinyin:"wǒ bù dǒng", pt:"não entendo", responses:[]}
+  ];
+
+  var GROUP_NAMES = {
+    1:"Introdução / cumprimento",
+    2:"Cortesia",
+    3:"Sobre você",
+    4:"Localização / ajuda"
+  };
+
+  var DIALOGUES = [
+    {group:1, title:"Cumprimentar alguém", ids:[1,2,3,4,5]},
+    {group:2, title:"Pedir desculpa e agradecer", ids:[8,9,6,7]},
+    {group:3, title:"Se apresentar e negociar preço", ids:[11,10,13,14,15]},
+    {group:4, title:"Pedir ajuda e localização", ids:[17,18,19,20]}
+  ];
+
+  var INTERVALS = [1,3,7]; // dias após 1a, 2a, 3a acerto (dias diferentes)
+  var STORAGE_KEY = "mandarim-china-app-v1";
+
+  /* ---------- Estado ---------- */
+  var state = loadState();
+
+  function defaultState(){
+    return { unlockedGroup:1, srs:{} };
+  }
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return defaultState();
+      var parsed = JSON.parse(raw);
+      if(!parsed.srs) parsed.srs = {};
+      if(!parsed.unlockedGroup) parsed.unlockedGroup = 1;
+      return parsed;
+    }catch(e){
+      return defaultState();
+    }
+  }
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  function getSRS(id){
+    if(!state.srs[id]){
+      state.srs[id] = { correctCount:0, lastCorrectDate:null, nextReview: todayStr(), learned:false };
+    }
+    return state.srs[id];
+  }
+
+  /* ---------- Datas ---------- */
+  function todayStr(){
+    var d = new Date();
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  }
+  function pad(n){ return n<10 ? "0"+n : ""+n; }
+  function addDays(dateStr, n){
+    var parts = dateStr.split("-").map(Number);
+    var d = new Date(parts[0], parts[1]-1, parts[2]);
+    d.setDate(d.getDate()+n);
+    return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  }
+
+  /* ---------- TTS ---------- */
+  var chineseVoice = null;
+  function loadVoices(){
+    var voices = speechSynthesis.getVoices();
+    chineseVoice = voices.find(function(v){ return v.lang === "zh-CN"; })
+      || voices.find(function(v){ return v.lang && v.lang.indexOf("zh") === 0; })
+      || null;
+  }
+  if("speechSynthesis" in window){
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+  function speak(text, rate, onEnd){
+    if(!("speechSynthesis" in window)){
+      if(onEnd) onEnd();
+      return;
+    }
+    speechSynthesis.cancel();
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "zh-CN";
+    if(chineseVoice) utter.voice = chineseVoice;
+    utter.rate = rate || 1;
+    if(onEnd) utter.onend = onEnd;
+    speechSynthesis.speak(utter);
+  }
+
+  /* ---------- Navegação simples ---------- */
+  var views = ["view-home","view-study","view-dialogue-pick","view-dialogue-play"];
+  function showView(id){
+    views.forEach(function(v){
+      document.getElementById(v).classList.toggle("hidden", v!==id);
+    });
+  }
+
+  /* ---------- Progresso / desbloqueio de grupo ---------- */
+  function phrasesOfGroup(g){
+    return PHRASES.filter(function(p){ return p.group === g; });
+  }
+  function isGroupLearned(g){
+    return phrasesOfGroup(g).every(function(p){
+      return !!(state.srs[p.id] && state.srs[p.id].learned);
+    });
+  }
+  function recomputeUnlockedGroup(){
+    var g = 1;
+    while(g < 4 && isGroupLearned(g)){
+      g++;
+    }
+    state.unlockedGroup = g;
+    saveState();
+  }
+
+  /* ---------- Fila de estudo ---------- */
+  function buildQueue(){
+    var today = todayStr();
+    return PHRASES.filter(function(p){ return p.group <= state.unlockedGroup; })
+      .filter(function(p){
+        var s = state.srs[p.id];
+        if(!s) return true;
+        return s.nextReview <= today;
+      })
+      .map(function(p){ return p.id; });
+  }
+
+  /* ---------- Renderização: HOME ---------- */
+  function renderHome(){
+    recomputeUnlockedGroup();
+    var queue = buildQueue();
+    var statusEl = document.getElementById("home-status");
+    var subEl = document.getElementById("home-sub");
+    var btnStudy = document.getElementById("btn-start-study");
+
+    if(queue.length > 0){
+      statusEl.textContent = queue.length === 1
+        ? "Você tem 1 frase para revisar"
+        : "Você tem " + queue.length + " frases para revisar";
+      subEl.textContent = "";
+      btnStudy.disabled = false;
+      btnStudy.textContent = "Continuar estudo";
+    } else {
+      statusEl.textContent = "Tudo em dia por hoje";
+      subEl.textContent = "Volte mais tarde ou pratique o diálogo.";
+      btnStudy.disabled = false;
+      btnStudy.textContent = "Revisar mesmo assim";
+    }
+
+    var list = document.getElementById("group-list");
+    list.innerHTML = "";
+    for(var g=1; g<=4; g++){
+      var li = document.createElement("li");
+      var learnedCount = phrasesOfGroup(g).filter(function(p){
+        return state.srs[p.id] && state.srs[p.id].learned;
+      }).length;
+      var total = phrasesOfGroup(g).length;
+      var name = document.createElement("span");
+      name.textContent = "Grupo " + g + " — " + GROUP_NAMES[g];
+      var badge = document.createElement("span");
+      badge.className = "badge";
+      if(g > state.unlockedGroup){
+        badge.textContent = "bloqueado";
+        badge.classList.add("locked");
+      } else if(learnedCount === total){
+        badge.textContent = "completo";
+        badge.classList.add("done");
+      } else {
+        badge.textContent = learnedCount + "/" + total;
+      }
+      li.appendChild(name);
+      li.appendChild(badge);
+      list.appendChild(li);
+    }
+
+    var dialogueBtn = document.getElementById("btn-start-dialogue");
+    var hasDialogue = DIALOGUES.some(function(d){ return d.group <= state.unlockedGroup; });
+    dialogueBtn.disabled = !hasDialogue;
+  }
+
+  /* ---------- Estudo ---------- */
+  var studyQueue = [];
+  var studyIndex = 0;
+  var studyPhase = "recall"; // "recall" | "reveal"
+
+  function startStudy(){
+    studyQueue = buildQueue();
+    studyIndex = 0;
+    if(studyQueue.length === 0){
+      showView("view-home");
+      return;
+    }
+    showView("view-study");
+    renderStudyCard(true);
+  }
+
+  function currentPhrase(){
+    return PHRASES.find(function(p){ return p.id === studyQueue[studyIndex]; });
+  }
+
+  function renderStudyCard(autoSpeak){
+    var p = currentPhrase();
+    studyPhase = "recall";
+    document.getElementById("study-progress").textContent =
+      (studyIndex+1) + " de " + studyQueue.length;
+
+    var card = document.getElementById("study-card");
+    card.innerHTML = "";
+
+    var label = document.createElement("div");
+    label.className = "label";
+    label.textContent = "Você lembra o significado?";
+    card.appendChild(label);
+
+    var hanzi = document.createElement("div");
+    hanzi.className = "hanzi";
+    hanzi.textContent = p.hanzi;
+    card.appendChild(hanzi);
+
+    var pinyin = document.createElement("div");
+    pinyin.className = "pinyin";
+    pinyin.textContent = p.pinyin;
+    card.appendChild(pinyin);
+
+    var row1 = document.createElement("div");
+    row1.className = "row";
+    var btnNormal = document.createElement("button");
+    btnNormal.className = "btn btn-secondary";
+    btnNormal.textContent = "Ouvir";
+    btnNormal.onclick = function(){ speak(p.hanzi, 1); };
+    var btnSlow = document.createElement("button");
+    btnSlow.className = "btn btn-secondary";
+    btnSlow.textContent = "Devagar";
+    btnSlow.onclick = function(){ speak(p.hanzi, 0.6); };
+    row1.appendChild(btnNormal);
+    row1.appendChild(btnSlow);
+    card.appendChild(row1);
+
+    var row2 = document.createElement("div");
+    row2.className = "row";
+    var btnNo = document.createElement("button");
+    btnNo.className = "btn btn-bad";
+    btnNo.textContent = "Não lembrei";
+    btnNo.onclick = function(){ handleAssessment(p, false); };
+    var btnYes = document.createElement("button");
+    btnYes.className = "btn btn-good";
+    btnYes.textContent = "Lembrei";
+    btnYes.onclick = function(){ handleAssessment(p, true); };
+    row2.appendChild(btnNo);
+    row2.appendChild(btnYes);
+    card.appendChild(row2);
+
+    if(autoSpeak){
+      speak(p.hanzi, 1);
+    }
+  }
+
+  function handleAssessment(p, remembered){
+    markResult(p.id, remembered);
+    renderRevealCard(p, remembered);
+  }
+
+  function markResult(id, remembered){
+    var s = getSRS(id);
+    var today = todayStr();
+    if(remembered){
+      if(s.lastCorrectDate !== today){
+        s.correctCount = Math.min(s.correctCount + 1, 3);
+        s.lastCorrectDate = today;
+        if(s.correctCount >= 3){
+          s.learned = true;
+        }
+      }
+      var idx = Math.min(s.correctCount - 1, INTERVALS.length - 1);
+      var days = idx >= 0 ? INTERVALS[idx] : 1;
+      s.nextReview = addDays(today, days);
+    } else {
+      s.correctCount = 0;
+      s.learned = false;
+      s.nextReview = today;
+    }
+    saveState();
+  }
+
+  function renderRevealCard(p, remembered){
+    studyPhase = "reveal";
+    var card = document.getElementById("study-card");
+    card.innerHTML = "";
+
+    var label = document.createElement("div");
+    label.className = "label";
+    label.textContent = remembered ? "Você acertou" : "Vamos revisar";
+    card.appendChild(label);
+
+    var hanzi = document.createElement("div");
+    hanzi.className = "hanzi";
+    hanzi.textContent = p.hanzi;
+    card.appendChild(hanzi);
+
+    var pinyin = document.createElement("div");
+    pinyin.className = "pinyin";
+    pinyin.textContent = p.pinyin;
+    card.appendChild(pinyin);
+
+    var translation = document.createElement("div");
+    translation.className = "translation";
+    translation.textContent = p.pt;
+    card.appendChild(translation);
+
+    if(p.responses && p.responses.length){
+      p.responses.forEach(function(r){
+        var block = document.createElement("div");
+        block.className = "response-block";
+
+        var respLabel = document.createElement("div");
+        respLabel.className = "label";
+        respLabel.textContent = "Resposta possível";
+        block.appendChild(respLabel);
+
+        var rh = document.createElement("div");
+        rh.className = "hanzi";
+        rh.textContent = r.hanzi;
+        block.appendChild(rh);
+
+        var rp = document.createElement("div");
+        rp.className = "pinyin";
+        rp.textContent = r.pinyin;
+        block.appendChild(rp);
+
+        var rt = document.createElement("div");
+        rt.className = "translation";
+        rt.textContent = r.pt;
+        block.appendChild(rt);
+
+        var rbtn = document.createElement("button");
+        rbtn.className = "btn btn-secondary";
+        rbtn.textContent = "Ouvir resposta";
+        rbtn.onclick = function(){ speak(r.hanzi, 1); };
+        block.appendChild(rbtn);
+
+        card.appendChild(block);
+      });
+    }
+
+    var next = document.createElement("button");
+    next.className = "btn btn-primary";
+    next.textContent = (studyIndex + 1 < studyQueue.length) ? "Próxima" : "Finalizar sessão";
+    next.onclick = function(){
+      studyIndex++;
+      if(studyIndex >= studyQueue.length){
+        recomputeUnlockedGroup();
+        showView("view-home");
+        renderHome();
+      } else {
+        renderStudyCard(true);
+      }
+    };
+    card.appendChild(next);
+  }
+
+  /* ---------- Diálogo ---------- */
+  function renderDialoguePicker(){
+    var list = document.getElementById("dialogue-list");
+    list.innerHTML = "";
+    DIALOGUES.forEach(function(d, idx){
+      var btn = document.createElement("button");
+      btn.className = "dialogue-choice";
+      var available = d.group <= state.unlockedGroup;
+      btn.disabled = !available;
+      btn.innerHTML = "<strong>" + d.title + "</strong><br><span class='muted'>Grupo " + d.group + (available ? "" : " — bloqueado") + "</span>";
+      btn.onclick = function(){ startDialogue(idx); };
+      list.appendChild(btn);
+    });
+    showView("view-dialogue-pick");
+  }
+
+  var dialogueIds = [];
+  var dialogueIndex = 0;
+  var dialogueStopped = false;
+
+  function startDialogue(idx){
+    dialogueIds = DIALOGUES[idx].ids;
+    dialogueIndex = 0;
+    dialogueStopped = false;
+    showView("view-dialogue-play");
+    playDialogueStep();
+  }
+
+  function playDialogueStep(){
+    if(dialogueStopped) return;
+    if(dialogueIndex >= dialogueIds.length){
+      var card = document.getElementById("dialogue-card");
+      card.innerHTML = "";
+      var done = document.createElement("div");
+      done.className = "translation";
+      done.textContent = "Fim do diálogo";
+      card.appendChild(done);
+      var back = document.createElement("button");
+      back.className = "btn btn-primary";
+      back.textContent = "Voltar ao início";
+      back.onclick = function(){ showView("view-home"); renderHome(); };
+      card.appendChild(back);
+      document.getElementById("dialogue-progress").textContent = "";
+      return;
+    }
+    var p = PHRASES.find(function(x){ return x.id === dialogueIds[dialogueIndex]; });
+    document.getElementById("dialogue-progress").textContent =
+      (dialogueIndex+1) + " de " + dialogueIds.length;
+
+    var card = document.getElementById("dialogue-card");
+    card.innerHTML = "";
+    var hanzi = document.createElement("div");
+    hanzi.className = "hanzi";
+    hanzi.textContent = p.hanzi;
+    card.appendChild(hanzi);
+    var pinyin = document.createElement("div");
+    pinyin.className = "pinyin";
+    pinyin.textContent = p.pinyin;
+    card.appendChild(pinyin);
+    var translation = document.createElement("div");
+    translation.className = "translation";
+    translation.textContent = p.pt;
+    card.appendChild(translation);
+
+    speak(p.hanzi, 1, function(){
+      if(dialogueStopped) return;
+      setTimeout(function(){
+        dialogueIndex++;
+        playDialogueStep();
+      }, 1400);
+    });
+  }
+
+  /* ---------- Eventos ---------- */
+  document.getElementById("btn-start-study").onclick = startStudy;
+  document.getElementById("btn-start-dialogue").onclick = renderDialoguePicker;
+  document.getElementById("btn-study-back").onclick = function(){
+    speechSynthesis.cancel();
+    showView("view-home");
+    renderHome();
+  };
+  document.getElementById("btn-dialogue-back").onclick = function(){
+    showView("view-home");
+  };
+  document.getElementById("btn-dialogue-stop").onclick = function(){
+    dialogueStopped = true;
+    speechSynthesis.cancel();
+    showView("view-home");
+    renderHome();
+  };
+  document.getElementById("btn-reset").onclick = function(){
+    if(confirm("Apagar todo o progresso salvo?")){
+      localStorage.removeItem(STORAGE_KEY);
+      state = defaultState();
+      renderHome();
+    }
+  };
+
+  /* ---------- Início ---------- */
+  renderHome();
+})();
+</script>
+</body>
+</html>
