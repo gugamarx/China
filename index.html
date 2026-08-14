@@ -312,21 +312,37 @@
     {id:17, group:4, hanzi:"...在哪里?", pinyin:"...zài nǎlǐ?", pt:"onde fica...?", responses:[]},
     {id:18, group:4, hanzi:"洗手间在哪里?", pinyin:"xǐshǒujiān zài nǎlǐ?", pt:"onde fica o banheiro?", responses:[]},
     {id:19, group:4, hanzi:"我需要帮助", pinyin:"wǒ xūyào bāngzhù", pt:"preciso de ajuda", responses:[]},
-    {id:20, group:4, hanzi:"我不懂", pinyin:"wǒ bù dǒng", pt:"não entendo", responses:[]}
+    {id:20, group:4, hanzi:"我不懂", pinyin:"wǒ bù dǒng", pt:"não entendo", responses:[]},
+
+    {id:21, group:5, hanzi:"你会说中文吗?", pinyin:"nǐ huì shuō zhōngwén ma?", pt:"você fala chinês?", responses:[
+      {hanzi:"我只会一点点", pinyin:"wǒ zhǐ huì yìdiǎndiǎn", pt:"só sei um pouquinho"},
+      {hanzi:"我刚开始学", pinyin:"wǒ gāng kāishǐ xué", pt:"acabei de começar a aprender"}
+    ]},
+    {id:22, group:5, hanzi:"你的中文说得很好!", pinyin:"nǐ de zhōngwén shuō de hěn hǎo!", pt:"seu chinês está muito bom!", responses:[
+      {hanzi:"哪里哪里", pinyin:"nǎlǐ nǎlǐ", pt:"imagina, não é bem assim"},
+      {hanzi:"谢谢,我还在学", pinyin:"xièxie, wǒ hái zài xué", pt:"obrigado, ainda estou aprendendo"}
+    ]},
+    {id:23, group:5, hanzi:"我只会一点点", pinyin:"wǒ zhǐ huì yìdiǎndiǎn", pt:"só sei um pouquinho", responses:[]},
+    {id:24, group:5, hanzi:"我很喜欢中文", pinyin:"wǒ hěn xǐhuan zhōngwén", pt:"gosto muito de chinês", responses:[]},
+    {id:25, group:5, hanzi:"我想学更多", pinyin:"wǒ xiǎng xué gèng duō", pt:"quero aprender mais", responses:[]}
   ];
+
+  var MAX_GROUP = 5;
 
   var GROUP_NAMES = {
     1:"Introdução / cumprimento",
     2:"Cortesia",
     3:"Sobre você",
-    4:"Localização / ajuda"
+    4:"Localização / ajuda",
+    5:"Sobre seu mandarim"
   };
 
   var DIALOGUES = [
     {group:1, title:"Cumprimentar alguém", ids:[1,2,3,4,5]},
     {group:2, title:"Pedir desculpa e agradecer", ids:[8,9,6,7]},
     {group:3, title:"Se apresentar e negociar preço", ids:[11,10,13,14,15]},
-    {group:4, title:"Pedir ajuda e localização", ids:[17,18,19,20]}
+    {group:4, title:"Pedir ajuda e localização", ids:[17,18,19,20]},
+    {group:5, title:"Explicar que está aprendendo", ids:[21,23,22,24,25]}
   ];
 
   var INTERVALS = [1,3,7]; // dias após 1a, 2a, 3a acerto (dias diferentes)
@@ -421,7 +437,7 @@
   }
   function recomputeUnlockedGroup(){
     var g = 1;
-    while(g < 4 && isGroupLearned(g)){
+    while(g < MAX_GROUP && isGroupLearned(g)){
       g++;
     }
     state.unlockedGroup = g;
@@ -464,7 +480,7 @@
 
     var list = document.getElementById("group-list");
     list.innerHTML = "";
-    for(var g=1; g<=4; g++){
+    for(var g=1; g<=MAX_GROUP; g++){
       var li = document.createElement("li");
       var learnedCount = phrasesOfGroup(g).filter(function(p){
         return state.srs[p.id] && state.srs[p.id].learned;
