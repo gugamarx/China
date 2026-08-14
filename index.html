@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>中文 · Mandarim para Viagem</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#a6372f">
 <style>
   :root{
     --bg:#f5f4f2;
@@ -212,6 +216,38 @@
   }
   .history-mark.ok{ color:var(--good); }
   .history-mark.no{ color:var(--bad); }
+
+  .word-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+    margin:10px 0 14px;
+  }
+  .word-chip{
+    background:#f0efec;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px 10px;
+    min-width:44px;
+    text-align:center;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .word-chip .word-hz{ font-size:1.4rem; }
+  .word-chip .word-py{ font-size:0.72rem; color:var(--ink-soft); }
+  .counters{
+    text-align:center;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    margin-top:10px;
+  }
+  .mic-result{
+    text-align:center;
+    font-size:0.85rem;
+    margin-top:4px;
+    min-height:1.2em;
+  }
 </style>
 </head>
 <body>
@@ -279,52 +315,79 @@
   "use strict";
 
   /* ---------- Dados ---------- */
+  function W(hz, py){ return {hanzi:hz, pinyin:py}; }
+
   var PHRASES = [
-    {id:1, group:1, hanzi:"你好", pinyin:"nǐ hǎo", pt:"olá", responses:[]},
-    {id:2, group:1, hanzi:"你好吗?", pinyin:"nǐ hǎo ma?", pt:"como você está?", responses:[
-      {hanzi:"我很好", pinyin:"wǒ hěn hǎo", pt:"estou bem"}
+    {id:1, group:1, hanzi:"你好", pinyin:"nǐ hǎo", pt:"olá",
+      words:[W("你","nǐ"),W("好","hǎo")], responses:[]},
+    {id:2, group:1, hanzi:"你好吗?", pinyin:"nǐ hǎo ma?", pt:"como você está?",
+      words:[W("你","nǐ"),W("好","hǎo"),W("吗","ma")], responses:[
+      {hanzi:"我很好", pinyin:"wǒ hěn hǎo", pt:"estou bem", words:[W("我","wǒ"),W("很","hěn"),W("好","hǎo")]}
     ]},
-    {id:3, group:1, hanzi:"我很好", pinyin:"wǒ hěn hǎo", pt:"estou bem", responses:[]},
-    {id:4, group:1, hanzi:"你呢?", pinyin:"nǐ ne?", pt:"e você?", responses:[]},
-    {id:5, group:1, hanzi:"再见", pinyin:"zàijiàn", pt:"tchau / até mais", responses:[]},
+    {id:3, group:1, hanzi:"我很好", pinyin:"wǒ hěn hǎo", pt:"estou bem",
+      words:[W("我","wǒ"),W("很","hěn"),W("好","hǎo")], responses:[]},
+    {id:4, group:1, hanzi:"你呢?", pinyin:"nǐ ne?", pt:"e você?",
+      words:[W("你","nǐ"),W("呢","ne")], responses:[]},
+    {id:5, group:1, hanzi:"再见", pinyin:"zàijiàn", pt:"tchau / até mais",
+      words:[W("再","zài"),W("见","jiàn")], responses:[]},
 
-    {id:6, group:2, hanzi:"谢谢", pinyin:"xièxie", pt:"obrigado", responses:[
-      {hanzi:"不客气", pinyin:"bú kèqi", pt:"de nada"}
+    {id:6, group:2, hanzi:"谢谢", pinyin:"xièxie", pt:"obrigado",
+      words:[W("谢","xiè"),W("谢","xie")], responses:[
+      {hanzi:"不客气", pinyin:"bú kèqi", pt:"de nada", words:[W("不","bú"),W("客","kè"),W("气","qi")]}
     ]},
-    {id:7, group:2, hanzi:"不客气", pinyin:"bú kèqi", pt:"de nada", responses:[]},
-    {id:8, group:2, hanzi:"对不起", pinyin:"duìbuqǐ", pt:"desculpa", responses:[
-      {hanzi:"没关系", pinyin:"méi guānxi", pt:"tudo bem / sem problema"}
+    {id:7, group:2, hanzi:"不客气", pinyin:"bú kèqi", pt:"de nada",
+      words:[W("不","bú"),W("客","kè"),W("气","qi")], responses:[]},
+    {id:8, group:2, hanzi:"对不起", pinyin:"duìbuqǐ", pt:"desculpa",
+      words:[W("对","duì"),W("不","bu"),W("起","qǐ")], responses:[
+      {hanzi:"没关系", pinyin:"méi guānxi", pt:"tudo bem / sem problema", words:[W("没","méi"),W("关","guān"),W("系","xi")]}
     ]},
-    {id:9, group:2, hanzi:"没关系", pinyin:"méi guānxi", pt:"tudo bem / sem problema", responses:[]},
-    {id:10, group:2, hanzi:"我叫...", pinyin:"wǒ jiào...", pt:"meu nome é...", responses:[]},
+    {id:9, group:2, hanzi:"没关系", pinyin:"méi guānxi", pt:"tudo bem / sem problema",
+      words:[W("没","méi"),W("关","guān"),W("系","xi")], responses:[]},
+    {id:10, group:2, hanzi:"我叫...", pinyin:"wǒ jiào...", pt:"meu nome é...",
+      words:[W("我","wǒ"),W("叫","jiào")], responses:[]},
 
-    {id:11, group:3, hanzi:"你叫什么名字?", pinyin:"nǐ jiào shénme míngzi?", pt:"qual é seu nome?", responses:[
-      {hanzi:"我叫...", pinyin:"wǒ jiào...", pt:"meu nome é..."}
+    {id:11, group:3, hanzi:"你叫什么名字?", pinyin:"nǐ jiào shénme míngzi?", pt:"qual é seu nome?",
+      words:[W("你","nǐ"),W("叫","jiào"),W("什","shén"),W("么","me"),W("名","míng"),W("字","zi")], responses:[
+      {hanzi:"我叫...", pinyin:"wǒ jiào...", pt:"meu nome é...", words:[W("我","wǒ"),W("叫","jiào")]}
     ]},
-    {id:12, group:3, hanzi:"我是巴西人", pinyin:"wǒ shì Bāxī rén", pt:"sou brasileiro", responses:[]},
-    {id:13, group:3, hanzi:"多少钱?", pinyin:"duōshao qián?", pt:"quanto custa?", responses:[]},
-    {id:14, group:3, hanzi:"太贵了", pinyin:"tài guì le", pt:"está muito caro", responses:[
-      {hanzi:"可以便宜一点吗?", pinyin:"kěyǐ piányi yìdiǎn ma?", pt:"dá pra baixar um pouco?"}
+    {id:12, group:3, hanzi:"我是巴西人", pinyin:"wǒ shì Bāxī rén", pt:"sou brasileiro",
+      words:[W("我","wǒ"),W("是","shì"),W("巴","Bā"),W("西","xī"),W("人","rén")], responses:[]},
+    {id:13, group:3, hanzi:"多少钱?", pinyin:"duōshao qián?", pt:"quanto custa?",
+      words:[W("多","duō"),W("少","shao"),W("钱","qián")], responses:[]},
+    {id:14, group:3, hanzi:"太贵了", pinyin:"tài guì le", pt:"está muito caro",
+      words:[W("太","tài"),W("贵","guì"),W("了","le")], responses:[
+      {hanzi:"可以便宜一点吗?", pinyin:"kěyǐ piányi yìdiǎn ma?", pt:"dá pra baixar um pouco?", words:[W("可","kě"),W("以","yǐ"),W("便","pián"),W("宜","yi"),W("一","yì"),W("点","diǎn"),W("吗","ma")]}
     ]},
-    {id:15, group:3, hanzi:"可以便宜一点吗?", pinyin:"kěyǐ piányi yìdiǎn ma?", pt:"dá pra baixar um pouco?", responses:[]},
+    {id:15, group:3, hanzi:"可以便宜一点吗?", pinyin:"kěyǐ piányi yìdiǎn ma?", pt:"dá pra baixar um pouco?",
+      words:[W("可","kě"),W("以","yǐ"),W("便","pián"),W("宜","yi"),W("一","yì"),W("点","diǎn"),W("吗","ma")], responses:[]},
 
-    {id:16, group:4, hanzi:"这个", pinyin:"zhège", pt:"isto / este", responses:[]},
-    {id:17, group:4, hanzi:"...在哪里?", pinyin:"...zài nǎlǐ?", pt:"onde fica...?", responses:[]},
-    {id:18, group:4, hanzi:"洗手间在哪里?", pinyin:"xǐshǒujiān zài nǎlǐ?", pt:"onde fica o banheiro?", responses:[]},
-    {id:19, group:4, hanzi:"我需要帮助", pinyin:"wǒ xūyào bāngzhù", pt:"preciso de ajuda", responses:[]},
-    {id:20, group:4, hanzi:"我不懂", pinyin:"wǒ bù dǒng", pt:"não entendo", responses:[]},
+    {id:16, group:4, hanzi:"这个", pinyin:"zhège", pt:"isto / este",
+      words:[W("这","zhè"),W("个","ge")], responses:[]},
+    {id:17, group:4, hanzi:"...在哪里?", pinyin:"...zài nǎlǐ?", pt:"onde fica...?",
+      words:[W("在","zài"),W("哪","nǎ"),W("里","lǐ")], responses:[]},
+    {id:18, group:4, hanzi:"洗手间在哪里?", pinyin:"xǐshǒujiān zài nǎlǐ?", pt:"onde fica o banheiro?",
+      words:[W("洗","xǐ"),W("手","shǒu"),W("间","jiān"),W("在","zài"),W("哪","nǎ"),W("里","lǐ")], responses:[]},
+    {id:19, group:4, hanzi:"我需要帮助", pinyin:"wǒ xūyào bāngzhù", pt:"preciso de ajuda",
+      words:[W("我","wǒ"),W("需","xū"),W("要","yào"),W("帮","bāng"),W("助","zhù")], responses:[]},
+    {id:20, group:4, hanzi:"我不懂", pinyin:"wǒ bù dǒng", pt:"não entendo",
+      words:[W("我","wǒ"),W("不","bù"),W("懂","dǒng")], responses:[]},
 
-    {id:21, group:5, hanzi:"你会说中文吗?", pinyin:"nǐ huì shuō zhōngwén ma?", pt:"você fala chinês?", responses:[
-      {hanzi:"我只会一点点", pinyin:"wǒ zhǐ huì yìdiǎndiǎn", pt:"só sei um pouquinho"},
-      {hanzi:"我刚开始学", pinyin:"wǒ gāng kāishǐ xué", pt:"acabei de começar a aprender"}
+    {id:21, group:5, hanzi:"你会说中文吗?", pinyin:"nǐ huì shuō zhōngwén ma?", pt:"você fala chinês?",
+      words:[W("你","nǐ"),W("会","huì"),W("说","shuō"),W("中","zhōng"),W("文","wén"),W("吗","ma")], responses:[
+      {hanzi:"我只会一点点", pinyin:"wǒ zhǐ huì yìdiǎndiǎn", pt:"só sei um pouquinho", words:[W("我","wǒ"),W("只","zhǐ"),W("会","huì"),W("一","yì"),W("点","diǎn"),W("点","diǎn")]},
+      {hanzi:"我刚开始学", pinyin:"wǒ gāng kāishǐ xué", pt:"acabei de começar a aprender", words:[W("我","wǒ"),W("刚","gāng"),W("开","kāi"),W("始","shǐ"),W("学","xué")]}
     ]},
-    {id:22, group:5, hanzi:"你的中文说得很好!", pinyin:"nǐ de zhōngwén shuō de hěn hǎo!", pt:"seu chinês está muito bom!", responses:[
-      {hanzi:"哪里哪里", pinyin:"nǎlǐ nǎlǐ", pt:"imagina, não é bem assim"},
-      {hanzi:"谢谢,我还在学", pinyin:"xièxie, wǒ hái zài xué", pt:"obrigado, ainda estou aprendendo"}
+    {id:22, group:5, hanzi:"你的中文说得很好!", pinyin:"nǐ de zhōngwén shuō de hěn hǎo!", pt:"seu chinês está muito bom!",
+      words:[W("你","nǐ"),W("的","de"),W("中","zhōng"),W("文","wén"),W("说","shuō"),W("得","de"),W("很","hěn"),W("好","hǎo")], responses:[
+      {hanzi:"哪里哪里", pinyin:"nǎlǐ nǎlǐ", pt:"imagina, não é bem assim", words:[W("哪","nǎ"),W("里","lǐ"),W("哪","nǎ"),W("里","lǐ")]},
+      {hanzi:"谢谢,我还在学", pinyin:"xièxie, wǒ hái zài xué", pt:"obrigado, ainda estou aprendendo", words:[W("谢","xiè"),W("谢","xie"),W("我","wǒ"),W("还","hái"),W("在","zài"),W("学","xué")]}
     ]},
-    {id:23, group:5, hanzi:"我只会一点点", pinyin:"wǒ zhǐ huì yìdiǎndiǎn", pt:"só sei um pouquinho", responses:[]},
-    {id:24, group:5, hanzi:"我很喜欢中文", pinyin:"wǒ hěn xǐhuan zhōngwén", pt:"gosto muito de chinês", responses:[]},
-    {id:25, group:5, hanzi:"我想学更多", pinyin:"wǒ xiǎng xué gèng duō", pt:"quero aprender mais", responses:[]}
+    {id:23, group:5, hanzi:"我只会一点点", pinyin:"wǒ zhǐ huì yìdiǎndiǎn", pt:"só sei um pouquinho",
+      words:[W("我","wǒ"),W("只","zhǐ"),W("会","huì"),W("一","yì"),W("点","diǎn"),W("点","diǎn")], responses:[]},
+    {id:24, group:5, hanzi:"我很喜欢中文", pinyin:"wǒ hěn xǐhuan zhōngwén", pt:"gosto muito de chinês",
+      words:[W("我","wǒ"),W("很","hěn"),W("喜","xǐ"),W("欢","huan"),W("中","zhōng"),W("文","wén")], responses:[]},
+    {id:25, group:5, hanzi:"我想学更多", pinyin:"wǒ xiǎng xué gèng duō", pt:"quero aprender mais",
+      words:[W("我","wǒ"),W("想","xiǎng"),W("学","xué"),W("更","gèng"),W("多","duō")], responses:[]}
   ];
 
   var MAX_GROUP = 5;
@@ -354,7 +417,7 @@
   var MAX_LOG_ENTRIES = 1000;
 
   function defaultState(){
-    return { unlockedGroup:1, srs:{}, log:[] };
+    return { unlockedGroup:1, srs:{}, log:[], counters:{} };
   }
   function loadState(){
     try{
@@ -364,10 +427,15 @@
       if(!parsed.srs) parsed.srs = {};
       if(!parsed.unlockedGroup) parsed.unlockedGroup = 1;
       if(!parsed.log) parsed.log = [];
+      if(!parsed.counters) parsed.counters = {};
       return parsed;
     }catch(e){
       return defaultState();
     }
+  }
+  function getCounters(key){
+    if(!state.counters[key]) state.counters[key] = { heard:0, spoken:0 };
+    return state.counters[key];
   }
   function saveState(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -416,6 +484,131 @@
     utter.rate = rate || 1;
     if(onEnd) utter.onend = onEnd;
     speechSynthesis.speak(utter);
+  }
+  function hear(key, text, rate, onEnd){
+    getCounters(key).heard++;
+    saveState();
+    speak(text, rate, onEnd);
+  }
+
+  /* ---------- Reconhecimento de voz (contador "falei") ---------- */
+  var SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognitionSupported = !!SpeechRecognitionCtor;
+  var activeRecognition = null;
+
+  function startListening(key, buttonEl, resultEl, onSpoken){
+    if(!recognitionSupported){
+      resultEl.textContent = "Reconhecimento de voz não é suportado neste navegador.";
+      return;
+    }
+    if(activeRecognition){
+      try{ activeRecognition.stop(); }catch(e){}
+    }
+    var rec = new SpeechRecognitionCtor();
+    activeRecognition = rec;
+    rec.lang = "zh-CN";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+
+    var originalLabel = buttonEl.textContent;
+    buttonEl.textContent = "🎤 Ouvindo...";
+    buttonEl.disabled = true;
+    resultEl.textContent = "";
+
+    rec.onresult = function(event){
+      var said = event.results[0][0].transcript;
+      getCounters(key).spoken++;
+      saveState();
+      resultEl.textContent = "Você disse: " + said;
+      if(onSpoken) onSpoken();
+    };
+    rec.onerror = function(event){
+      resultEl.textContent = (event.error === "not-allowed")
+        ? "Permissão de microfone negada."
+        : "Não consegui te ouvir, tenta de novo.";
+    };
+    rec.onend = function(){
+      buttonEl.textContent = originalLabel;
+      buttonEl.disabled = false;
+      activeRecognition = null;
+    };
+    try{
+      rec.start();
+    }catch(e){
+      buttonEl.textContent = originalLabel;
+      buttonEl.disabled = false;
+      resultEl.textContent = "Não foi possível iniciar o microfone.";
+    }
+  }
+
+  /* ---------- Palavras clicáveis + controles de prática ---------- */
+  function renderWordChips(container, words){
+    if(!words || !words.length) return;
+    var row = document.createElement("div");
+    row.className = "word-row";
+    words.forEach(function(w){
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "word-chip";
+      var hz = document.createElement("div");
+      hz.className = "word-hz";
+      hz.textContent = w.hanzi;
+      var py = document.createElement("div");
+      py.className = "word-py";
+      py.textContent = w.pinyin;
+      chip.appendChild(hz);
+      chip.appendChild(py);
+      chip.onclick = function(){ speak(w.hanzi, 1); };
+      row.appendChild(chip);
+    });
+    container.appendChild(row);
+  }
+
+  function buildAudioBlock(key, hanziText, words){
+    var wrap = document.createElement("div");
+
+    renderWordChips(wrap, words);
+
+    var row1 = document.createElement("div");
+    row1.className = "row";
+    var btnNormal = document.createElement("button");
+    btnNormal.className = "btn btn-secondary";
+    btnNormal.textContent = "Ouvir";
+    var btnSlow = document.createElement("button");
+    btnSlow.className = "btn btn-secondary";
+    btnSlow.textContent = "Devagar";
+    row1.appendChild(btnNormal);
+    row1.appendChild(btnSlow);
+    wrap.appendChild(row1);
+
+    var row2 = document.createElement("div");
+    row2.className = "row";
+    var btnMic = document.createElement("button");
+    btnMic.className = "btn btn-secondary";
+    btnMic.textContent = "🎤 Falar";
+    btnMic.disabled = !recognitionSupported;
+    row2.appendChild(btnMic);
+    wrap.appendChild(row2);
+
+    var counters = document.createElement("div");
+    counters.className = "counters";
+    wrap.appendChild(counters);
+
+    var micResult = document.createElement("div");
+    micResult.className = "mic-result muted";
+    wrap.appendChild(micResult);
+
+    function refreshCounters(){
+      var c = getCounters(key);
+      counters.textContent = "🔊 ouvida " + c.heard + "x · 🎤 falada " + c.spoken + "x";
+    }
+    refreshCounters();
+
+    btnNormal.onclick = function(){ hear(key, hanziText, 1); refreshCounters(); };
+    btnSlow.onclick = function(){ hear(key, hanziText, 0.6); refreshCounters(); };
+    btnMic.onclick = function(){ startListening(key, btnMic, micResult, refreshCounters); };
+
+    return { wrap: wrap, refreshCounters: refreshCounters };
   }
 
   /* ---------- Navegação simples ---------- */
@@ -553,19 +746,8 @@
     pinyin.textContent = p.pinyin;
     card.appendChild(pinyin);
 
-    var row1 = document.createElement("div");
-    row1.className = "row";
-    var btnNormal = document.createElement("button");
-    btnNormal.className = "btn btn-secondary";
-    btnNormal.textContent = "Ouvir";
-    btnNormal.onclick = function(){ speak(p.hanzi, 1); };
-    var btnSlow = document.createElement("button");
-    btnSlow.className = "btn btn-secondary";
-    btnSlow.textContent = "Devagar";
-    btnSlow.onclick = function(){ speak(p.hanzi, 0.6); };
-    row1.appendChild(btnNormal);
-    row1.appendChild(btnSlow);
-    card.appendChild(row1);
+    var audioBlock = buildAudioBlock("p" + p.id, p.hanzi, p.words);
+    card.appendChild(audioBlock.wrap);
 
     var row2 = document.createElement("div");
     row2.className = "row";
@@ -582,7 +764,8 @@
     card.appendChild(row2);
 
     if(autoSpeak){
-      speak(p.hanzi, 1);
+      hear("p" + p.id, p.hanzi, 1);
+      audioBlock.refreshCounters();
     }
   }
 
@@ -655,8 +838,11 @@
     translation.textContent = p.pt;
     card.appendChild(translation);
 
+    var mainAudio = buildAudioBlock("p" + p.id, p.hanzi, p.words);
+    card.appendChild(mainAudio.wrap);
+
     if(p.responses && p.responses.length){
-      p.responses.forEach(function(r){
+      p.responses.forEach(function(r, idx){
         var block = document.createElement("div");
         block.className = "response-block";
 
@@ -680,11 +866,8 @@
         rt.textContent = r.pt;
         block.appendChild(rt);
 
-        var rbtn = document.createElement("button");
-        rbtn.className = "btn btn-secondary";
-        rbtn.textContent = "Ouvir resposta";
-        rbtn.onclick = function(){ speak(r.hanzi, 1); };
-        block.appendChild(rbtn);
+        var rAudio = buildAudioBlock("p" + p.id + "-r" + idx, r.hanzi, r.words);
+        block.appendChild(rAudio.wrap);
 
         card.appendChild(block);
       });
@@ -770,7 +953,9 @@
     translation.textContent = p.pt;
     card.appendChild(translation);
 
-    speak(p.hanzi, 1, function(){
+    renderWordChips(card, p.words);
+
+    hear("p" + p.id, p.hanzi, 1, function(){
       if(dialogueStopped) return;
       setTimeout(function(){
         dialogueIndex++;
@@ -899,6 +1084,12 @@
 
   /* ---------- Início ---------- */
   renderHome();
+
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("service-worker.js").catch(function(){});
+    });
+  }
 })();
 </script>
 </body>
