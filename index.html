@@ -177,6 +177,41 @@
     font-size:0.9rem;
     margin-bottom:8px;
   }
+  .history-summary{
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .history-day{ margin-bottom:18px; }
+  .history-day-title{
+    font-size:0.95rem;
+    font-weight:600;
+    margin-bottom:8px;
+  }
+  .history-entry{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .history-entry:last-child{ border-bottom:none; }
+  .history-time{
+    color:var(--ink-soft);
+    font-size:0.8rem;
+    width:42px;
+    flex-shrink:0;
+  }
+  .history-text{ flex:1; }
+  .history-text .hz{ font-size:1.1rem; }
+  .history-text .tr{ font-size:0.85rem; color:var(--ink-soft); }
+  .history-mark{
+    font-size:1.1rem;
+    width:24px;
+    text-align:center;
+    flex-shrink:0;
+  }
+  .history-mark.ok{ color:var(--good); }
+  .history-mark.no{ color:var(--bad); }
 </style>
 </head>
 <body>
@@ -191,6 +226,7 @@
       <div class="status-sub" id="home-sub"></div>
       <button class="btn btn-primary" id="btn-start-study">Continuar estudo</button>
       <button class="btn btn-secondary" id="btn-start-dialogue">Modo diálogo</button>
+      <button class="btn btn-secondary" id="btn-start-history">Histórico</button>
     </div>
 
     <div class="card">
@@ -226,6 +262,15 @@
     <div class="row">
       <button class="btn btn-secondary" id="btn-dialogue-stop">Parar</button>
     </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="view-history" class="hidden">
+    <div class="card">
+      <div class="history-summary" id="history-summary"></div>
+    </div>
+    <div id="history-list"></div>
+    <button class="btn btn-secondary" id="btn-history-back">Voltar ao início</button>
   </div>
 </div>
 
@@ -290,8 +335,10 @@
   /* ---------- Estado ---------- */
   var state = loadState();
 
+  var MAX_LOG_ENTRIES = 1000;
+
   function defaultState(){
-    return { unlockedGroup:1, srs:{} };
+    return { unlockedGroup:1, srs:{}, log:[] };
   }
   function loadState(){
     try{
@@ -300,6 +347,7 @@
       var parsed = JSON.parse(raw);
       if(!parsed.srs) parsed.srs = {};
       if(!parsed.unlockedGroup) parsed.unlockedGroup = 1;
+      if(!parsed.log) parsed.log = [];
       return parsed;
     }catch(e){
       return defaultState();
@@ -355,7 +403,7 @@
   }
 
   /* ---------- Navegação simples ---------- */
-  var views = ["view-home","view-study","view-dialogue-pick","view-dialogue-play"];
+  var views = ["view-home","view-study","view-dialogue-pick","view-dialogue-play","view-history"];
   function showView(id){
     views.forEach(function(v){
       document.getElementById(v).classList.toggle("hidden", v!==id);
@@ -524,7 +572,24 @@
 
   function handleAssessment(p, remembered){
     markResult(p.id, remembered);
+    logActivity(p, remembered);
     renderRevealCard(p, remembered);
+  }
+
+  function logActivity(p, correct){
+    var now = new Date();
+    state.log.push({
+      date: todayStr(),
+      time: pad(now.getHours()) + ":" + pad(now.getMinutes()),
+      phraseId: p.id,
+      hanzi: p.hanzi,
+      pt: p.pt,
+      correct: correct
+    });
+    if(state.log.length > MAX_LOG_ENTRIES){
+      state.log = state.log.slice(state.log.length - MAX_LOG_ENTRIES);
+    }
+    saveState();
   }
 
   function markResult(id, remembered){
@@ -698,9 +763,102 @@
     });
   }
 
+  /* ---------- Histórico ---------- */
+  function formatDateLabel(dateStr){
+    var today = todayStr();
+    var yesterday = addDays(today, -1);
+    if(dateStr === today) return "Hoje";
+    if(dateStr === yesterday) return "Ontem";
+    var parts = dateStr.split("-").map(Number);
+    var d = new Date(parts[0], parts[1]-1, parts[2]);
+    try{
+      return d.toLocaleDateString("pt-BR", {day:"2-digit", month:"long", year:"numeric"});
+    }catch(e){
+      return dateStr;
+    }
+  }
+
+  function renderHistory(){
+    var listEl = document.getElementById("history-list");
+    var summaryEl = document.getElementById("history-summary");
+    listEl.innerHTML = "";
+
+    var log = state.log;
+    if(log.length === 0){
+      summaryEl.textContent = "Nenhuma atividade registrada ainda.";
+      var empty = document.createElement("div");
+      empty.className = "card center muted";
+      empty.textContent = "Comece uma sessão de estudo para começar seu histórico.";
+      listEl.appendChild(empty);
+      return;
+    }
+
+    var totalCorrect = log.filter(function(e){ return e.correct; }).length;
+    summaryEl.textContent = log.length + " revisões · " + totalCorrect + " acertos";
+
+    var byDate = {};
+    log.forEach(function(entry){
+      if(!byDate[entry.date]) byDate[entry.date] = [];
+      byDate[entry.date].push(entry);
+    });
+    var dates = Object.keys(byDate).sort().reverse();
+
+    dates.forEach(function(date){
+      var entries = byDate[date];
+      var correctCount = entries.filter(function(e){ return e.correct; }).length;
+
+      var dayCard = document.createElement("div");
+      dayCard.className = "card history-day";
+
+      var title = document.createElement("div");
+      title.className = "history-day-title";
+      title.textContent = formatDateLabel(date) + " — " + correctCount + "/" + entries.length + " acertos";
+      dayCard.appendChild(title);
+
+      entries.forEach(function(entry){
+        var row = document.createElement("div");
+        row.className = "history-entry";
+
+        var time = document.createElement("div");
+        time.className = "history-time";
+        time.textContent = entry.time;
+
+        var text = document.createElement("div");
+        text.className = "history-text";
+        var hz = document.createElement("div");
+        hz.className = "hz";
+        hz.textContent = entry.hanzi;
+        var tr = document.createElement("div");
+        tr.className = "tr";
+        tr.textContent = entry.pt;
+        text.appendChild(hz);
+        text.appendChild(tr);
+
+        var mark = document.createElement("div");
+        mark.className = "history-mark " + (entry.correct ? "ok" : "no");
+        mark.textContent = entry.correct ? "✓" : "✗";
+
+        row.appendChild(time);
+        row.appendChild(text);
+        row.appendChild(mark);
+        dayCard.appendChild(row);
+      });
+
+      listEl.appendChild(dayCard);
+    });
+  }
+
   /* ---------- Eventos ---------- */
   document.getElementById("btn-start-study").onclick = startStudy;
   document.getElementById("btn-start-dialogue").onclick = renderDialoguePicker;
+  document.getElementById("btn-start-history").onclick = function(){
+    renderHistory();
+    showView("view-history");
+  };
+  document.getElementById("btn-history-back").onclick = function(){
+    showView("view-home");
+    renderHome();
+  };
   document.getElementById("btn-study-back").onclick = function(){
     speechSynthesis.cancel();
     showView("view-home");
