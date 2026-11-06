@@ -53,7 +53,7 @@ const PAINTERS = {
 
 /* ============ PAINTINGS ============
    lvl, need = % match to pass (0 = free), music theme, amb = ambient sound, say = painter line, zh = word of the painting */
-const ART = [
+let ART = [
   { t: "Composition with Red, Blue and Yellow", p: "mondrian", y: 1930, music: "boogie", amb: "", say: "I only use straight lines and red, blue and yellow! Simple, ja?", zh: ["方块", "fāng kuài", "squares"] },
   { t: "Squares with Circles", p: "kandinsky", y: 1913, music: "bubbles", amb: "", say: "For me, colors make music! Red sings loud, blue sings soft!", zh: ["圆圈", "yuán quān", "circles"] },
   { t: "The Ten Largest, Youth", p: "afklint", y: 1907, music: "bells", amb: "", say: "I painted giant pictures, bigger than a door! Spirals and flowers!", zh: ["花", "huā", "flower"] },
@@ -79,5 +79,10 @@ const ART = [
   { t: "Self-portrait with her Daughter Julie", p: "vigee", y: 1786, music: "twinkle", amb: "", say: "This is me hugging my daughter Julie! A big hug!", zh: ["拥抱", "yōng bào", "hug"] },
   { t: "Girl with a Pearl Earring", p: "vermeer", y: 1665, music: "minuet", amb: "", say: "Look at her shiny pearl earring! She is looking at you!", zh: ["珍珠", "zhēn zhū", "pearl"] },
   { t: "Mona Lisa", p: "leonardo", y: 1503, music: "opera", amb: "", say: "Mamma mia! The most famous painting in the world! Is she smiling? Look closely!", zh: ["微笑", "wēi xiào", "smile"] },
-].map((a, i) => ({ ...a, i: i + 1, n: String(i + 1).padStart(2, "0"), lvl: Math.floor(i / 5) + 1,
-  need: i < 5 ? 0 : i < 15 ? 50 : i < 20 ? 60 : i < 23 ? 75 : 100 }));
+].map((a, i) => ({ ...a, i: i + 1, n: String(i + 1).padStart(2, "0") }));
+/* play order = easiest first (fewest areas to paint); the last two must be copied perfectly */
+const ORDER = [1, 19, 10, 6, 13,   8, 20, 21, 2, 14,   18, 16, 11, 12, 15,   3, 5, 7, 9, 23,   17, 22, 4, 24, 25];
+const ART_BY_FILE = ART; ART = ORDER.map((f, k) => ({ ...ART_BY_FILE[f - 1], pos: k, lvl: Math.floor(k / 5) + 1, need: k >= 23 ? 100 : 0 }));
+const COUNTRY = { "🇳🇱": ["the Netherlands", "荷兰", "hé lán"], "🇷🇺": ["Russia", "俄罗斯", "é luó sī"], "🇸🇪": ["Sweden", "瑞典", "ruì diǎn"], "🇨🇭": ["Switzerland", "瑞士", "ruì shì"],
+  "🇫🇷": ["France", "法国", "fǎ guó"], "🇺🇸": ["the USA", "美国", "měi guó"], "🇯🇵": ["Japan", "日本", "rì běn"], "🇳🇴": ["Norway", "挪威", "nuó wēi"], "🇦🇹": ["Austria", "奥地利", "ào dì lì"],
+  "🇧🇷": ["Brazil", "巴西", "bā xī"], "🇧🇪": ["Belgium", "比利时", "bǐ lì shí"], "🇮🇹": ["Italy", "意大利", "yì dà lì"] };

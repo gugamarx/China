@@ -110,7 +110,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 #brushico{position:relative;width:46px;height:46px;flex-shrink:0}
 #brushico span{position:absolute;left:4px;top:2px;font-size:38px;transform:rotate(-20deg)}
 #btip{position:absolute;left:2px;top:28px;width:20px;height:16px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;border:2px solid #0003;transition:background .3s}
-#bname{font-size:14px;line-height:1.05;overflow:hidden}#bname b{color:#c41d6e}
+#bname{font-size:12px;line-height:1.05;overflow:hidden}#bname b{color:#c41d6e}
 #water{position:relative;width:54px;height:54px;border-radius:12px 12px 22px 22px;background:linear-gradient(#e8f6ff,#bfe5ff);border:3px solid #fff;box-shadow:0 3px 0 #0002;font-size:26px;overflow:hidden}
 #water i{position:absolute;inset:0;opacity:0;transition:.5s;mix-blend-mode:multiply}
 #water span{position:relative}
@@ -164,6 +164,25 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 #dpainter .pimg,#dpainter svg{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
 #dstars{font-size:36px;letter-spacing:4px}
 #dmsg{font-size:19px}.newroom{font-family:"Arcade";font-size:12px;color:#2f7dff;margin-top:8px;line-height:1.5}
+
+/* v2: compact meet + done + ceremony */
+.mtop{display:flex;align-items:center;gap:10px;width:100%;text-align:left}
+.mtop .painter{width:110px;height:110px}
+.minfo{flex:1}.pname{font-size:21px}.pcountry{font-size:14px;line-height:1.15;margin:2px 0}.pcountry b{font-size:17px;color:#c41d6e}
+.msay{font-size:17px;min-height:2.4em;margin:6px 0;padding:8px 12px}
+.perfect{background:#fff4c2;border:3px dashed #e0a000;border-radius:16px;padding:8px;font-size:16px;margin-bottom:6px}
+.chip{font-size:12px}.chip b{font-size:13px}
+.modes{gap:10px;margin-top:6px}
+.mbtn{flex-direction:row;justify-content:center;gap:6px;font-size:22px;padding:10px 6px;border-radius:18px}
+.mbtn span{font-size:17px}
+.donebtn{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50px;padding:0 10px;border-radius:16px;background:#2bc46b;color:#fff;font-size:18px;line-height:1;box-shadow:0 4px 0 #188a49}
+.donebtn span{font-size:12px}
+.nextbtn{font-size:22px;padding:12px;border-radius:18px;background:#2f7dff;color:#fff;box-shadow:0 6px 0 #1d55b8;line-height:1.1}
+.nextbtn small{display:block;font-size:13px;opacity:.9}
+#cbox{background:radial-gradient(circle,#fffbe6,#ffe08a)}
+.cicon{font-size:110px;line-height:1;animation:jel 1s infinite}
+.cname{font-family:"Arcade";font-size:20px;color:#c41d6e}.cpt{font-size:24px}.czh{font-size:18px}.czh b{font-size:26px;color:#c41d6e}
+.cfaces{font-size:30px;animation:bob .3s infinite alternate}
 </style>
 </head>
 <body>
@@ -187,7 +206,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
     <button id="bwrap"><div id="brushico"><div id="btip"></div><span>🖌️</span></div><div id="bname"></div></button>
     <button id="water"><i></i><span>💧</span></button>
     <button class="ibtn" id="mixbtn">🥣</button><button class="ibtn" id="undo">↩️</button>
-    <button class="ibtn" id="zout">➖</button><button class="ibtn" id="zin">🔍</button>
+    <button class="ibtn" id="zin">🔍</button><button class="donebtn" id="finishBtn">✅<span>I'm done!</span></button>
   </div>
   <div id="pots"></div>
 </section>
@@ -201,8 +220,9 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 <div class="ov" id="done"><div class="obox"><h3 id="dtitle"></h3><div id="dpainter"></div>
   <div class="dpics"><figure><img id="dmine" alt=""><figcaption>mine 💖</figcaption></figure><figure><img id="dorig" alt=""><figcaption>the master</figcaption></figure></div>
   <div id="dstars"></div><div id="dmsg"></div>
-  <div class="obtns"><button id="dmore" style="background:#2f7dff">🎨 Keep painting</button></div>
-  <div class="obtns"><button id="dmuseum" style="background:#ff4fa0;font-size:26px">🏛️</button><button id="dsave" style="background:#2fd6a3;font-size:26px">💾</button><button id="dagain" style="background:#ff8a1f;font-size:26px">🔄</button></div></div></div>
+  <button class="nextbtn" id="dnext"></button>
+  <div class="obtns"><button id="dmuseum" style="background:#ff4fa0;font-size:26px">🏛️</button><button id="dsave" style="background:#2fd6a3;font-size:26px">💾</button></div></div></div>
+<div class="ov" id="ceremony"><div class="obox" id="cbox"></div></div>
 
 <div class="ov" id="opts"><div class="obox" id="obox"></div></div>
 <div id="wipe"></div><div id="flash"></div><canvas id="fx"></canvas>

@@ -41,6 +41,7 @@ const saveFound = f => store.set("found", f);
 const prog = i => store.get("art" + i, null);
 const passed = a => !!(prog(a.i) || {}).passed;
 const roomOpen = l => l === 1 || ART.filter(a => a.lvl === l - 1).every(passed);
+const awards = () => store.get("awards", {});
 const STARS = (pct, need) => pct >= 100 ? 3 : pct >= 75 ? 2 : pct >= Math.max(need, 1) ? 1 : 0;
 
 /* ================= SPLASH ================= */
@@ -48,7 +49,7 @@ $("#cover").src = KID.cover;
 $("#press").onclick = async () => {
   Audio8.unlock(); Audio8.play("menu"); Audio8.fx("tada");
   $("#press").style.display = "none"; FX.confetti();
-  await Voice.en(`Welcome to ${NAME} Paint!`); await Voice.zh(KID.zh);
+  await Voice.talk([[`Welcome to ${NAME} Paint!`], [KID.zh, "zh-CN"]]);
   goMuseum();
 };
 
@@ -56,17 +57,17 @@ $("#press").onclick = async () => {
 const ROOMNAME = ["Room of Shapes", "Room of Sunshine", "Room of Dreams", "Room of Nature", "Room of Masters"];
 function goMuseum() { UI.go("museum", "#ff4fa0", () => { renderMuseum(); Audio8.play("menu"); }); }
 function renderMuseum() {
-  $("#mtitle").textContent = `${UPNAME}'S MUSEUM`; $("#mcolors").textContent = `🎨 ${found().length}/${Object.keys(PAINT).length}`;
+  const aw = awards(); $("#mtitle").textContent = `${UPNAME}'S MUSEUM`; $("#mcolors").textContent = `${aw.trophy ? "🏆" : ""}${aw.medal ? "🏅" : ""} 🎨 ${found().length}/${Object.keys(PAINT).length}`;
   const box = $("#rooms"); box.innerHTML = "";
   for (let l = 1; l <= 5; l++) {
     const open = roomOpen(l), arts = ART.filter(a => a.lvl === l), done = arts.filter(passed).length;
-    const need = l === 1 ? "free painting" : l === 5 ? "75% · 💯 for the last two" : `at least ${arts[0].need}% like the master`;
+    const need = l === 5 ? "The last two: copy the colors perfectly! 💯" : "Paint all 5 to open the next room!";
     const r = el("div", "room" + (open ? "" : " locked"), `<div class="rhead"><b>${open ? "🚪" : "🔒"} ${l}. ${ROOMNAME[l - 1]}</b><span>${done}/5 ⭐</span></div><div class="rsub">${open ? need : "Finish the room before to open!"}</div><div class="frames"></div>`);
     arts.forEach(a => {
       const p = prog(a.i), f = el("button", "frame" + (p && p.passed ? " done" : ""));
       const img = p && p.thumb ? p.thumb : `art/${a.n}.jpg`;
       f.innerHTML = `<div class="pic"><img src="${img}" alt="" class="${p && p.thumb ? "" : "orig"}">${open ? "" : "<i>🔒</i>"}</div><div class="plate">${a.t}<small>${PAINTERS[a.p].flag} ${PAINTERS[a.p].n}${a.need === 100 ? " · 💯" : ""}</small></div>
-        <div class="fstars">${p && p.passed ? (p.mode === "free" && a.need === 0 ? "🌈" : "⭐".repeat(Math.max(1, p.stars || 1))) : ""}</div>`;
+        <div class="fstars">${p && p.passed ? (a.need === 100 ? (a.pos === 24 ? "🏆" : "🏅") : p.mode === "free" ? "🌈" : "⭐") : ""}</div>`;
       f.onclick = () => { if (!open) { Audio8.fx("oops"); UI.bubble(f, `🔒 Finish room ${l - 1} first!`); Voice.en(`Finish room ${l - 1} first!`); return; } Audio8.fx("tap"); meet(a); };
       r.querySelector(".frames").appendChild(f);
     });
@@ -77,31 +78,36 @@ function renderMuseum() {
 /* ================= MEET THE PAINTER ================= */
 let cur = null, mode = "exact";
 async function meet(a) {
-  cur = a; const P = PAINTERS[a.p];
+  cur = a; const P = PAINTERS[a.p], C = COUNTRY[P.flag], perfect = a.need === 100;
   await UI.go("meet", null, async () => {
     Audio8.play(a.music, a.amb);
     const meta = await getMeta(a); const cols = colorsOf(meta);
-    $("#meetBox").innerHTML = `<div class="painter jump">${painterHTML(a.p)}</div>
-      <div class="pname">${P.flag} ${P.n}</div><div class="ptitle">“${a.t}” · ${a.y}</div>
+    $("#meetBox").innerHTML = `<div class="mtop"><div class="painter jump">${painterHTML(a.p)}</div>
+        <div class="minfo"><div class="pname">${P.n}</div><div class="pcountry">${P.flag} ${C[0]}<br><b>${C[1]}</b> ${pyHTML(C[2])}</div><div class="ptitle">“${a.t}” · ${a.y}</div></div></div>
       <div class="msay" id="msay"></div>
+      ${perfect ? `<div class="perfect">💯 Nesta obra você precisa copiar <b>perfeitamente</b> as cores do original! Você consegue, ${NAME}! 💪</div>` : ""}
       <div class="mycolors"><div class="small">My colors:</div><div class="chips">${cols.map(c => chipHTML(c)).join("")}</div></div>
       <div class="zhword">🇨🇳 <b>${a.zh[0]}</b> ${pyHTML(a.zh[1])} = ${a.zh[2]}</div>
-      <div class="modes"><button class="mbtn exact" id="goExact">🎯<span>Like ${P.n.split(" ").pop()}!</span><small>${a.need ? a.need + "% to win" : "copy the colors"}</small></button>
-      <button class="mbtn free" id="goFree">🌈<span>My way!</span><small>any colors</small></button></div>`;
+      <div class="modes"><button class="mbtn exact" id="goExact">🎯 <span>Copy the colors</span></button>
+      ${perfect ? "" : `<button class="mbtn free" id="goFree">🌈 <span>My way!</span></button>`}</div>`;
     $$("#meetBox .chip").forEach(ch => ch.onclick = () => { Audio8.fx("pop"); Voice.color(ch.dataset.c); });
     $("#goExact").onclick = () => { mode = "exact"; startPaint(a); };
-    $("#goFree").onclick = () => { mode = "free"; startPaint(a); };
+    if (!perfect) $("#goFree").onclick = () => { mode = "free"; startPaint(a); };
   });
-  const sayP = t => Voice.say(t, P.v, { rate: .92 });
-  const lines = [`${P.hi}, ${NAME}! I am ${P.n}!`, a.say]; if (KID.jokes[a.i]) lines.push(KID.jokes[a.i]);
-  $(".painter").classList.add("talk");
-  for (const l of lines) { if (UI.cur !== "meet") return; $("#msay").textContent = l; await sayP(l); }
-  if (UI.cur === "meet") { await Voice.en(`In Chinese, ${a.zh[2]} is...`); await Voice.zh(a.zh[0]); }
-  $(".painter")?.classList.remove("talk");
+  const lines = [`${P.hi}, ${NAME}! I am ${P.n}!`, `I am from ${C[0]}!`, a.say]; if (KID.jokes[a.i]) lines.push(KID.jokes[a.i]);
+  $(".painter").classList.add("talk"); const items = [];
+  for (const l of lines) { items.push([l, P.v, { rate: .92 }]); if (l.startsWith("I am from")) items.push([C[1], "zh-CN"]); }
+  if (perfect) items.push([`Nesta obra você precisa copiar perfeitamente as cores do original! Você consegue, ${NAME}!`, "pt-BR"]);
+  items.push([`In Chinese, ${a.zh[2]} is...`], [a.zh[0], "zh-CN"]);
+  // show each line while it is spoken
+  let k = 0; const show = () => { const t = lines[Math.min(k, lines.length - 1)]; $("#msay") && ($("#msay").textContent = t); };
+  show(); const tick = setInterval(() => { if (UI.cur !== "meet") return clearInterval(tick); }, 500);
+  for (const it of items) { if (UI.cur !== "meet") break; if (lines.includes(it[0])) { k = lines.indexOf(it[0]); show(); } const ok = await Voice.talk([it]); if (!ok) break; }
+  clearInterval(tick); $(".painter")?.classList.remove("talk");
 }
 function chipHTML(c) {
   const have = found().includes(c), r = RECIPES[c];
-  return `<button class="chip" data-c="${c}"><i style="background:${PAINT[c][0]}"></i><span>${PAINT[c][1]}<br><b>${PAINT[c][2]}</b></span>${!have && r ? `<em>${dot(r[0])}+${dot(r[1])}</em>` : ""}</button>`;
+  return `<button class="chip" data-c="${c}"><i style="background:${PAINT[c][0]}"></i><span>${PAINT[c][1]}<br><b>${PAINT[c][2]}</b> ${pyHTML(PAINT[c][3])}</span>${!have && r ? `<em>${dot(r[0])}+${dot(r[1])}</em>` : ""}</button>`;
 }
 const dot = c => `<i class="d" style="background:${PAINT[c][0]}"></i>`;
 const metaCache = {};
@@ -110,7 +116,7 @@ function colorsOf(meta) { const area = {}; meta.regions.forEach(r => { if (!r.lo
 
 /* ================= PAINT ================= */
 const P8 = { cv: null, g: null, W: 0, H: 0, reg: null, sketch: null, detail: null, edge: null, img: null, pix: [], box: [], fills: [], meta: null, brush: null, water: 0, zoom: 1, panX: 0, panY: 0, hist: [] };
-function loadPix(src) { return new Promise(res => { const i = new Image(); i.onload = () => { const c = document.createElement("canvas"); c.width = i.width; c.height = i.height; const g = c.getContext("2d"); g.drawImage(i, 0, 0); res(g.getImageData(0, 0, i.width, i.height).data); }; i.src = src; }); }
+function loadPix(src) { return new Promise((res, rej) => { const i = new Image(); i.onerror = () => rej(new Error("image " + src)); i.onload = () => { const c = document.createElement("canvas"); c.width = i.width; c.height = i.height; const g = c.getContext("2d"); g.drawImage(i, 0, 0); res(g.getImageData(0, 0, i.width, i.height).data); }; i.src = src; }); }
 async function startPaint(a) {
   await UI.go("paint", null, async () => {
     const meta = await getMeta(a); P8.meta = meta; const W = meta.w, H = meta.h; P8.W = W; P8.H = H;
@@ -133,7 +139,8 @@ async function startPaint(a) {
     $("#paint").classList.toggle("exact", mode === "exact");
   });
   const P = PAINTERS[a.p], first = !store.get("tutorial", false);
-  if (first) { store.set("tutorial", true); await Voice.en("Tap a paint pot to dip your brush. Then tap the picture!"); }
+  $("#finishBtn").style.display = ""; 
+  if (first) { store.set("tutorial", true); Voice.en("Tap a paint pot to dip your brush. Then tap the picture!"); }
   else Voice.say(mode === "exact" ? `Look at my painting up there, ${NAME}!` : `Paint it your way, ${NAME}!`, P.v);
 }
 function fitCanvas() {
@@ -179,7 +186,7 @@ function drawHints() {
 function score() { const rs = P8.meta.regions.filter(r => !r.lock); const ok = rs.filter(r => P8.fills[r.id] === r.c).length, filled = rs.filter(r => P8.fills[r.id]).length; return { pct: Math.round(ok / rs.length * 100), filled, total: rs.length }; }
 function renderScore() {
   const s = score(); $("#pfill").style.width = (s.filled / s.total * 100) + "%";
-  $("#pscore").innerHTML = mode === "exact" ? `🎯 ${s.pct}%${cur.need ? ` <small>/ ${cur.need}%</small>` : ""}` : `🌈 ${s.filled}/${s.total}`;
+  $("#pscore").innerHTML = cur.need === 100 ? `💯 ${s.pct}%` : `${mode === "exact" ? "🎯" : "🌈"} ${s.filled}/${s.total}`;
 }
 /* ---- pots, brush, water ---- */
 function renderPots() {
@@ -189,7 +196,7 @@ function renderPots() {
 }
 function renderBrush() {
   const c = P8.brush; $("#btip").style.background = c ? PAINT[c][0] : "#f2ece0";
-  $("#bname").innerHTML = c ? `${PAINT[c][1]}<br><b>${PAINT[c][2]}</b>` : "clean";
+  $("#bname").innerHTML = c ? `${PAINT[c][1]}<br><b>${PAINT[c][2]}</b> ${pyHTML(PAINT[c][3])}` : "clean";
   $("#water i").style.opacity = Math.min(.85, P8.water * .14); $("#water i").style.background = P8.lastWash ? PAINT[P8.lastWash][0] : "transparent";
 }
 let dirtyWarned = false;
@@ -200,15 +207,15 @@ async function dip(c, btn) {
   const was = P8.brush, res = mix(was, c); P8.brush = res; renderBrush(); FX.splat(x, y, PAINT[res][0], 12);
   const f = found();
   if (!f.includes(res)) { f.push(res); saveFound(f); renderPots(); discover(was, c, res); return; }
-  if (res === "brown" && !(RECIPES.brown.includes(was) && RECIPES.brown.includes(c))) { Audio8.fx("mud"); UI.bubble($("#water"), "💧 Muddy! Wash your brush!"); await Voice.en("Oops! Muddy brown! Wash your brush in the water!"); return; }
-  if (!dirtyWarned) { dirtyWarned = true; UI.bubble($("#water"), `Your brush had ${PAINT[was][1]}! 💧 Wash it first!`); Audio8.fx("oops"); await Voice.en(`Oh! Your brush still had ${PAINT[was][1]}! ${PAINT[was][1]} and ${PAINT[c][1]} make ${PAINT[res][1]}! Wash your brush to get a clean color!`); return; }
-  Voice.en(`${PAINT[was][1]} and ${PAINT[c][1]} make ${PAINT[res][1]}!`).then(() => Voice.zh(PAINT[res][2]));
+  if (res === "brown" && !(RECIPES.brown.includes(was) && RECIPES.brown.includes(c))) { Audio8.fx("mud"); UI.bubble($("#water"), "💧 Muddy! Wash your brush!"); Voice.en("Oops! Muddy brown! Wash your brush in the water!"); return; }
+  if (!dirtyWarned) { dirtyWarned = true; UI.bubble($("#water"), `Your brush had ${PAINT[was][1]}! 💧 Wash it first!`); Voice.en(`Oh! Your brush still had ${PAINT[was][1]}! ${PAINT[was][1]} and ${PAINT[c][1]} make ${PAINT[res][1]}! Wash your brush to get a clean color!`); return; }
+  Voice.talk([[`${PAINT[was][1]} and ${PAINT[c][1]} make ${PAINT[res][1]}!`], [PAINT[res][2], "zh-CN"]]);
 }
 async function discover(a, b, c) {
   Audio8.fx("magic"); FX.burst(innerWidth / 2, innerHeight * .5, ["✨", "🌟", "🎨"], 26);
   const d = el("div", "discover", `<div class="dmix">${dot(a)} + ${dot(b)} = <i class="big" style="background:${PAINT[c][0]}"></i></div><div class="dname">NEW COLOR!<br><b>${PAINT[c][1].toUpperCase()}</b></div><div class="dzh">${PAINT[c][2]} ${pyHTML(PAINT[c][3])}</div>`);
   document.body.appendChild(d); setTimeout(() => d.classList.add("out"), 3600); setTimeout(() => d.remove(), 4000);
-  await Voice.en(`Wow! ${PAINT[a][1]} and ${PAINT[b][1]} make... ${PAINT[c][1]}! A new color!`); await Voice.zh(PAINT[c][2]);
+  await Voice.talk([[`Wow! ${PAINT[a][1]} and ${PAINT[b][1]} make... ${PAINT[c][1]}! A new color!`], [PAINT[c][2], "zh-CN"]]);
 }
 $("#water").onclick = () => { if (P8.brush) { P8.lastWash = P8.brush; P8.water++; } P8.brush = null; Audio8.fx("bloop"); renderBrush();
   const [x, y] = centerOf($("#water")); FX.burst(x, y - 20, ["💧", "🫧"], 8);
@@ -217,8 +224,8 @@ $("#water").onclick = () => { if (P8.brush) { P8.lastWash = P8.brush; P8.water++
 };
 $("#bwrap").onclick = () => { if (P8.brush) Voice.color(P8.brush); else Voice.en("Your brush is clean! Dip it in a paint pot!"); };
 $("#undo").onclick = () => { const h = P8.hist.pop(); if (!h) return; P8.fills[h[0]] = h[1]; Audio8.fx("whoosh"); paintPix(P8.pix[h[0]], h[1], P8.img.data); P8.g.putImageData(P8.img, 0, 0); drawHints(); renderScore(); autosave(); };
-$("#zin").onclick = () => { P8.zoom = Math.min(4, P8.zoom * 1.5); applyZoom(); drawHints(); Audio8.fx("tap"); };
-$("#zout").onclick = () => { P8.zoom = Math.max(1, P8.zoom / 1.5); if (P8.zoom === 1) { P8.panX = P8.panY = 0; } applyZoom(); drawHints(); Audio8.fx("tap"); };
+$("#zin").onclick = () => { P8.zoom = P8.zoom >= 2.9 ? 1 : P8.zoom < 1.9 ? 2 : 3; if (P8.zoom === 1) P8.panX = P8.panY = 0; $("#zin").textContent = P8.zoom === 1 ? "🔍" : "🔎×" + P8.zoom; applyZoom(); drawHints(); Audio8.fx("tap"); };
+$("#finishBtn").onclick = () => { Audio8.fx("tap"); finish(true); };
 /* ---- tapping & panning the canvas ---- */
 (() => {
   const area = $("#parea"); let down = null, pinch = null; const pts = new Map();
@@ -241,7 +248,7 @@ async function tapAt(cx, cy) {
   if (mode === "exact") { if (P8.brush === R.c) { if (Math.random() < .25) UI.float(cx, cy, pick(["✨", "⭐", "Yes!", "💖"])); }
     else if (Math.random() < .35 && Date.now() - lastHint > 5000) { lastHint = Date.now(); const P = PAINTERS[cur.p]; Voice.say(`Hmm... look at my painting, ${NAME}! I used ${PAINT[R.c][1]} there!`, P.v); $("#gwrap").classList.add("blink"); setTimeout(() => $("#gwrap").classList.remove("blink"), 1600); } }
   drawHints(); renderScore(); autosave();
-  const s = score(); if (s.filled === s.total) setTimeout(finish, 700);
+  const s = score(); if (s.filled === s.total) setTimeout(() => finish(false), 700);
 }
 let saveT = 0;
 function autosave() { clearTimeout(saveT); saveT = setTimeout(() => { const old = prog(cur.i) || {}; store.set("art" + cur.i, { ...old, fills: P8.fills, mode: old.passed ? old.mode : mode, wip: 1 }); }, 400); }
@@ -272,7 +279,7 @@ async function mixPick(c) {
   $("#wr").classList.add("swirl"); $("#wr").style.background = `conic-gradient(${PAINT[mixA][0]},${PAINT[mixB][0]},${PAINT[mixA][0]})`; Audio8.fx("swirl"); await sleep(1100);
   $("#wr").classList.remove("swirl"); $("#wr").style.background = PAINT[res][0]; $("#wr").innerHTML = "🖌️";
   const f = found(), isNew = !f.includes(res); if (isNew) { f.push(res); saveFound(f); }
-  if (isNew) discover(mixA, mixB, res); else { await Voice.en(`${PAINT[mixA][1]} and ${PAINT[mixB][1]} make ${PAINT[res][1]}!`); Voice.zh(PAINT[res][2]); }
+  if (isNew) discover(mixA, mixB, res); else Voice.talk([[`${PAINT[mixA][1]} and ${PAINT[mixB][1]} make ${PAINT[res][1]}!`], [PAINT[res][2], "zh-CN"]]);
   renderMixer(); $("#wr").style.background = PAINT[res][0]; $("#wr").innerHTML = "🖌️<small>use it!</small>"; $("#wr").classList.add("ready");
   $("#wr").onclick = () => { P8.brush = res; renderBrush(); renderPots(); $("#mixer").classList.remove("on"); Audio8.fx("dip"); Voice.en(`Your brush has ${PAINT[res][1]}!`); };
 }
@@ -280,30 +287,46 @@ $("#pback").onclick = () => { Audio8.fx("tap"); goMuseum(); };
 
 /* ================= FINISH ================= */
 function thumbData(w = 320) { const c = document.createElement("canvas"); const s = w / P8.W; c.width = w; c.height = Math.round(P8.H * s); c.getContext("2d").drawImage(P8.cv, 0, 0, c.width, c.height); return c.toDataURL("image/jpeg", .72); }
-async function finish() {
-  if (UI.cur !== "paint") return; const s = score(), a = cur, P = PAINTERS[a.p];
-  const ok = a.need === 0 || (mode === "exact" && s.pct >= a.need), stars = mode === "exact" ? STARS(s.pct, a.need) : 0;
-  const old = prog(a.i) || {};
-  const rec = { fills: P8.fills, mode, pct: s.pct, thumb: thumbData(), passed: old.passed || ok, stars: Math.max(old.stars || 0, ok ? Math.max(1, stars) : 0) };
-  if (!store.set("art" + a.i, rec)) store.set("art" + a.i, { ...rec, thumb: thumbData(160) });
-  const wasOpen = [1, 2, 3, 4, 5].map(roomOpen);
-  $("#dmine").src = rec.thumb; $("#dorig").src = `art/${a.n}.jpg`; $("#dpainter").innerHTML = painterHTML(a.p);
-  if (ok) {
-    $("#dtitle").innerHTML = `BRAVO, ${UPNAME}!`; $("#dstars").textContent = mode === "free" ? "🌈🌈🌈" : "⭐".repeat(Math.max(1, stars));
-    $("#dmsg").innerHTML = mode === "exact" ? `${s.pct}% like ${P.n.split(" ").pop()}!` : `Your own ${a.t}! 🌈${a.need ? `<br><small>To open the next room, paint it like ${P.n.split(" ").pop()} 🎯</small>` : ""}`;
-    $("#dmore").style.display = "none"; Audio8.play("win"); Audio8.fx("applause"); FX.confetti(); setTimeout(() => FX.burst(innerWidth / 2, innerHeight * .3), 500);
-  } else {
-    $("#dtitle").innerHTML = "ALMOST!"; $("#dstars").textContent = "🎨"; $("#dmsg").innerHTML = `${s.pct}% · you need <b>${a.need}%</b>!<br><small>Look at the colored dots! 👀</small>`; $("#dmore").style.display = ""; Audio8.fx("oops");
+const nextArt = () => ART.find(x => x.pos > cur.pos && roomOpen(x.lvl) && !passed(x)) || ART.find(x => x.pos > cur.pos && roomOpen(x.lvl));
+async function finish(byButton) {
+  if (UI.cur !== "paint" || $("#done").classList.contains("on")) return; const s = score(), a = cur, P = PAINTERS[a.p];
+  const perfect = a.need === 100;
+  if (perfect && s.pct < 100) {
+    Audio8.fx("oops"); $("#gwrap").classList.add("blink"); setTimeout(() => $("#gwrap").classList.remove("blink"), 1600);
+    UI.bubble($("#parea"), `Quase lá! ${s.pct}% 💪<br>Copie <b>perfeitamente</b> as cores do original. Olhe as bolinhas!`, 4200);
+    Voice.talk([[`Quase lá, ${NAME}! Você precisa copiar perfeitamente as cores do original. Olhe as bolinhas coloridas e o quadro lá em cima. Você consegue!`, "pt-BR"]]); return;
   }
+  const old = prog(a.i) || {};
+  const rec = { fills: P8.fills, mode, pct: s.pct, thumb: thumbData(), passed: true, stars: 1 };
+  if (!store.set("art" + a.i, rec)) store.set("art" + a.i, { ...rec, thumb: thumbData(160) });
+  const wasOpen = [1, 2, 3, 4, 5].map(l => l === 1 || ART.filter(x => x.lvl === l - 1).every(x => x === a ? !!old.passed : passed(x)));
+  $("#dmine").src = rec.thumb; $("#dorig").src = `art/${a.n}.jpg`; $("#dpainter").innerHTML = painterHTML(a.p);
+  $("#dtitle").innerHTML = `BRAVO, ${UPNAME}!`; $("#dstars").textContent = perfect ? "💯" : mode === "free" ? "🌈" : "⭐";
+  $("#dmsg").innerHTML = perfect ? `Perfect! Just like ${P.n.split(" ").pop()}!` : byButton && s.filled < s.total ? `A beautiful ${a.t}! 💖` : `Your own ${a.t}! 💖`;
+  const nx = nextArt(); $("#dnext").style.display = nx ? "" : "none"; if (nx) $("#dnext").innerHTML = `➡️ Next: <small>${nx.t}</small>`;
+  Audio8.play("win"); Audio8.fx("applause"); FX.confetti(); setTimeout(() => FX.burst(innerWidth / 2, innerHeight * .3), 500);
   $("#done").classList.add("on");
-  if (ok) { await Voice.say(`${P.bye} Bravo, ${NAME}!`, P.v); if (KID.jokes[a.i] && a.i === 23) await Voice.say("Julie and " + NAME + "! Two artists!", P.v); }
-  else await Voice.say(`Almost, ${NAME}! You need ${a.need} percent. Look at the dots and fix the colors!`, P.v);
+  await Voice.talk([[`${P.bye} Bravo, ${NAME}!`, P.v]]);
   const nowOpen = [1, 2, 3, 4, 5].map(roomOpen); const newRoom = nowOpen.findIndex((o, i) => o && !wasOpen[i]);
-  if (newRoom >= 0) { await sleep(400); Audio8.fx("unlock"); FX.burst(innerWidth / 2, innerHeight / 2, ["🔓", "🚪", "⭐"], 30); $("#dmsg").innerHTML += `<div class="newroom">🔓 Room ${newRoom + 1} is open!</div>`; await Voice.en(`Wow! Room ${newRoom + 1} is open! New painters are waiting for you!`); }
+  if (newRoom >= 0) { Audio8.fx("unlock"); FX.burst(innerWidth / 2, innerHeight / 2, ["🔓", "🚪", "⭐"], 30); $("#dmsg").innerHTML += `<div class="newroom">🔓 Room ${newRoom + 1} is open!</div>`; await Voice.en(`Wow! Room ${newRoom + 1} is open! New painters are waiting for you!`); }
+  if (perfect) ceremony(a.pos === 24 ? "trophy" : "medal");
+}
+async function ceremony(kind) {
+  const aw = awards(); aw[kind] = 1; store.set("awards", aw);
+  const T = kind === "trophy";
+  $("#cbox").innerHTML = `<div class="cicon">${T ? "🏆" : "🏅"}</div><h3>${T ? "GREAT PAINTER!" : "GOLD MEDAL!"}</h3>
+    <div class="cname">${UPNAME}</div><div class="cpt">${T ? "Grande Pintora! 🎨" : "Medalha de ouro! ✨"}</div>
+    <div class="czh"><b>${T ? "伟大的画家" : "金牌"}</b> ${pyHTML(T ? "wěi dà de huà jiā" : "jīn pái")} = ${T ? "great painter" : "gold medal"}</div>
+    <div class="cfaces">👏👏👏🎉👏👏👏</div><button class="orow" id="cok">💖 Thank you!</button>`;
+  $("#done").classList.remove("on"); $("#ceremony").classList.add("on");
+  Audio8.play("win"); Audio8.fx("ovation"); FX.confetti(); [0, 700, 1400, 2100].forEach(d => setTimeout(() => { FX.burst(innerWidth * (.2 + Math.random() * .6), innerHeight * .3, ["🌟", "✨", T ? "🏆" : "🏅", "🎉"], 26); FX.confetti(); }, d));
+  $("#cok").onclick = () => { $("#ceremony").classList.remove("on"); goMuseum(); };
+  await Voice.talk([[T ? `${NAME}! You are a great painter! Everybody is clapping for you!` : `${NAME}! A gold medal for you!`],
+    [T ? `Parabéns, ${NAME}! Você é uma grande pintora! Todo mundo está aplaudindo você!` : `Parabéns, ${NAME}! Você ganhou uma medalha de ouro!`, "pt-BR"],
+    [T ? "伟大的画家" : "金牌", "zh-CN"]]);
 }
 $("#dmuseum").onclick = () => { $("#done").classList.remove("on"); goMuseum(); };
-$("#dagain").onclick = () => { $("#done").classList.remove("on"); store.set("art" + cur.i, { ...(prog(cur.i) || {}), fills: null }); startPaint(cur); };
-$("#dmore").onclick = () => { $("#done").classList.remove("on"); Audio8.play(cur.music, cur.amb); };
+$("#dnext").onclick = () => { $("#done").classList.remove("on"); const nx = nextArt(); nx ? meet(nx) : goMuseum(); };
 $("#dsave").onclick = () => { const a = document.createElement("a"); a.download = `${NAME}-${cur.t.replace(/\W+/g, "-")}.jpg`; a.href = thumbData(P8.W * 2 > 1000 ? 1000 : P8.W * 2); document.body.appendChild(a); a.click(); a.remove(); Audio8.fx("tada"); };
 
 /* ================= OPTIONS ================= */
