@@ -5,9 +5,9 @@ Mesmo motor do Julia Paint (`juliapaint/`), mas o museu virou uma **viagem pelo 
 (Norte → Nordeste → Centro-Oeste → Sudeste → Sul) e cada pintura é um personagem do folclore.
 
 ## Como funciona
-- **Quem vai pintar?** Quatro cartões com as primas (avatares recortados das capas do Julia Paint).
-  Na primeira vez, ela escreve o nome num teclado grande em CAIXA ALTA: cada letra é falada ("jota", "u", "éle"...),
-  e o nome dela aparece clarinho como guia, com a próxima letra piscando. Ao entrar, o nome é soletrado com as letras acendendo.
+- **Quem vai pintar?** Cada menina cria a sua pintora (até 8): toca em ＋, escreve o nome num teclado grande em CAIXA ALTA
+  (sem sugestão; cada letra é falada: "jota", "u", "éle"...) e escolhe qualquer retrato da lista `AVATARES` (js/data.js).
+  Ao entrar, o nome é soletrado com as letras acendendo. Para mais avatares: `kids/avatar-<chave>.jpg` + uma linha em `AVATARES`.
 - **Perfis sem banco de dados:** tudo fica no `localStorage` do celular, com prefixo `atelie_<prima>_`
   (coisas do aparelho, como música e nomes, em `atelie_g_`). O jogo pede ao Chrome para não apagar os dados (`navigator.storage.persist`).
   No cantinho dos pais (⚙️) dá para guardar uma cópia em arquivo .json e restaurar em outro celular.
@@ -19,13 +19,16 @@ Mesmo motor do Julia Paint (`juliapaint/`), mas o museu virou uma **viagem pelo 
 - **Palavras escondidas:** ao pintar um objeto aparece a palavra em sílabas e a voz lê devagar ("gor... ro... gorro!").
 - **Cada personagem comemora do seu jeito:** a Iara toca uma nota a cada acerto, o Boitatá solta fogo, o Boi bate tambor,
   a Caipora assobia. O Curupira engana na primeira ajuda (as pegadas viradas para trás!).
-- **Travessura do Saci:** um redemoinho rouba um pote de tinta; ela precisa pegar o Saci (ele foge uma vez).
+- **Travessura do Saci:** um redemoinho rouba um pote de tinta (o lugar dele vira 🌪️ "sumiu!") e o Saci aparece com um balão;
+  ela precisa pegar o Saci (ele foge uma vez). Se ela não pegar em 30 s, ele devolve sozinho.
   Sempre acontece no Sudeste e às vezes nas outras regiões, no máximo uma vez por pintura.
 - **No final:** a 100% o personagem ganha vida → "Encontre!" (1 palavra) → "Monte o nome" com as sílabas →
   parlenda original lida com ritmo → "O que rima com...?" → figurinha nova para o **álbum** (bichos e plantas do Brasil).
 - **Fantasias:** completar uma região dá um acessório para o avatar (flor da Iara, chapéu de vaqueiro, coroa das Cavalhadas,
   gorro do Saci, lenço gaúcho). Toque no retrato no topo do mapa para trocar.
 - **Troféu:** "Guardiã do Folclore" na Festa do Folclore (última pintura, pede 100%). No dia 22 de agosto a abertura faz festa.
+
+- **Janelas com moldura e barra de rolagem** (▲ ▼ e seta "TEM MAIS AQUI EMBAIXO") no final, no álbum, nas opções e na mesa de misturar.
 
 ## Arquivos
 ```

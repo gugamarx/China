@@ -8,8 +8,13 @@ for s in ["index.html", "js", "fonts", "netlify.toml"]:
     (shutil.copytree if os.path.isdir(f"{ROOT}/{s}") else shutil.copy)(f"{ROOT}/{s}", f"{D}/{s}")
 for f in os.listdir(f"{ROOT}/pages"):
     if f.endswith((".png", ".jpg", ".json")): shutil.copy(f"{ROOT}/pages/{f}", f"{D}/pages/{f}")
-for kid in ["julia", "elisa", "yasmin", "valentina"]:
-    Image.open(f"{ROOT}/kids/cover-{kid}.jpg").crop((130, 760, 830, 1460)).resize((320, 320), Image.LANCZOS).save(f"{D}/kids/avatar-{kid}.jpg", quality=86)
+# avatares: kids/avatar-<chave>.jpg (qualquer quadrado serve; é reduzido para 320px). As capas do Julia Paint viram avatar se faltar.
+for f in sorted(os.listdir(f"{ROOT}/kids")):
+    if f.startswith("cover-") and not os.path.exists(f"{ROOT}/kids/avatar-{f[6:]}"):
+        Image.open(f"{ROOT}/kids/{f}").crop((130, 760, 830, 1460)).save(f"{ROOT}/kids/avatar-{f[6:]}", quality=90)
+for f in sorted(os.listdir(f"{ROOT}/kids")):
+    if f.startswith("avatar-"):
+        ImageOps.fit(Image.open(f"{ROOT}/kids/{f}").convert("RGB"), (320, 320), Image.LANCZOS).save(f"{D}/kids/{f[:-4]}.jpg", quality=86)
 saci = Image.open(f"{ROOT}/pages/saci.orig.jpg").convert("RGB"); W, H = saci.size
 face = saci.crop((int(W * .46), int(H * .22), int(W * .46) + int(W * .44), int(H * .22) + int(W * .44)))
 for sz in (192, 512): ImageOps.fit(face, (sz, sz)).save(f"{D}/icons/icon-{sz}.png")

@@ -1,6 +1,6 @@
 "use strict";
 /* ================= Ateliê Brasil: motor do jogo ================= */
-let WHO = gstore.get("ultima", "julia"), NAME = "JULIA";
+let WHO = null, NAME = "";
 const perfis = () => gstore.get("perfis", {});
 const perfil = id => perfis()[id] || {};
 const setPerfil = (id, o) => { const p = perfis(); p[id] = { ...(p[id] || {}), ...o }; gstore.set("perfis", p); };
@@ -37,6 +37,28 @@ const FX = {
   confetti() { const C = ["#21a050", "#ffd23f", "#2560d9", "#e3262e", "#ff8a1f", "#ff8fbf", "#fff"]; this.add([...Array(140)].map(() => ({ x: Math.random() * innerWidth, y: -20 - Math.random() * 300, vx: (Math.random() - .5) * 3, vy: 2 + Math.random() * 3, g: .03, r: Math.random() * 6, vr: (Math.random() - .5) * .3, s: 5 + Math.random() * 5, c: pick(C), l: 3, dl: .012 }))); },
   burst(x, y, em = ["⭐", "✨", "🎨", "💚"], n = 24) { this.add([...Array(n)].map(() => { const a = Math.random() * 7, s = 3 + Math.random() * 7; return { x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2, g: .16, r: 0, vr: (Math.random() - .5) * .2, s: 20 + rnd(18), e: pick(em), l: 1.4, dl: .018 }; })); },
 };
+/* janela com moldura e barra de rolagem "tipo Windows" (▲ ▼ e polegar) + seta que pisca quando tem mais embaixo */
+function scrollify(box) {
+  if (!box.querySelector(":scope > .sbody")) {
+    const body = el("div", "sbody"); while (box.firstChild) body.appendChild(box.firstChild);
+    const bar = el("div", "sbar", `<button class="sup">▲</button><div class="strack"><div class="sthumb"></div></div><button class="sdn">▼</button>`);
+    const more = el("button", "smore", "⬇️ TEM MAIS AQUI EMBAIXO ⬇️");
+    box.append(body, bar, more); box.classList.add("swin");
+    const tr = bar.querySelector(".strack"), th = bar.querySelector(".sthumb");
+    const upd = () => { const h = body.scrollHeight, c = body.clientHeight, can = h > c + 4; bar.style.display = can ? "flex" : "none";
+      box.classList.toggle("mais", can && body.scrollTop + c < h - 24);
+      const hh = Math.max(36, tr.clientHeight * c / Math.max(1, h)); th.style.height = hh + "px"; th.style.top = (tr.clientHeight - hh) * body.scrollTop / Math.max(1, h - c) + "px"; };
+    const step = d => { Audio8.fx("tap"); body.scrollBy({ top: d * body.clientHeight * .7, behavior: "smooth" }); };
+    body.addEventListener("scroll", upd); bar.querySelector(".sup").onclick = () => step(-1); bar.querySelector(".sdn").onclick = () => step(1); more.onclick = () => step(1);
+    const drag = e => { const r = tr.getBoundingClientRect(); body.scrollTop = (e.clientY - r.top) / r.height * (body.scrollHeight - body.clientHeight) * 1.1; };
+    tr.addEventListener("pointerdown", e => { tr.setPointerCapture(e.pointerId); drag(e); tr.onpointermove = drag; });
+    tr.addEventListener("pointerup", () => tr.onpointermove = null);
+    if (window.ResizeObserver) new ResizeObserver(upd).observe(body);
+    new MutationObserver(() => setTimeout(upd, 30)).observe(body, { childList: true, subtree: true });
+    box._upd = upd; box._body = body;
+  }
+  box._body.scrollTop = 0; setTimeout(box._upd, 60); setTimeout(box._upd, 600);
+}
 const centerOf = e => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
 
 /* ================= mapa do Brasil (um <symbol> por estado, reaproveitado em todos os mapinhas) ================= */
@@ -50,7 +72,9 @@ const ufNome = uf => MAPA.uf[uf][0].toUpperCase();
 /* ================= avatar com fantasia ================= */
 const GORRO = `<svg viewBox="0 0 100 70"><path d="M10 58 Q18 12 58 6 Q92 2 97 42 Q82 22 66 28 Q50 34 48 58Z" fill="#e3262e" stroke="#7a1010" stroke-width="4"/><path d="M4 54 Q48 42 54 58 Q30 70 6 66Z" fill="#c41d1d" stroke="#7a1010" stroke-width="3"/></svg>`;
 function accHTML(f) { if (!f) return ""; const r = REGIOES.find(x => x.fantasia.id === f); if (!r) return ""; return `<div class="acc">${f === "gorro" ? GORRO : `<span>${r.fantasia.e}</span>`}</div>`; }
-function avHTML(id, size) { const p = perfil(id); return `<div class="av" ${size ? `style="width:${size}px;height:${size}px;font-size:${size}px"` : `style="font-size:118px"`}><img src="${PERFIS[id].av}" alt="">${accHTML(p.veste)}</div>`; }
+const avSrc = k => (AVATARES.find(a => a.k === k) || AVATARES[0]).src;
+function avImg(k, size, veste) { return `<div class="av" ${size ? `style="width:${size}px;height:${size}px;font-size:${size}px"` : `style="font-size:118px"`}><img src="${avSrc(k)}" alt="">${accHTML(veste)}</div>`; }
+function avHTML(id, size) { const p = perfil(id); return avImg(p.av || id, size, p.veste); }
 
 /* ================= progresso ================= */
 const found = () => store.get("found", [...BASE]);
@@ -75,23 +99,25 @@ $("#press").onclick = async () => {
   goPerfis();
 };
 
-/* ================= QUEM VAI PINTAR? ================= */
+/* ================= QUEM VAI PINTAR? (qualquer menina cria a sua pintora) ================= */
+const listaPintoras = () => Object.entries(perfis()).filter(([, p]) => p && p.nome).sort((a, b) => (a[1].criada || 0) - (b[1].criada || 0)).map(([id]) => id);
 function goPerfis() { UI.go("perfis", "#21a050", () => {
-  $("#plist").innerHTML = Object.keys(PERFIS).map(id => { const p = perfil(id); return `<button class="pcard" data-id="${id}">${avHTML(id)}<div class="pn">${p.nome ? silabasHTML(p.nome) : "❓"}</div><div class="pp">${p.nome ? "toque para pintar!" : "escreva o seu nome!"}</div></button>`; }).join("");
-  $$(".pcard").forEach(b => b.onclick = () => escolher(b.dataset.id, b));
-  Audio8.play("menu", "birds"); Voice.say("Quem vai pintar hoje?");
+  const ids = listaPintoras();
+  $("#plist").innerHTML = ids.map(id => `<button class="pcard" data-id="${id}">${avHTML(id)}<div class="pn">${silabasHTML(perfil(id).nome)}</div><div class="pp">toque para pintar!</div></button>`).join("")
+    + (ids.length < MAX_PINTORAS ? `<button class="pcard novo" id="novaP"><div class="mais">＋</div><div class="pn" style="font-size:18px">NOVA PINTORA</div></button>` : "");
+  $$(".pcard[data-id]").forEach(b => b.onclick = () => escolher(b.dataset.id, b));
+  if ($("#novaP")) $("#novaP").onclick = () => { Audio8.fx("pop"); goNome(null); };
+  Audio8.play("menu", "birds"); Voice.say(ids.length ? "Quem vai pintar hoje? Toque no seu retrato!" : "Vamos começar! Toque no mais para criar a sua pintora!");
 }); }
 async function escolher(id, card) {
   if (UI.busy) return; Audio8.fx("pop");
-  const p = perfil(id); if (!p.nome) return goNome(id);
   entrar(id); FX.burst(...centerOf(card), ["⭐", "✨", "💖"], 20);
   const pn = card.querySelector(".pn"); pn.innerHTML = [...NAME].map(c => `<span class="sy">${c}</span>`).join("");
   await soletrar(NAME, [...pn.children]); goMuseum();
 }
-function entrar(id) { WHO = id; useProfile(id); NAME = perfil(id).nome || PERFIS[id].nome; }
+function entrar(id) { WHO = id; useProfile(id); NAME = perfil(id).nome || "PINTORA"; }
 /* soletra o nome letra por letra (acende a letra) e depois fala o nome inteiro */
 async function soletrar(nome, cells) {
-  const g = Voice.gen;
   for (let i = 0; i < nome.length; i++) {
     cells && cells.forEach((c, j) => c.classList.toggle("hl", j === i)); if (cells && cells[i]) cells[i].style.color = SYLC[i % SYLC.length];
     Audio8.fx("letra"); const ok = await Voice.talk([[LETRA[nome[i]] || nome[i], { rate: .9 }]]); if (!ok) return;
@@ -101,30 +127,40 @@ async function soletrar(nome, cells) {
   cells && cells.forEach(c => c.classList.remove("hl"));
 }
 
-/* ================= ESCREVER O NOME (teclado grande, letra falada) ================= */
-let nomeId = null, typed = "";
-function goNome(id) { nomeId = id; typed = ""; UI.go("nome", "#ffd23f", () => { $("#nomeAv").innerHTML = avHTML(id, 96); renderNome(); });
-  setTimeout(() => Voice.say(`Escreva o seu nome! Procure a letra ${LETRA[PERFIS[id].nome[0]]}!`), 900); }
+/* ================= ESCREVER O NOME (teclado grande, sem sugestão; cada letra é falada) ================= */
+let nomeId = null, typed = "", avEsc = null;
+function goNome(id) { nomeId = id; typed = id ? perfil(id).nome || "" : ""; UI.go("nome", "#ffd23f", renderNome);
+  setTimeout(() => Voice.say(id ? "Escreva o seu nome de novo!" : "Escreva o seu nome! Toque nas letras!"), 900); }
 const TECLAS = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZÇ"];
 function renderNome() {
-  const guia = PERFIS[nomeId].nome, segue = guia.startsWith(typed);
-  const n = Math.max(typed.length + 1, segue ? guia.length : 0, 3);
-  $("#slots").innerHTML = [...Array(Math.min(12, n))].map((_, i) => `<div class="slot${i < typed.length ? "" : " guia"}${i === typed.length ? " cur" : ""}">${typed[i] || (segue ? guia[i] || "" : "")}</div>`).join("");
-  const next = segue ? guia[typed.length] : null;
-  $("#teclas").innerHTML = TECLAS.map(c => `<button class="tk${c === next ? " next" : ""}" data-c="${c}">${c}</button>`).join("") + `<button class="tk wide" data-c="⌫">⌫ APAGAR</button>`;
+  $("#slots").innerHTML = [...typed].map(c => `<div class="slot">${c}</div>`).join("") + (typed.length < 12 ? `<div class="slot cur"></div>` : "");
+  $("#teclas").innerHTML = TECLAS.map(c => `<button class="tk" data-c="${c}">${c}</button>`).join("") + `<button class="tk wide" data-c="⌫">⌫ APAGAR</button>`;
   $$("#teclas .tk").forEach(b => b.onclick = () => tecla(b.dataset.c, b));
 }
 function tecla(c, b) {
-  if (c === "⌫") { typed = typed.slice(0, -1); Audio8.fx("whoosh"); renderNome(); return; }
+  if (c === "⌫") { if (!typed) return; typed = typed.slice(0, -1); Audio8.fx("whoosh"); renderNome(); return; }
   if (typed.length >= 12) return; typed += c; Audio8.fx("letra"); FX.burst(...centerOf(b), ["✨"], 6);
   renderNome(); Voice.say(LETRA[c] || c);
-  if (typed === PERFIS[nomeId].nome) setTimeout(() => Voice.say("Muito bem! Agora toque em PRONTO!"), 700);
 }
 $("#nomeOk").onclick = async () => {
-  if (!typed) { Audio8.fx("oops"); Voice.say("Escreva o seu nome primeiro!"); return; }
-  setPerfil(nomeId, { nome: typed }); entrar(nomeId);
-  $("#slots").innerHTML = [...typed].map(c => `<div class="slot">${c}</div>`).join("");
-  await soletrar(typed, $$("#slots .slot")); goMuseum();
+  if (UI.busy) return;
+  if (typed.length < 2) { Audio8.fx("oops"); Voice.say(typed ? "Só uma letra? Escreva o nome inteiro!" : "Escreva o seu nome primeiro!"); return; }
+  Audio8.fx("tada"); avEsc = nomeId ? perfil(nomeId).av || null : null; goAvatar();
+};
+
+/* ================= ESCOLHER O RETRATO (qualquer avatar) ================= */
+function goAvatar() { UI.go("avatar", "#ff8fbf", renderAvatar); setTimeout(() => Voice.say(`${typed.charAt(0) + typed.slice(1).toLowerCase()}, agora escolha o seu retrato!`), 900); }
+function renderAvatar() {
+  $("#avNome").innerHTML = [...typed].map(c => `<div class="slot">${c}</div>`).join("");
+  $("#avGrid").innerHTML = AVATARES.map(a => `<button class="avpick${a.k === avEsc ? " sel" : ""}" data-k="${a.k}">${avImg(a.k)}</button>`).join("");
+  $$(".avpick").forEach(b => b.onclick = () => { avEsc = b.dataset.k; Audio8.fx("pop"); FX.burst(...centerOf(b), ["💖", "✨"], 10); renderAvatar(); Voice.say(pick(["Que lindo!", "Gostei!", "Que retrato bonito!"])); });
+  $("#avOk").disabled = !avEsc;
+}
+$("#avOk").onclick = async () => {
+  if (UI.busy || !avEsc) return;
+  const id = nomeId || "p" + Date.now().toString(36);
+  setPerfil(id, { nome: typed, av: avEsc, ...(nomeId ? {} : { criada: Date.now() }) }); entrar(id);
+  await soletrar(typed, $$("#avNome .slot")); goMuseum();
 };
 
 /* ================= MAPA DA VIAGEM (museu) ================= */
@@ -210,7 +246,7 @@ function renderIntro(t) {
 }
 async function falarIntro(t) {
   const R = REG[t.reg], lines = [t.fala, `Eu moro em ${MAPA.uf[t.uf][0]}, na região ${R.nome.toLowerCase()}!`, t.lenda];
-  if (t.extra) lines.push(t.extra); if ((PIADAS[WHO] || {})[t.k]) lines.push(PIADAS[WHO][t.k]);
+  if (t.extra) lines.push(t.extra); if ((PIADAS[NAME] || {})[t.k]) lines.push(PIADAS[NAME][t.k]);
   if (t.need === 100) lines.push(`Nesta pintura você precisa copiar todas as cores! Você consegue, ${Nome()}!`);
   $(".retrato")?.classList.add("talk");
   for (const l of lines) { if (UI.cur !== "meet" || cur !== t) break; $("#msay") && ($("#msay").textContent = l); const ok = await Voice.talk([[l, t.voz]]); if (!ok) break; }
@@ -298,8 +334,9 @@ function renderScore() {
 /* ---- potes, pincel e água ---- */
 function renderPots() {
   const f = found(), need = new Set(colorsOf(P8.meta)); const order = [...BASE, ...f.filter(c => !BASE.includes(c))];
-  $("#pots").innerHTML = order.map(c => `<button class="pot${need.has(c) && mode === "exact" ? " want" : ""}${P8.stolen === c ? " sumiu" : ""}" data-c="${c}"><i style="background:${PAINT[c][0]}"></i><small>${PAINT[c][1]}</small></button>`).join("");
-  $$("#pots .pot").forEach(b => b.onclick = () => dip(b.dataset.c, b)); setTimeout(potArrows, 50);
+  $("#pots").innerHTML = order.map(c => P8.stolen === c ? `<button class="pot roubado" data-c="${c}"><i>🌪️</i><small>sumiu!</small></button>`
+    : `<button class="pot${need.has(c) && mode === "exact" ? " want" : ""}" data-c="${c}"><i style="background:${PAINT[c][0]}"></i><small>${PAINT[c][1]}</small></button>`).join("");
+  $$("#pots .pot").forEach(b => b.onclick = () => b.classList.contains("roubado") ? Saci.avisar() : dip(b.dataset.c, b)); setTimeout(potArrows, 50);
 }
 function renderBrush() {
   const c = P8.brush; $("#btip").style.background = c ? PAINT[c][0] : "#f2ece0";
@@ -416,7 +453,7 @@ $("#gwrap").onclick = openGab; $("#gx").onclick = e => { e.stopPropagation(); cl
   g.addEventListener("pointerup", () => d = null); })();
 /* ---- mesa de misturar ---- */
 let mixA = null, mixB = null;
-$("#mixbtn").onclick = () => { mixA = mixB = null; renderMixer(); $("#mixer").classList.add("on"); Audio8.fx("whoosh"); Voice.say("Mesa de misturar! Escolha duas cores!"); };
+$("#mixbtn").onclick = () => { mixA = mixB = null; renderMixer(); $("#mixer").classList.add("on"); scrollify($("#mixer .obox")); Audio8.fx("whoosh"); Voice.say("Mesa de misturar! Escolha duas cores!"); };
 $("#mclose").onclick = () => { $("#mixer").classList.remove("on"); Audio8.fx("tap"); };
 function renderMixer() {
   const f = found(); $("#mwells").innerHTML = `<div class="well" id="wa">${mixA ? `<i style="background:${PAINT[mixA][0]}"></i>` : "1"}</div><b>+</b><div class="well" id="wb">${mixB ? `<i style="background:${PAINT[mixB][0]}"></i>` : "2"}</div><b>=</b><div class="well res" id="wr">?</div>`;
@@ -441,27 +478,30 @@ $("#pback").onclick = () => { Audio8.fx("tap"); goMuseum(); };
 
 /* ================= TRAVESSURA DO SACI: um redemoinho rouba um pote de tinta ================= */
 const Saci = {
-  timer: 0, tries: 0,
+  timer: 0, volta: 0, tries: 0,
   agendar(ms) { clearTimeout(this.timer); this.timer = setTimeout(() => this.roubar(), ms); },
-  stop() { clearTimeout(this.timer); $("#saci").classList.remove("on"); $("#vento").style.display = "none"; if (P8.stolen) { P8.stolen = null; } },
+  stop() { clearTimeout(this.timer); clearTimeout(this.volta); $("#saci").classList.remove("on"); $("#vento").style.display = "none"; P8.stolen = null; },
   async roubar() {
-    if (UI.cur !== "paint" || finishing || $("#quest").classList.contains("on") || $(".ov.on")) return this.agendar(8000);
-    const pots = $$("#pots .pot").filter(b => b.dataset.c !== P8.brush); if (pots.length < 3) return; const pot = pick(pots), c = pot.dataset.c;
+    if (UI.cur !== "paint" || finishing || $("#quest").classList.contains("on") || $("#monte").classList.contains("on") || $(".ov.on")) return this.agendar(8000);
+    const cs = [...BASE, ...found().filter(c => !BASE.includes(c))].filter(c => c !== P8.brush); if (cs.length < 3) return; const c = pick(cs);
     const a = $("#parea").getBoundingClientRect(), v = $("#vento"); v.style.display = "block"; Audio8.fx("redemoinho");
     await v.animate([{ left: "-80px", top: a.top + a.height * .7 + "px", transform: "rotate(0)" }, { left: innerWidth + "px", top: a.top + a.height * .3 + "px", transform: "rotate(720deg)" }], { duration: 1600, easing: "ease-in-out" }).finished;
-    v.style.display = "none"; if (UI.cur !== "paint") return;
-    P8.stolen = c; pot.classList.add("sumiu"); this.tries = 0;
-    const s = $("#saci"); s.innerHTML = `${cropHTML("saci", .67, .4, .3, "crop cara")}<i class="pote" style="background:${PAINT[c][0]}"></i>`;
+    v.style.display = "none"; if (UI.cur !== "paint" || finishing) return;
+    P8.stolen = c; renderPots(); this.tries = 0;
+    const s = $("#saci"); s.innerHTML = `${cropHTML("saci", .67, .4, .3, "crop cara")}<i class="pote" style="background:${PAINT[c][0]}"></i><div class="sfala">PEGUEI O<br>${silabasHTML(PAINT[c][2])}!<br>ME PEGA! 😜</div>`;
     this.mover(); s.classList.add("on"); Audio8.fx("giggle");
-    Voice.say(`Hihihi! Peguei a sua tinta ${N(c)}! Me pega se for capaz!`, VOZ.saci);
+    Voice.say(`Hihihi! Eu sou o Saci! Peguei a sua tinta ${N(c)}! Toque em mim pra pegar de volta!`, VOZ.saci);
+    clearTimeout(this.volta); this.volta = setTimeout(() => { if (P8.stolen) { this.tries = 9; this.pegar(true); } }, 30000);   // não deixa ela sem a cor
   },
-  mover() { const a = $("#parea").getBoundingClientRect(), s = $("#saci"); s.style.left = a.left + 10 + Math.random() * (a.width - 104) + "px"; s.style.top = a.top + 50 + Math.random() * (a.height - 150) + "px"; },
-  async pegar() {
+  avisar() { const s = $("#saci"); Audio8.fx("giggle"); s.animate([{ transform: "scale(1)" }, { transform: "scale(1.3) rotate(-10deg)" }, { transform: "scale(1)" }], { duration: 500, iterations: 2 });
+    Voice.say(`O Saci pegou o ${N(P8.stolen)}! Toque no Saci pra pegar de volta!`); },
+  mover() { const a = $("#parea").getBoundingClientRect(), s = $("#saci"); s.style.left = a.left + 10 + Math.random() * (a.width - 104) + "px"; s.style.top = a.top + 70 + Math.random() * (a.height - 180) + "px"; },
+  async pegar(sozinho) {
     const s = $("#saci"); if (!P8.stolen) return;
     if (this.tries++ < 1) { Audio8.fx("giggle"); this.mover(); Voice.say("Errou! Hihihi! Tenta de novo!", VOZ.saci); return; }
-    const c = P8.stolen; FX.burst(...centerOf(s), ["🧢", "✨", "⭐"], 22); Audio8.fx("good"); s.classList.remove("on"); P8.stolen = null;
-    $$("#pots .pot").forEach(b => b.classList.remove("sumiu"));
-    Voice.say(`Tá bom, tá bom! Você me pegou! Toma a sua tinta ${N(c)} de volta!`, VOZ.saci);
+    const c = P8.stolen; FX.burst(...centerOf(s), ["🧢", "✨", "⭐"], 22); Audio8.fx("good"); s.classList.remove("on"); P8.stolen = null; clearTimeout(this.volta);
+    renderPots(); const pot = $(`#pots .pot[data-c="${c}"]`); if (pot) { pot.scrollIntoView({ inline: "center", behavior: "smooth" }); FX.burst(...centerOf(pot), ["✨", "🎨"], 12); }
+    Voice.say(sozinho ? `Tá bom, eu devolvo a sua tinta ${N(c)}! Hihihi!` : `Tá bom, tá bom! Você me pegou! Toma a sua tinta ${N(c)} de volta!`, VOZ.saci);
   },
 };
 $("#saci").onclick = () => Saci.pegar();
@@ -541,7 +581,7 @@ async function finish(byButton) {
   renderRima(t);
   const nx = nextArt(); $("#dnext").style.display = nx ? "" : "none"; if (nx) $("#dnext").innerHTML = `➡️ PRÓXIMA: <small>${nx.e} ${nx.nome}</small>`;
   Audio8.play("win"); Audio8.fx("applause"); FX.confetti(); setTimeout(() => FX.burst(innerWidth / 2, innerHeight * .3), 500);
-  $("#done").classList.add("on");
+  $("#done").classList.add("on"); scrollify($("#done .obox"));
   await Voice.talk([[`Muito bem, ${Nome()}! Ficou lindo!`, t.voz]]);
   for (const f of novas) { if (!$("#done").classList.contains("on")) break; await Voice.talk([["Figurinha nova!"], [palavra(f[0]).toLowerCase() + "!"]]); }
   // parlenda com ritmo, acendendo cada verso
@@ -586,7 +626,7 @@ $("#bAlbum").onclick = () => {
   Audio8.fx("whoosh"); const fg = figs();
   $("#albBox").innerHTML = `<h3>📒 FIGURINHAS ${fg.length}/${FIGS.length}</h3><div class="small">Bichos e plantas do Brasil! Toque para ouvir.</div><div class="figs">${FIGS.map((f, i) => { const tem = fg.includes(f.s);
     return `<button class="fig${tem ? "" : " no"}" data-i="${i}">${cropHTML(f.t.k, f.x, f.y, f.z)}<b>${tem ? silabasHTML(f.s) : "???"}</b></button>`; }).join("")}</div><button class="orow" id="albX">✖ FECHAR</button>`;
-  $("#album").classList.add("on"); Voice.say("O seu álbum de figurinhas!");
+  $("#album").classList.add("on"); scrollify($("#albBox")); Voice.say("O seu álbum de figurinhas!");
   $$("#albBox .fig").forEach(b => b.onclick = () => { const f = FIGS[b.dataset.i]; Audio8.fx("pop");
     if (fg.includes(f.s)) Voice.talk([...silabas(f.s).map(s => [s.toLowerCase(), { rate: .7 }]), [palavra(f.s).toLowerCase() + "!"], [f.fato]]); else Voice.say(`Pinte ${f.t.nome.toLowerCase()} para ganhar esta figurinha!`); });
   $("#albX").onclick = () => { Voice.cancel(); $("#album").classList.remove("on"); };
@@ -613,27 +653,30 @@ function renderOpts() {
   const done = TELAS.filter(passed).length, tot = TELAS.filter(t => !t.breve).length;
   $("#obox").innerHTML = `<h3>⚙️ OPÇÕES</h3>
    <button class="orow" id="oM">${Audio8.musicOn ? "🎵 Música: LIGADA" : "🎵 Música: DESLIGADA"}</button><button class="orow" id="oS">${Audio8.sfxOn ? "🔊 Sons e vozes: LIGADOS" : "🔇 Sons e vozes: DESLIGADOS"}</button>
-   <button class="orow" id="oB">📖 Meu livro de cores</button><button class="orow" id="oP">👧 Trocar de pintora</button><button class="orow" id="oN">✏️ Escrever o nome de novo</button>
+   <button class="orow" id="oB">📖 Meu livro de cores</button><button class="orow" id="oP">👧 Trocar de pintora</button><button class="orow" id="oN">✏️ Mudar nome e retrato</button>
    <div class="small parent"><b>👨‍👩‍👧 Cantinho dos pais</b><br>${NAME}: <b>${done}/${tot}</b> pinturas · <b>${found().length}/${Object.keys(PAINT).length}</b> cores · <b>${figs().length}/${FIGS.length}</b> figurinhas<br>
    Voz em português: <b>${Voice.has("pt") ? "✅" : "⚠️ instale em Configurações → Conversão de texto em voz"}</b><br>
    O progresso fica só neste celular. Para não perder, guarde uma cópia:
    <div class="obtns" style="margin-top:6px"><button id="oExp" style="background:#2f7dff;font-size:16px">💾 Guardar cópia</button><button id="oImp" style="background:#8a3fc4;font-size:16px">📂 Restaurar</button></div></div>
-   <div id="oMain"><button class="orow danger" id="oR" style="width:100%">🗑️ Apagar o progresso de ${NAME}</button></div>
-   <div id="oConf" hidden><p>Tem certeza? As pinturas, cores e figurinhas de ${NAME} serão apagadas.</p><div class="obtns"><button id="oY" style="background:#e0262f">Sim, apagar</button><button id="oNo" style="background:#2bc46b">Não</button></div></div>
+   <div id="oMain" style="display:flex;gap:8px"><button class="orow danger" id="oR" style="flex:1;font-size:16px">🗑️ Apagar progresso</button><button class="orow danger" id="oD" style="flex:1;font-size:16px">❌ Apagar ${NAME}</button></div>
+   <div id="oConf" hidden><p id="oQ"></p><div class="obtns"><button id="oY" style="background:#e0262f">Sim, apagar</button><button id="oNo" style="background:#2bc46b">Não</button></div></div>
    <button class="orow" id="oC">✖ Fechar</button>`;
+  scrollify($("#obox"));
   $("#oM").onclick = () => { Audio8.toggleMusic(); renderOpts(); }; $("#oS").onclick = () => { Audio8.toggleSfx(); renderOpts(); };
-  $("#oB").onclick = () => { P8.meta = null; $("#opts").classList.remove("on"); mixA = mixB = null; renderMixer(); $("#mixer").classList.add("on"); };
+  $("#oB").onclick = () => { P8.meta = null; $("#opts").classList.remove("on"); mixA = mixB = null; renderMixer(); $("#mixer").classList.add("on"); scrollify($("#mixer .obox")); };
   $("#oP").onclick = () => { $("#opts").classList.remove("on"); goPerfis(); };
   $("#oN").onclick = () => { $("#opts").classList.remove("on"); goNome(WHO); };
   $("#oExp").onclick = () => { const b = new Blob([JSON.stringify(backupAll())], { type: "application/json" }), a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `atelie-brasil-${new Date().toISOString().slice(0, 10)}.json`; document.body.appendChild(a); a.click(); a.remove(); Audio8.fx("tada"); };
   $("#oImp").onclick = () => $("#fileIn").click();
-  $("#oR").onclick = () => { $("#oMain").hidden = true; $("#oConf").hidden = false; Audio8.fx("oops"); };
-  $("#oNo").onclick = () => { $("#oMain").hidden = false; $("#oConf").hidden = true; };
-  $("#oY").onclick = () => { store.clear(); $("#obox").innerHTML = "<h3>🧹 Tudo novo!</h3>"; setTimeout(() => location.reload(), 1000); };
+  let apagaTudo = false;
+  const conf = tudo => { apagaTudo = tudo; $("#oQ").textContent = tudo ? `Tem certeza? A pintora ${NAME} e tudo o que ela pintou vão sumir.` : `Tem certeza? As pinturas, cores e figurinhas de ${NAME} serão apagadas.`; $("#oMain").style.display = "none"; $("#oConf").hidden = false; Audio8.fx("oops"); };
+  $("#oR").onclick = () => conf(false); $("#oD").onclick = () => conf(true);
+  $("#oNo").onclick = () => { $("#oMain").style.display = "flex"; $("#oConf").hidden = true; };
+  $("#oY").onclick = () => { store.clear(); if (apagaTudo) { const p = perfis(); delete p[WHO]; gstore.set("perfis", p); gstore.set("ultima", null); }
+    $("#obox").innerHTML = "<h3>🧹 Tudo novo!</h3>"; setTimeout(() => location.reload(), 1000); };
   $("#oC").onclick = () => $("#opts").classList.remove("on");
 }
 $("#fileIn").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const n = restoreAll(JSON.parse(await f.text())); $("#obox").innerHTML = `<h3>📂 Restaurado!</h3><p>${n} itens</p>`; setTimeout(() => location.reload(), 1200); } catch (err) { alert("Arquivo inválido"); } };
 $("#opts").onclick = e => { if (e.target.id === "opts") $("#opts").classList.remove("on"); };
 addEventListener("resize", () => { if (UI.cur === "paint") fitCanvas(); });
 if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => { }));
-entrar(WHO);

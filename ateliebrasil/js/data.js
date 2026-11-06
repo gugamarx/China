@@ -23,17 +23,17 @@ function mix(a, b) {
   return "brown"; // o resto vira lama, como tinta de verdade!
 }
 
-/* ============ AS PRIMAS ============ */
-const PERFIS = {
-  julia: { nome: "JULIA", av: "kids/avatar-julia.jpg" },
-  elisa: { nome: "ELISA", av: "kids/avatar-elisa.jpg" },
-  yasmin: { nome: "YASMIN", av: "kids/avatar-yasmin.jpg" },
-  valentina: { nome: "VALENTINA", av: "kids/avatar-valentina.jpg" },
-};
-/* piadinhas por prima (tela -> fala extra) */
+/* ============ AVATARES ============
+   Qualquer pintora escolhe qualquer retrato. Para pôr mais um: salve kids/avatar-<chave>.jpg (quadrado) e acrescente aqui. */
+const AVATARES = [
+  { k: "julia", src: "kids/avatar-julia.jpg" }, { k: "elisa", src: "kids/avatar-elisa.jpg" },
+  { k: "yasmin", src: "kids/avatar-yasmin.jpg" }, { k: "valentina", src: "kids/avatar-valentina.jpg" },
+];
+const MAX_PINTORAS = 8;
+/* piadinhas pelo nome escrito (tela -> fala extra) */
 const PIADAS = {
-  yasmin: { iara: "YASMIN! Seu nome é nome de flor, e eu tenho uma flor no cabelo! Somos amigas!", caipora: "Yasmin, flor do mato! Eu cuido das flores pra você!" },
-  valentina: { lobisomem: "Valentina, nome de menina valente! Você não tem medo de mim, né? Auuuu!" },
-  elisa: { boto: "Elisa, Elisa, sua risada é igual à minha! Hihihi!" },
-  julia: { saci: "Julia! Vou te contar um segredo: você é a pintora mais rápida do Brasil!" },
+  YASMIN: { iara: "Yasmin! Seu nome é nome de flor, e eu tenho uma flor no cabelo! Somos amigas!", caipora: "Yasmin, flor do mato! Eu cuido das flores pra você!" },
+  VALENTINA: { lobisomem: "Valentina, nome de menina valente! Você não tem medo de mim, né? Auuuu!" },
+  ELISA: { boto: "Elisa, Elisa, sua risada é igual à minha! Hihihi!" },
+  JULIA: { saci: "Julia! Vou te contar um segredo: você é a pintora mais rápida do Brasil!" },
 };
