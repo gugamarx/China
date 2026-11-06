@@ -10,7 +10,7 @@ const Nome = () => NAME.charAt(0) + NAME.slice(1).toLowerCase();   // para a voz
 const UI = {
   busy: false,
   async go(id, color, onSwap) {
-    if (UI.busy) return false; UI.busy = true; Voice.cancel(); Saci.stop();
+    if (UI.busy) return false; UI.busy = true; Voice.cancel(); Saci.stop(); Missao.abort();
     const w = $("#wipe"); w.style.background = color || pick(["#21a050", "#ffd23f", "#2560d9", "#e3262e", "#ff8a1f"]); w.style.display = "block"; Audio8.fx("splash");
     w.animate([{ clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)" }], { duration: 380, easing: "ease-in", fill: "forwards" });
     await sleep(390); $$(".screen").forEach(s => s.classList.toggle("on", s.id === id)); UI.cur = id;
@@ -218,8 +218,9 @@ function boasVindas(R) {
   });
 }
 function renderAdivinha(t) {
-  const outros = shuffle(TELAS.filter(x => x !== t && x.e !== t.e && x.k !== "grupo")).slice(0, 2), ops = shuffle([t, ...outros]);
-  $("#meetBox").innerHTML = `<div class="adv"><b>O QUE É, O QUE É?</b>${t.adv.replace(/^O que é, o que é\? ?/, "")}</div><div class="opts">${ops.map(o => `<button class="opt" data-k="${o.k}"><span>${o.e}</span>${o.nome}</button>`).join("")}</div><div class="small" style="margin-top:10px">🔈 Toque em quem você acha que é!</div>`;
+  // as opções mostram o retrato de verdade de cada personagem (só os que já têm ilustração)
+  const outros = shuffle(TELAS.filter(x => x !== t && !x.breve && x.k !== "grupo")).slice(0, 2), ops = shuffle([t, ...outros]);
+  $("#meetBox").innerHTML = `<div class="adv"><b>O QUE É, O QUE É?</b>${t.adv.replace(/^O que é, o que é\? ?/, "")}</div><div class="opts">${ops.map(o => `<button class="opt" data-k="${o.k}">${cropHTML(o.k, ...o.rosto)}${o.nome}</button>`).join("")}</div><div class="small" style="margin-top:10px">🔈 Toque em quem você acha que é!</div>`;
   $$("#meetBox .opt").forEach(b => b.onclick = async () => {
     if (b.classList.contains("no")) return;
     const o = TELAS.find(x => x.k === b.dataset.k);
@@ -278,6 +279,7 @@ async function startPaint(t) {
     const nR = meta.regions.length + 1, cnt = new Int32Array(nR); for (let p = 0; p < N; p++) cnt[reg[p]]++;
     P8.pix = [...cnt].map(c => new Int32Array(c)); const k = new Int32Array(nR); P8.box = [...Array(nR)].map(() => [W, H, 0, 0]);
     for (let p = 0; p < N; p++) { const r = reg[p]; P8.pix[r][k[r]++] = p; const b = P8.box[r], x = p % W, y = (p / W) | 0; if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y; if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y; }
+    window.resetPointers && resetPointers();
     Object.assign(P8, { reg, lines, edge, orig: op, brush: null, hist: [], zoom: 1, panX: 0, panY: 0, seen: new Set(), tricked: false, stolen: null });
     P8.objs = (t.palavras || []).map(o => ({ o, id: reg[Math.min(H - 1, Math.round(o[2] * (H - 1))) * W + Math.min(W - 1, Math.round(o[1] * (W - 1)))] }));
     const saved = prog(t.k); P8.fills = Array(nR).fill(null);
@@ -399,7 +401,10 @@ $("#helpBtn").onclick = async () => {
 (() => {
   const area = $("#parea"); let stroke = null, pinch = null; const pts = new Map();
   const startPinch = () => { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: P8.zoom, mx: (a[0] + b[0]) / 2, my: (a[1] + b[1]) / 2, px: P8.panX, py: P8.panY }; };
-  area.addEventListener("pointerdown", e => { if (e.target.closest(".pfloat") || e.target.closest("#monte")) return; area.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]);
+  window.resetPointers = () => { pts.clear(); pinch = null; stroke = null; };
+  area.addEventListener("pointerdown", e => { if (e.target.closest(".pfloat") || e.target.closest("#monte")) return;
+    if (e.isPrimary || !pts.size) { pts.clear(); pinch = null; stroke = null; }   // um toque novo nunca herda dedo "preso" de antes
+    try { area.setPointerCapture(e.pointerId); } catch (err) { } pts.set(e.pointerId, [e.clientX, e.clientY]);
     if (pts.size === 2) { if (stroke) { endStroke(); } startPinch(); return; }
     stroke = { list: [], last: null }; paintAt(e.clientX, e.clientY, true); });
   area.addEventListener("pointermove", e => { if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, [e.clientX, e.clientY]);
@@ -523,6 +528,10 @@ async function alive(t) {
   UI.bubble(wrap, `✨ PERFEITO! ${t.nome} ganhou vida! ✨`, 3200);
   await Voice.talk([[`Uau, ${Nome()}! Você copiou todas as cores! Eu ganhei vida!`, t.voz]]); await sleep(500);
 }
+/* missões do final (Encontre e Monte): se ela sair da pintura no meio, tudo é desfeito, senão o toque fica preso */
+const Missao = { id: 0, h: null, res: null,
+  abort() { this.id++; if (this.h) $("#parea").removeEventListener("pointerdown", this.h, true); this.h = null;
+    $("#quest").classList.remove("on"); $("#monte").classList.remove("on"); const r = this.res; this.res = null; r && r(); } };
 /* encontre: 1 palavra escondida */
 async function quest(t) {
   const objs = shuffle(P8.objs.filter(o => P8.pix[o.id] && P8.pix[o.id].length)).slice(0, 1); if (!objs.length) return;
@@ -530,12 +539,12 @@ async function quest(t) {
     const o = ob.o; $("#quest").innerHTML = `<b>ENCONTRE: ${silabasHTML(o[0])}</b> ${o[3]} 👆`; $("#quest").classList.add("on");
     Voice.talk([[`Encontre: ${palavra(o[0]).toLowerCase()}! Onde está?`]]);
     await new Promise(res => {
-      let tries = 0; const area = $("#parea");
+      let tries = 0; const area = $("#parea"); Missao.res = res;
       const h = e => { const r = $("#pcv").getBoundingClientRect(); const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; if (x < 0 || y < 0 || x > 1 || y > 1) return;
         const id = P8.reg[Math.floor(y * P8.H) * P8.W + Math.floor(x * P8.W)]; e.stopImmediatePropagation(); e.stopPropagation(); e.preventDefault();
-        if (id === ob.id || Math.hypot(x - o[1], y - o[2]) < .09) { area.removeEventListener("pointerdown", h, true); FX.burst(e.clientX, e.clientY, [o[3], "✨", "⭐"], 16); Audio8.fx("good"); Voice.talk([[`Isso! Achou!`]]).then(() => setTimeout(res, 300)); }
+        if (id === ob.id || Math.hypot(x - o[1], y - o[2]) < .09) { area.removeEventListener("pointerdown", h, true); Missao.h = null; FX.burst(e.clientX, e.clientY, [o[3], "✨", "⭐"], 16); Audio8.fx("good"); Voice.talk([[`Isso! Achou!`]]).then(() => setTimeout(res, 300)); }
         else { tries++; Audio8.fx("oops"); if (tries >= 2) { const px = r.left + o[1] * r.width, py = r.top + o[2] * r.height; UI.float(px, py, "👇" + o[3]); Voice.say(`Aqui! Olhe!`); } } };
-      area.addEventListener("pointerdown", h, true);
+      area.addEventListener("pointerdown", h, true); Missao.h = h;
     });
   }
   $("#quest").classList.remove("on");
@@ -544,7 +553,7 @@ async function quest(t) {
 function montar(t) {
   const sy = silabas(t.sil); if (sy.length < 2) return Promise.resolve();
   return new Promise(res => {
-    let k = 0; const m = $("#monte");
+    let k = 0; const m = $("#monte"); Missao.res = res;
     m.innerHTML = `<b>MONTE O NOME! 🧩</b><div class="mw">${sy.map(() => `<div class="ms"></div>`).join("")}</div><div class="tiles">${shuffle(sy.map((s, i) => [s, i])).map(([s, i]) => `<button data-s="${s}" style="color:${SYLC[i % SYLC.length]}">${s}</button>`).join("")}</div>`;
     m.classList.add("on"); Voice.talk([["Agora monte o meu nome! Toque nas sílabas na ordem certa!"], ...sy.map(s => [s.toLowerCase(), { rate: .7 }])]);
     m.querySelectorAll(".tiles button").forEach(b => b.onclick = async () => {
@@ -567,7 +576,7 @@ async function finish(byButton) {
     Voice.say(`Quase lá, ${Nome()}! Nesta pintura você precisa copiar todas as cores. Use a lâmpada de ajuda e olhe a pintura lá em cima. Você consegue!`); finishing = false; return;
   }
   if (mode === "exact" && s.pct >= 100) await alive(t); else if (mode === "exact" && s.pct >= 80) renderAll();
-  await quest(t); await montar(t);
+  const mid = Missao.id; await quest(t); if (mid !== Missao.id) return; await montar(t); if (mid !== Missao.id) return;
   const old = prog(t.k) || {}, wasDone = REGIOES.map(R => regDone(R.id)), wasOpen = REGIOES.map((_, i) => roomOpen(i + 1));
   const rec = { fills: P8.fills, mode, pct: s.pct, thumb: thumbData(), passed: true };
   if (!store.set("art_" + t.k, rec)) store.set("art_" + t.k, { ...rec, thumb: thumbData(160) });
