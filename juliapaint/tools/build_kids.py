@@ -6,7 +6,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 kids_js = open(f"{ROOT}/js/kid.js").read()
 ALL = re.findall(r"^\s+(\w+): \{ name:", kids_js, re.M)
 NAMES = dict(re.findall(r"^\s+(\w+): \{ name: \"(\w+)\"", kids_js, re.M))
-SHARED = ["index.html", "js", "fonts", "art", "pages", "painters", "netlify.toml"]
+SHARED = ["index.html", "js", "fonts", "pages3", "painters", "netlify.toml"]
 for kid in (sys.argv[1:] or ALL):
     D = f"{ROOT}/dist/{kid}"; shutil.rmtree(D, ignore_errors=True); os.makedirs(D + "/kids"); os.makedirs(D + "/icons")
     for s in SHARED:

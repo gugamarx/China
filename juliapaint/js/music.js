@@ -61,6 +61,8 @@ const THEMES = {
     mel: "D6.2 G5.1 A5.1 B5.1 C6.1 D6.2 G5.2 G5.2 E6.2 C6.1 D6.1 E6.1 F#6.1 G6.2 G5.2 G5.2 C6.2 D6.1 C6.1 B5.1 A5.1 B5.2 C6.1 B5.1 A5.1 G5.1 F#5.2 G5.1 A5.1 B5.1 G5.1 A5.6" },
   opera: { bpm: 132, bar: 6, wave: "sawtooth", bass: "C3 G2 G2 C3", style: "waltz",       // Verdi, La donna è mobile (1851)
     mel: "E5.2 E5.2 E5.2 G5.1 F5.1 D5.4 D5.2 D5.2 D5.2 F5.1 E5.1 C5.4 C5.2 C5.2 C5.2 E5.1 D5.1 B4.2 C5.1 D5.1 C5.4 r.2" },
+  jasmine: { bpm: 92, bar: 8, wave: "sine", bass: "C3 G2 A2 E2 F2 C3 G2 C3", style: "koto",   // 茉莉花 Mo Li Hua (traditional Chinese)
+    mel: "E5.2 E5.1 G5.1 A5.1 C6.1 C6.1 A5.1 G5.2 G5.1 A5.1 G5.4 E5.2 E5.1 G5.1 A5.1 C6.1 C6.1 A5.1 G5.2 G5.1 A5.1 G5.4 G5.2 G5.2 G5.2 E5.1 G5.1 A5.2 A5.2 G5.4 E5.2 D5.1 E5.1 G5.2 E5.1 D5.1 C5.2 C5.1 D5.1 C5.4" },
   win: { bpm: 150, bar: 8, wave: "square", bass: "C3 F2 G2 C3", style: "pop",
     mel: "C5.1 E5.1 G5.1 C6.3 r.2 A5.1 C6.1 F6.3 r.2 B5.1 D6.1 G6.2 F6.1 E6.1 D6.1 C6.6" },
 };
@@ -129,6 +131,7 @@ const Audio8 = (() => {
     frogs() { ambTimer = setInterval(() => { if (Math.random() < .45) { const t = ctx.currentTime; for (let k = 0; k < 2; k++) tone(amb, "square", 150 + rnd(40), t + k * .16, .1, .18, 110); } }, 1300); },
     thunder() { loopNoise("highpass", 4000, .05, 0); ambTimer = setInterval(() => { if (Math.random() < .12) { const t = ctx.currentTime; noise(amb, t, 2.5, .9, "lowpass", 180); if (UI.flash) UI.flash(); } }, 2000); },
     wind() { loopNoise("bandpass", 500, .16, .08); ambTimer = setInterval(() => { if (Math.random() < .3) tone(amb, "sine", 1760 + rnd(400), ctx.currentTime, .4, .07); }, 1500); },
+    rain() { loopNoise("highpass", 2500, .09, 0); loopNoise("lowpass", 400, .06, .2); },
     crickets() { ambTimer = setInterval(() => { if (Math.random() < .6) { const t = ctx.currentTime; for (let k = 0; k < 3; k++) tone(amb, "sine", 4200, t + k * .05, .03, .12); } }, 700); },
   };
   return {
@@ -161,6 +164,7 @@ const Audio8 = (() => {
         case "oops": tone(sfx, "triangle", 500, t, .25, .8, 170); break;
         case "mud": tone(sfx, "sawtooth", 160, t, .4, .35, 90); noise(sfx, t, .3, .5, "lowpass", 400); break;
         case "pop": tone(sfx, "sine", 900, t, .09, .9, 260); break;
+        case "sparkle": seq([88, 91, 96, 100], .05, "sine", .15, .35); break;
         case "unlock": seq([60, 64, 67, 72, 76, 79, 84, 88], .07, "sine", .2, .5); break;
         case "applause": for (let k = 0; k < 40; k++) noise(sfx, t + Math.random() * 1.6, .05, .35 + Math.random() * .3, "bandpass", 1500 + rnd(2500)); break;
         case "tada": seq([67, 72, 76, 79, 0, 76, 79, 84], .1, "triangle", .2, .6); break;

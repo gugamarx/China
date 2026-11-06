@@ -1,0 +1,71 @@
+"use strict";
+/* ============ Julia Paint v3: the 25 paintings ============
+   k = file key in pages3/, obj = hidden words [emoji, en, zh, pinyin, x, y] (x,y = 0..1 on the picture),
+   alive = what happens when it is copied 100%: twinkle | sway | hop | zoom | wink | swim */
+Object.assign(PAINTERS, {
+  matisse: { ...PAINTERS.matisse }, malevich: { n: "Kazimir Malevich", flag: "🇺🇦", v: "uk-UA", hi: "Pryvit", bye: "Chudovo!", look: { hair: "short", hairc: "#3a2a1a", coat: "#e3262e", item: "🟥" } },
+  lautrec: { n: "Henri de Toulouse-Lautrec", flag: "🇫🇷", v: "fr-FR", hi: "Bonsoir", bye: "Formidable!", look: { hair: "short", hairc: "#1e1b1e", beard: "full", beardc: "#1e1b1e", glasses: 1, hat: "top", coat: "#1d2f66", item: "🎩" } },
+  marc: { n: "Franz Marc", flag: "🇩🇪", v: "de-DE", hi: "Hallo", bye: "Wunderbar!", look: { hair: "short", hairc: "#4a3020", beard: "full", beardc: "#4a3020", coat: "#2560d9", item: "🐴" } },
+  hiroshige: { n: "Utagawa Hiroshige", flag: "🇯🇵", v: "ja-JP", hi: "Konnichiwa", bye: "Subarashii!", look: { hair: "bald", coat: "#1d2f66", item: "☔" } },
+  nianhua: { n: "Yangliuqing painters", flag: "🇨🇳", v: "zh-CN", hi: "Nǐ hǎo", bye: "Tài bàng le!", she: 1, look: { hair: "bun", hairc: "#1e1b1e", coat: "#e3262e", item: "🧧" } },
+  egypt: { n: "Ancient Egyptian painter", flag: "🇪🇬", v: "ar-EG", hi: "Ahlan", bye: "Mumtaz!", look: { hair: "long", hairc: "#1e1b1e", coat: "#fbf8f0", collar: 1, item: "🐱" } },
+  arcimboldo: { n: "Giuseppe Arcimboldo", flag: "🇮🇹", v: "it-IT", hi: "Ciao", bye: "Bellissimo!", look: { hair: "short", hairc: "#5a3b22", beard: "full", beardc: "#5a3b22", hat: "beret", coat: "#1f4d2e", item: "🍐" } },
+});
+Object.assign(COUNTRY, { "🇺🇦": ["Ukraine", "乌克兰", "wū kè lán"], "🇩🇪": ["Germany", "德国", "dé guó"], "🇨🇳": ["China", "中国", "zhōng guó"], "🇪🇬": ["Egypt", "埃及", "āi jí"] });
+
+ART = [
+ { k: "mondrian", t: "Composition with Red, Blue and Yellow", p: "mondrian", y: 1930, music: "boogie", say: "I only use straight lines! Red, blue, yellow, white and black. Simple, ja?", zh: ["方块", "fāng kuài", "squares"], alive: "hop",
+   obj: [["🟥", "square", "正方形", "zhèng fāng xíng", .6, .35], ["🟦", "rectangle", "长方形", "cháng fāng xíng", .12, .86]] },
+ { k: "snail", t: "The Snail", p: "matisse", y: 1953, music: "musette", say: "I could not paint any more, so I cut colored paper with scissors! Can you see the snail?", zh: ["蜗牛", "wō niú", "snail"], alive: "zoom",
+   obj: [["🐌", "snail", "蜗牛", "wō niú", .5, .45], ["✂️", "paper", "纸", "zhǐ", .38, .86]] },
+ { k: "red_fuji", t: "Red Fuji", p: "hokusai", y: 1831, music: "calm", amb: "wind", say: "In the morning, the sun makes my mountain red! Mount Fuji!", zh: ["红色", "hóng sè", "red"], alive: "zoom",
+   obj: [["🗻", "mountain", "山", "shān", .75, .55], ["☁️", "clouds", "云", "yún", .3, .3], ["❄️", "snow", "雪", "xuě", .72, .28]] },
+ { k: "senecio", t: "Senecio", p: "klee", y: 1922, music: "musicbox", say: "This is a funny face made of squares! Hello, little face!", zh: ["脸", "liǎn", "face"], alive: "wink",
+   obj: [["👁️", "eye", "眼睛", "yǎn jing", .36, .42], ["😊", "face", "脸", "liǎn", .5, .55], ["👁️", "eye", "眼睛", "yǎn jing", .66, .42]] },
+ { k: "abaporu", t: "Abaporu", p: "tarsila", y: 1928, music: "samba", amb: "birds", say: "Oi! Abaporu means 'the man who eats people'! Look at his giant foot! Ha ha!", zh: ["仙人掌", "xiān rén zhǎng", "cactus"], alive: "hop",
+   obj: [["☀️", "sun", "太阳", "tài yáng", .43, .1], ["🌵", "cactus", "仙人掌", "xiān rén zhǎng", .86, .35], ["🦶", "foot", "脚", "jiǎo", .8, .85], ["✋", "hand", "手", "shǒu", .35, .87]] },
+
+ { k: "bruant", t: "Aristide Bruant", p: "lautrec", y: 1892, music: "cancan", say: "Bonsoir! This is my friend Aristide, a singer! Look at his big red scarf!", zh: ["围巾", "wéi jīn", "scarf"], alive: "sway",
+   obj: [["🎩", "hat", "帽子", "mào zi", .4, .14], ["🧣", "scarf", "围巾", "wéi jīn", .45, .38], ["🧤", "glove", "手套", "shǒu tào", .45, .72]] },
+ { k: "kandinsky", t: "Squares with Circles", p: "kandinsky", y: 1913, music: "bubbles", say: "For me, colors make music! Red sings loud, blue sings soft!", zh: ["圆圈", "yuán quān", "circles"], alive: "twinkle",
+   obj: [["⭕", "circle", "圆圈", "yuán quān", .13, .17], ["🔲", "square", "方块", "fāng kuài", .62, .5]] },
+ { k: "sportsmen", t: "Sportsmen", p: "malevich", y: 1931, music: "march", say: "Four sportsmen, made of shapes and bright colors! One, two, three, four!", zh: ["运动员", "yùn dòng yuán", "sportsmen"], alive: "hop",
+   obj: [["🧍", "person", "人", "rén", .2, .45], ["👕", "shirt", "衬衫", "chèn shān", .45, .42], ["👖", "pants", "裤子", "kù zi", .45, .75]] },
+ { k: "afklint", t: "The Ten Largest, Youth", p: "afklint", y: 1907, music: "bells", say: "I painted giant pictures, bigger than a door! Spirals and flowers!", zh: ["花", "huā", "flower"], alive: "twinkle",
+   obj: [["🌀", "spiral", "螺旋", "luó xuán", .16, .15], ["🌸", "flower", "花", "huā", .52, .16], ["🔵", "circle", "圆圈", "yuán quān", .45, .66]] },
+ { k: "scream", t: "The Scream", p: "munch", y: 1895, music: "mountainking", say: "Aaaaah! The sky is orange and I am screaming! Can you scream too?", zh: ["害怕", "hài pà", "scared"], alive: "sway",
+   obj: [["😱", "scared face", "害怕", "hài pà", .48, .55], ["🌅", "sky", "天空", "tiān kōng", .5, .07], ["🌉", "bridge", "桥", "qiáo", .2, .8], ["🌊", "water", "水", "shuǐ", .55, .3]] },
+
+ { k: "sunflowers", t: "Sunflowers", p: "vangogh", y: 1888, music: "waltz", amb: "birds", say: "Yellow is my favorite color! The color of the sun!", zh: ["向日葵", "xiàng rì kuí", "sunflower"], alive: "sway",
+   obj: [["🌻", "sunflower", "向日葵", "xiàng rì kuí", .4, .22], ["🏺", "vase", "花瓶", "huā píng", .5, .8], ["🍃", "leaf", "叶子", "yè zi", .27, .55]] },
+ { k: "yellow_cow", t: "Yellow Cow", p: "marc", y: 1911, music: "pastoral", amb: "birds", say: "Moo! A happy yellow cow jumping in the field! Animals are my favorite!", zh: ["牛", "niú", "cow"], alive: "hop",
+   obj: [["🐄", "cow", "牛", "niú", .45, .5], ["⛰️", "mountain", "山", "shān", .4, .1], ["🔵", "blue spot", "蓝点", "lán diǎn", .55, .55]] },
+ { k: "hiroshige", t: "Sudden Shower over the Bridge", p: "hiroshige", y: 1857, music: "sakura", amb: "rain", say: "Oh no, it's raining! Everybody runs across the bridge! Run, run!", zh: ["雨", "yǔ", "rain"], alive: "sway",
+   obj: [["🌧️", "rain", "雨", "yǔ", .5, .2], ["🌉", "bridge", "桥", "qiáo", .55, .55], ["☂️", "umbrella", "伞", "sǎn", .32, .52]] },
+ { k: "blue_horse", t: "Blue Horse", p: "marc", y: 1911, music: "pastoral", amb: "birds", say: "A blue horse! Horses are not blue... but in my painting they are!", zh: ["马", "mǎ", "horse"], alive: "hop",
+   obj: [["🐴", "horse", "马", "mǎ", .45, .45], ["⛰️", "hill", "山", "shān", .85, .55], ["🌿", "grass", "草", "cǎo", .85, .78]] },
+ { k: "nianhua", t: "Abundance Every Year", p: "nianhua", y: 1850, music: "jasmine", say: "Nǐ hǎo! A happy child hugs a big fish! In China, a fish means good luck for the new year!", zh: ["鱼", "yú", "fish"], alive: "swim",
+   obj: [["👦", "child", "孩子", "hái zi", .5, .28], ["🐟", "fish", "鱼", "yú", .55, .6], ["🪷", "lotus", "莲花", "lián huā", .88, .25], ["🍃", "leaf", "叶子", "yè zi", .78, .78]] },
+
+ { k: "bedroom", t: "Bedroom in Arles", p: "vangogh", y: 1888, music: "musicbox", say: "This is my bedroom! Can you find my bed and my two chairs?", zh: ["床", "chuáng", "bed"], alive: "zoom",
+   obj: [["🛏️", "bed", "床", "chuáng", .75, .68], ["🪑", "chair", "椅子", "yǐ zi", .1, .75], ["🪟", "window", "窗户", "chuāng hu", .33, .15], ["🖼️", "picture", "画", "huà", .62, .2]] },
+ { k: "castle", t: "Castle and Sun", p: "klee", y: 1928, music: "march", say: "A castle made of little squares and triangles, like a puzzle!", zh: ["城堡", "chéng bǎo", "castle"], alive: "twinkle",
+   obj: [["🏰", "castle", "城堡", "chéng bǎo", .3, .35], ["☀️", "sun", "太阳", "tài yáng", .61, .13], ["🔺", "triangle", "三角形", "sān jiǎo xíng", .6, .58]] },
+ { k: "wave", t: "The Great Wave", p: "hokusai", y: 1831, music: "sakura", amb: "waves", say: "A giant wave! And look, little Mount Fuji is hiding!", zh: ["海浪", "hǎi làng", "wave"], alive: "sway",
+   obj: [["🌊", "wave", "海浪", "hǎi làng", .28, .3], ["🗻", "mountain", "山", "shān", .52, .64], ["🚣", "boat", "船", "chuán", .17, .62]] },
+ { k: "nebamun", t: "Nebamun Hunting Birds", p: "egypt", y: -1350, music: "bells", say: "Three thousand years ago in Egypt! Birds, fish and a clever cat!", zh: ["猫", "māo", "cat"], alive: "twinkle",
+   obj: [["🐦", "bird", "鸟", "niǎo", .25, .25], ["🐱", "cat", "猫", "māo", .37, .6], ["🐟", "fish", "鱼", "yú", .42, .88], ["🧑", "man", "男人", "nán rén", .52, .35]] },
+ { k: "treeoflife", t: "The Tree of Life", p: "klimt", y: 1909, music: "danube", say: "I love gold! Real gold in my paintings! Look at all the spirals!", zh: ["树", "shù", "tree"], alive: "twinkle",
+   obj: [["🌳", "tree", "树", "shù", .5, .6], ["🌀", "spiral", "螺旋", "luó xuán", .3, .2], ["🐦", "bird", "鸟", "niǎo", .8, .42]] },
+
+ { k: "starry", t: "The Starry Night", p: "vangogh", y: 1889, music: "gymnopedie", amb: "crickets", say: "I looked out of my window at night and the stars were dancing!", zh: ["星星", "xīng xing", "stars"], alive: "twinkle",
+   obj: [["🌙", "moon", "月亮", "yuè liang", .88, .17], ["⭐", "star", "星星", "xīng xing", .35, .34], ["🌲", "tree", "树", "shù", .2, .55], ["⛪", "church", "教堂", "jiào táng", .59, .75]] },
+ { k: "tiger", t: "Tiger in a Storm", p: "rousseau", y: 1891, music: "jungle", amb: "thunder", say: "Rrroar! A tiger in the jungle, in a big storm! I never went to a jungle, I imagined it!", zh: ["老虎", "lǎo hǔ", "tiger"], alive: "hop",
+   obj: [["🐯", "tiger", "老虎", "lǎo hǔ", .4, .55], ["🌺", "flower", "花", "huā", .85, .45], ["🍃", "leaf", "叶子", "yè zi", .85, .78]] },
+ { k: "vertumnus", t: "Vertumnus", p: "arcimboldo", y: 1591, music: "baroque", say: "Ha ha! This is the king, made of fruits and vegetables! Can you find the pear nose?", zh: ["水果", "shuǐ guǒ", "fruit"], alive: "wink",
+   obj: [["🍐", "pear", "梨", "lí", .5, .45], ["🍎", "apple", "苹果", "píng guǒ", .36, .45], ["🍇", "grapes", "葡萄", "pú tao", .4, .12], ["🌸", "flower", "花", "huā", .25, .75]] },
+ { k: "pearl", t: "Girl with a Pearl Earring", p: "vermeer", y: 1665, music: "minuet", say: "Look at her shiny pearl earring! She is looking at you!", zh: ["珍珠", "zhēn zhū", "pearl"], alive: "wink", perfect: 1,
+   obj: [["💎", "pearl", "珍珠", "zhēn zhū", .69, .54], ["👀", "eyes", "眼睛", "yǎn jing", .4, .38], ["🧕", "turban", "头巾", "tóu jīn", .55, .17]] },
+ { k: "monalisa", t: "Mona Lisa", p: "leonardo", y: 1503, music: "opera", say: "Mamma mia! The most famous painting in the world! Is she smiling? Look closely!", zh: ["微笑", "wēi xiào", "smile"], alive: "wink", perfect: 1,
+   obj: [["😊", "smile", "微笑", "wēi xiào", .47, .31], ["🤲", "hands", "手", "shǒu", .48, .78], ["💇", "hair", "头发", "tóu fa", .32, .3], ["⛰️", "mountain", "山", "shān", .86, .27]] },
+].map((a, i) => ({ ...a, i: a.k, n: a.k, pos: i, lvl: Math.floor(i / 5) + 1, need: a.perfect ? 100 : 0 }));
