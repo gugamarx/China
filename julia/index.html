@@ -153,6 +153,27 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 .w-again{background:var(--green);box-shadow:0 6px 0 #188a49}
 .w-next{background:var(--blue);box-shadow:0 6px 0 #1a5fc0}
 .w-home{background:var(--red);box-shadow:0 6px 0 var(--red-d)}
+
+/* bottom space for the Netlify badge */
+.screen{padding-bottom:calc(64px + env(safe-area-inset-bottom)) !important}
+#win{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+.wbox{max-height:calc(96vh - 64px);overflow:auto}
+.skip{bottom:calc(64px + 12px + env(safe-area-inset-bottom)) !important}
+/* options menu */
+#opts{position:fixed;inset:0;z-index:45;display:none;align-items:center;justify-content:center;background:rgba(20,0,30,.6);padding-bottom:64px}
+#opts.on{display:flex}
+.obox{background:#fff;color:#3a1030;border-radius:26px;padding:18px;width:min(88vw,380px);display:flex;flex-direction:column;gap:12px;text-align:center;animation:obIn .4s cubic-bezier(.3,1.7,.5,1)}
+@keyframes obIn{from{transform:scale(.4);opacity:0}}
+.obox h3{font-family:"Arcade";font-size:16px;margin:4px 0 6px;color:#a6372f}
+.orow{font-size:22px;padding:14px;border-radius:18px;background:#f3eaf2;color:#3a1030;box-shadow:0 4px 0 #d9c6d6}
+.orow:active{transform:translateY(3px);box-shadow:0 1px 0 #d9c6d6}
+.orow.danger{background:#ffe1e1;color:#b3122a;box-shadow:0 4px 0 #f0b0b0}
+#oConfirm p{font-size:19px;margin:4px 0 10px}
+.obtns{display:flex;gap:10px}
+.obtns button{flex:1;font-size:22px;padding:14px;border-radius:18px;color:#fff}
+#oYes{background:#e0262f;box-shadow:0 5px 0 #9e1520} #oNo{background:#2bc46b;box-shadow:0 5px 0 #188a49}
+.word{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;font-size:16px;color:#7a5200;white-space:nowrap}
+.word .zh{font-size:28px;color:var(--red)} .word button{font-size:22px;background:#fff0c2;border-radius:12px;width:44px;height:40px}
 </style>
 </head>
 <body>
@@ -171,7 +192,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
   <div id="kb"></div>
   <div class="stars"></div>
   <div id="polas"></div>
-  <div class="bar" style="justify-content:flex-end"><div class="snd"></div></div>
+  <div class="bar"><button class="ibtn" id="gear">⚙️</button><div class="snd"></div></div>
   <h1 class="title"><span class="l1" id="t1">JULIA'S</span><span class="l2" id="t2">CHINA TRIP</span></h1>
   <div class="sub" id="sub"></div>
   <div class="hi" id="hi"></div>
@@ -225,6 +246,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
     <img id="wimg" alt="">
     <div class="cap" id="wcap"></div>
     <div class="stars3" id="wstars"></div>
+    <div class="word"><span>🇨🇳</span><span class="zh" id="wzh"></span><span id="wpy"></span><button id="wsay">🔈</button></div>
     <div class="wbtns">
       <button class="w-home" id="wHome">🏠</button>
       <button class="w-again" id="wAgain">🔄</button>
@@ -233,6 +255,18 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
   </div>
 </div>
 
+
+<div id="opts">
+  <div class="obox">
+    <h3>⚙️ OPTIONS</h3>
+    <button class="orow" id="oMusic"></button>
+    <button class="orow" id="oSfx"></button>
+    <div id="oMain"><button class="orow danger" id="oReset" style="width:100%">🗑️ Reset progress</button></div>
+    <div id="oConfirm" hidden><p>Are you sure?<br>All stars and stickers will be erased.</p>
+      <div class="obtns"><button id="oYes">Yes, erase</button><button id="oNo">No</button></div></div>
+    <button class="orow" id="oClose">✖ Close</button>
+  </div>
+</div>
 <script>
 "use strict";
 /* =========================================================
@@ -261,6 +295,14 @@ const PHOTOS = [
   "Macau – a little street and the golden tower",
 ].map((cap,i)=>{const n=String(i+1).padStart(2,"0");return {cap,full:`photos/p${n}.jpg`,thumb:`thumbs/t${n}.jpg`}});
 
+
+const WORDS=[["你好","nǐ hǎo","hello"],["中国","zhōng guó","China"],["长城","cháng chéng","Great Wall"],["熊猫","xióng māo","panda"],
+ ["奶奶","nǎi nai","grandma"],["叔叔","shū shu","uncle"],["北京","běi jīng","Beijing"],["上海","shàng hǎi","Shanghai"],["香港","xiāng gǎng","Hong Kong"],
+ ["灯笼","dēng long","lantern"],["龙","lóng","dragon"],["谢谢","xiè xie","thank you"],["朋友","péng you","friend"],["再见","zài jiàn","bye-bye"],["茶","chá","tea"]];
+const Voice={ say(text,lang="en-US"){ if(!Snd.sfxOn||!("speechSynthesis" in window)) return;
+  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang=lang; u.rate=lang==="en-US"?.95:.8; u.pitch=1.2;
+    const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.replace("_","-").startsWith(lang.slice(0,2))); if(v) u.voice=v; speechSynthesis.speak(u);}catch(e){} } };
+let curWord=null;
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const rnd = n => Math.floor(Math.random()*n);
@@ -667,8 +709,12 @@ function showWin(o){
   winActs=o; $("#wtitle").innerHTML=CHEERS[rnd(CHEERS.length)];
   $("#wimg").src=o.img; $("#wcap").textContent=o.cap; $("#wstars").textContent="⭐".repeat(o.stars);
   $("#win").classList.add("on"); Snd.play("win"); confetti();
+  curWord=WORDS[rnd(WORDS.length)]; $("#wzh").textContent=curWord[0]; $("#wpy").textContent=`${curWord[1]} = ${curWord[2]}`;
+  const cheer=$("#wtitle").innerHTML.replace("<br>"," ");
+  setTimeout(()=>Voice.say(cheer+" "+o.cap),600);
 }
 function hideWin(){ $("#win").classList.remove("on"); }
+$("#wsay").addEventListener("click",()=>Voice.say(curWord[0],"zh-CN"));
 $("#wHome").addEventListener("click",()=>{hideWin(); showMenu(true);});
 $("#wAgain").addEventListener("click",()=>{hideWin(); winActs.again();});
 $("#wNext").addEventListener("click",()=>{hideWin(); winActs.next();});
@@ -691,6 +737,28 @@ function confetti(){
 /* =========================================================
    OFFLINE (home-screen shortcut works without internet)
    ========================================================= */
+
+/* ============ OPTIONS MENU ============ */
+const KEEP_KEYS=["music","sfx","pzsize","swsize"];
+function renderOpts(){
+  $("#oMusic").textContent=Snd.musicOn?"🎵 Music: ON":"🎵 Music: OFF";
+  $("#oSfx").textContent=Snd.sfxOn?"🔊 Sounds: ON":"🔇 Sounds: OFF";
+}
+function openOpts(){ renderOpts(); $("#oConfirm").hidden=true; $("#oMain").hidden=false; $("#opts").classList.add("on"); Snd.play("flip"); }
+function closeOpts(){ $("#opts").classList.remove("on"); }
+$("#gear").addEventListener("click",openOpts);
+$("#oClose").addEventListener("click",()=>{closeOpts(); Snd.play("flip");});
+$("#opts").addEventListener("click",e=>{ if(e.target.id==="opts") closeOpts(); });
+$("#oMusic").addEventListener("click",()=>{Snd.toggleMusic(); renderOpts(); renderSndButtons();});
+$("#oSfx").addEventListener("click",()=>{Snd.toggleSfx(); renderOpts(); renderSndButtons(); Snd.play("flip");});
+$("#oReset").addEventListener("click",()=>{ $("#oMain").hidden=true; $("#oConfirm").hidden=false; Snd.play("miss"); });
+$("#oNo").addEventListener("click",()=>{ $("#oMain").hidden=false; $("#oConfirm").hidden=true; Snd.play("flip"); });
+$("#oYes").addEventListener("click",()=>{
+  try{ Object.keys(localStorage).filter(k=>k.startsWith("jct_")&&!KEEP_KEYS.includes(k.slice("jct_".length))).forEach(k=>localStorage.removeItem(k)); }catch(e){}
+  updateHi(); $("#oConfirm").innerHTML="<p>🧹 Done! Everything is new again.</p>"; Snd.play("start");
+  setTimeout(()=>{ closeOpts(); location.reload(); },1200);
+});
+
 if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>

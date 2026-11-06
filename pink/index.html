@@ -143,7 +143,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 @keyframes zoom{from{transform:scale(3);opacity:0}30%{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}
 
 /* hearts catcher */
-#catchcv{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#catchcv{position:absolute;left:0;top:0;width:100%;height:calc(100% - 64px - env(safe-area-inset-bottom));touch-action:none}
 
 /* studio */
 #stage{position:relative;z-index:2;margin-top:4px;touch-action:none;box-shadow:0 8px 0 var(--pd);border-radius:6px}
@@ -184,6 +184,25 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 .wbtns{display:flex;gap:12px;justify-content:center;margin-top:10px}
 .wbtns button{font-size:30px;width:84px;height:66px;border-radius:20px;color:#fff}
 .w-home{background:var(--p1);box-shadow:0 6px 0 var(--pd)} .w-again{background:var(--mint);box-shadow:0 6px 0 var(--mintd)} .w-next{background:var(--sky);box-shadow:0 6px 0 var(--skyd)}
+
+/* bottom space for the Netlify badge */
+.screen{padding-bottom:calc(64px + env(safe-area-inset-bottom)) !important}
+#win{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+.wbox{max-height:calc(96vh - 64px);overflow:auto}
+.skip{bottom:calc(64px + 12px + env(safe-area-inset-bottom)) !important}
+/* options menu */
+#opts{position:fixed;inset:0;z-index:45;display:none;align-items:center;justify-content:center;background:rgba(20,0,30,.6);padding-bottom:64px}
+#opts.on{display:flex}
+.obox{background:#fff;color:#3a1030;border-radius:26px;padding:18px;width:min(88vw,380px);display:flex;flex-direction:column;gap:12px;text-align:center;animation:obIn .4s cubic-bezier(.3,1.7,.5,1)}
+@keyframes obIn{from{transform:scale(.4);opacity:0}}
+.obox h3{font-family:"Arcade";font-size:16px;margin:4px 0 6px;color:#ff3d9a}
+.orow{font-size:22px;padding:14px;border-radius:18px;background:#f3eaf2;color:#3a1030;box-shadow:0 4px 0 #d9c6d6}
+.orow:active{transform:translateY(3px);box-shadow:0 1px 0 #d9c6d6}
+.orow.danger{background:#ffe1e1;color:#b3122a;box-shadow:0 4px 0 #f0b0b0}
+#oConfirm p{font-size:19px;margin:4px 0 10px}
+.obtns{display:flex;gap:10px}
+.obtns button{flex:1;font-size:22px;padding:14px;border-radius:18px;color:#fff}
+#oYes{background:#e0262f;box-shadow:0 5px 0 #9e1520} #oNo{background:#2bc46b;box-shadow:0 5px 0 #188a49}
 </style>
 </head>
 <body>
@@ -200,7 +219,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
   <div class="hearts"></div>
   <div id="polas"></div>
   <canvas id="burst"></canvas>
-  <div class="bar" style="justify-content:flex-end"><div class="snd"></div></div>
+  <div class="bar"><button class="ibtn" id="gear">⚙️</button><div class="snd"></div></div>
   <h1 class="title"><span class="l1" id="t1">JULIA</span><span class="l2" id="t2">PINK</span></h1>
   <div class="sub" id="sub"></div>
   <div class="hi" id="hi"></div>
@@ -300,6 +319,18 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
   </div>
 </div>
 
+
+<div id="opts">
+  <div class="obox">
+    <h3>⚙️ OPTIONS</h3>
+    <button class="orow" id="oMusic"></button>
+    <button class="orow" id="oSfx"></button>
+    <div id="oMain"><button class="orow danger" id="oReset" style="width:100%">🗑️ Reset progress</button></div>
+    <div id="oConfirm" hidden><p>Are you sure?<br>All stars and stickers will be erased.</p>
+      <div class="obtns"><button id="oYes">Yes, erase</button><button id="oNo">No</button></div></div>
+    <button class="orow" id="oClose">✖ Close</button>
+  </div>
+</div>
 <script>
 "use strict";
 /* ============ DATA ============ */
@@ -665,7 +696,7 @@ async function startStudio(idx){
   show("studio"); Voice.say("Decorate your photo!");
   const img=await loadImg(PH[idx].full), stage=$("#stage"), r=img.naturalWidth/img.naturalHeight;
   $$("#stage .stk").forEach(s=>s.remove());
-  const maxH=innerHeight-260, w=Math.min(innerWidth-24,maxH*r); stage.style.width=w+"px"; stage.style.height=(w/r)+"px"; $("#stagebg").src=img.src;
+  const maxH=innerHeight-260-64, w=Math.min(innerWidth-24,maxH*r); stage.style.width=w+"px"; stage.style.height=(w/r)+"px"; $("#stagebg").src=img.src;
   st={idx,img,w,h:w/r,sel:null,frame:0}; drawFrame();
   const mine=STICKERS.slice(0,unlocked()).map(s=>s[0]);
   $("#palette").innerHTML=[...BASE_STK,...mine].map(e=>`<button data-e="${e}">${e}</button>`).join("");
@@ -738,6 +769,28 @@ function confetti(){
     ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr; g.save();g.translate(p.x,p.y);g.rotate(p.r);g.fillStyle=p.c;g.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);g.restore();});
     if(++f<260&&$("#win").classList.contains("on")) requestAnimationFrame(tick); else g.clearRect(0,0,cv.width,cv.height); })();
 }
+
+
+/* ============ OPTIONS MENU ============ */
+const KEEP_KEYS=["music","sfx","pzsize","swsize"];
+function renderOpts(){
+  $("#oMusic").textContent=Snd.musicOn?"🎵 Music: ON":"🎵 Music: OFF";
+  $("#oSfx").textContent=Snd.sfxOn?"🔊 Sounds: ON":"🔇 Sounds: OFF";
+}
+function openOpts(){ renderOpts(); $("#oConfirm").hidden=true; $("#oMain").hidden=false; $("#opts").classList.add("on"); Snd.play("flip"); }
+function closeOpts(){ $("#opts").classList.remove("on"); }
+$("#gear").addEventListener("click",openOpts);
+$("#oClose").addEventListener("click",()=>{closeOpts(); Snd.play("flip");});
+$("#opts").addEventListener("click",e=>{ if(e.target.id==="opts") closeOpts(); });
+$("#oMusic").addEventListener("click",()=>{Snd.toggleMusic(); renderOpts(); renderSnd();});
+$("#oSfx").addEventListener("click",()=>{Snd.toggleSfx(); renderOpts(); renderSnd(); Snd.play("flip");});
+$("#oReset").addEventListener("click",()=>{ $("#oMain").hidden=true; $("#oConfirm").hidden=false; Snd.play("miss"); });
+$("#oNo").addEventListener("click",()=>{ $("#oMain").hidden=false; $("#oConfirm").hidden=true; Snd.play("flip"); });
+$("#oYes").addEventListener("click",()=>{
+  try{ Object.keys(localStorage).filter(k=>k.startsWith("jp_")&&!KEEP_KEYS.includes(k.slice("jp_".length))).forEach(k=>localStorage.removeItem(k)); }catch(e){}
+  updateHi(); $("#oConfirm").innerHTML="<p>🧹 Done! Everything is new again.</p>"; Snd.play("start");
+  setTimeout(()=>{ closeOpts(); location.reload(); },1200);
+});
 
 if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 if("speechSynthesis" in window) try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>{}; }catch(e){}
