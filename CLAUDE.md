@@ -36,3 +36,9 @@ Julia's Chinese name: 朱莉娅 (Zhū lì yà). Avoid swimwear photos on the ope
 - Painter portraits: painters/<key>.webp (HuggingFace Z-Image, same cartoon style); without an image it uses `cartoonSVG` from js/util.js.
   Missing: all except mondrian, kandinsky, afklint, klee, vangogh → generate when the quota allows and set `img:` in js/data.js.
 - art/, pages/, kids/, painters/, dist/ do not go to git (public repo).
+
+## Ateliê Brasil (`ateliebrasil/`, folclore em pt-BR)
+Fork do Julia Paint: 5 salas = regiões do Brasil, personagens do folclore, tudo em português (exceção ao padrão de inglês/chinês).
+Um site só com 4 perfis (Julia, Elisa, Yasmin, Valentina) no localStorage (`atelie_<prima>_`), teclado que fala as letras do nome.
+Ilustrações "colorida | P&B" em `art/<k>.jpg` → `python3 tools/build_folk.py` → `pages/`; conteúdo em `js/lendas.js`;
+`python3 tools/build_site.py` → `dist/` + `ateliebrasil.zip`. Detalhes e pendências em `ateliebrasil/README.md`.
