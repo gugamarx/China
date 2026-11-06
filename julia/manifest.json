@@ -1,0 +1,16 @@
+{
+  "name": "Julia's China Trip",
+  "short_name": "Julia China",
+  "description": "Memory game and puzzle with Grandma and Uncle's trip to China.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#1a1446",
+  "theme_color": "#1a1446",
+  "lang": "en",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

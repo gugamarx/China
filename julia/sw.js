@@ -1,0 +1,6 @@
+const CACHE="julia-v1";
+const FILES=["./", "index.html", "manifest.json", "fonts/pressstart.woff2", "fonts/baloo700.woff2", "fonts/baloo800.woff2", "icons/icon-192.png", "icons/icon-512.png", "photos/p01.jpg", "photos/p02.jpg", "photos/p03.jpg", "photos/p04.jpg", "photos/p05.jpg", "photos/p06.jpg", "photos/p07.jpg", "photos/p08.jpg", "photos/p09.jpg", "photos/p10.jpg", "photos/p11.jpg", "photos/p12.jpg", "photos/p13.jpg", "photos/p14.jpg", "photos/p15.jpg", "photos/p16.jpg", "photos/p17.jpg", "photos/p18.jpg", "photos/p19.jpg", "photos/p20.jpg", "thumbs/t01.jpg", "thumbs/t02.jpg", "thumbs/t03.jpg", "thumbs/t04.jpg", "thumbs/t05.jpg", "thumbs/t06.jpg", "thumbs/t07.jpg", "thumbs/t08.jpg", "thumbs/t09.jpg", "thumbs/t10.jpg", "thumbs/t11.jpg", "thumbs/t12.jpg", "thumbs/t13.jpg", "thumbs/t14.jpg", "thumbs/t15.jpg", "thumbs/t16.jpg", "thumbs/t17.jpg", "thumbs/t18.jpg", "thumbs/t19.jpg", "thumbs/t20.jpg"];
+self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));self.skipWaiting();});
+self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
+self.addEventListener("fetch",e=>{if(e.request.method!=="GET")return;
+  e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(r=>r||fetch(e.request)));});
