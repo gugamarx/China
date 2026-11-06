@@ -38,7 +38,7 @@ def fill_small(cidx, ncol, thr):
     out = cidx[iy, ix]
     return out, n, True
 
-def run(src, out, maxN, cols, smooth=1.0, W=560, lw=.6, lines=False, crop=0, vivid=True):
+def run(src, out, maxN, cols, smooth=1.0, W=560, lw=.6, lines=False, crop=0, vivid=True, minfrac=.0012):
     img = cv2.cvtColor(cv2.imread(src), cv2.COLOR_BGR2RGB)
     if crop:
         ch, cw = img.shape[:2]; dy, dx = int(ch * crop), int(cw * crop); img = img[dy:ch - dy, dx:cw - dx]
@@ -65,7 +65,7 @@ def run(src, out, maxN, cols, smooth=1.0, W=560, lw=.6, lines=False, crop=0, viv
     for _ in range(3): cidx = mode_filter(cidx, len(cols), k)
     if lock is not None: cidx[lock] = cols.index('black')
     area = H * Wd
-    thr = area * 0.0012
+    thr = area * minfrac
     for t in [20, 80, 250, thr]:
         for _ in range(4):
             cidx, n, ch = fill_small(cidx, len(cols), t)
