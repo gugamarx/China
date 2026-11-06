@@ -1,0 +1,23 @@
+# Shared paint palette (mirrored in js/colors.js). id: (hex, english, chinese, pinyin, recipe)
+PALETTE = {
+    "red":       ("#e3262e", "red", "红色", "hóng sè", None),
+    "yellow":    ("#ffd23f", "yellow", "黄色", "huáng sè", None),
+    "blue":      ("#2560d9", "blue", "蓝色", "lán sè", None),
+    "white":     ("#fbf8f0", "white", "白色", "bái sè", None),
+    "black":     ("#1e1b1e", "black", "黑色", "hēi sè", None),
+    "orange":    ("#ff8a1f", "orange", "橙色", "chéng sè", ("red", "yellow")),
+    "green":     ("#2fa84f", "green", "绿色", "lǜ sè", ("blue", "yellow")),
+    "purple":    ("#8a3fc4", "purple", "紫色", "zǐ sè", ("red", "blue")),
+    "pink":      ("#ff8fbf", "pink", "粉红色", "fěn hóng sè", ("red", "white")),
+    "lightblue": ("#8cc4f0", "light blue", "浅蓝色", "qiǎn lán sè", ("blue", "white")),
+    "gray":      ("#9a9a9a", "gray", "灰色", "huī sè", ("black", "white")),
+    "darkblue":  ("#1d2f66", "dark blue", "深蓝色", "shēn lán sè", ("blue", "black")),
+    "darkred":   ("#8f1d22", "dark red", "深红色", "shēn hóng sè", ("red", "black")),
+    "brown":     ("#8a5a2b", "brown", "棕色", "zōng sè", ("orange", "blue")),
+    "cream":     ("#f5e6a8", "cream", "奶油色", "nǎi yóu sè", ("yellow", "white")),
+    "darkgreen": ("#1f4d2e", "dark green", "深绿色", "shēn lǜ sè", ("green", "black")),
+    "lightgreen":("#9bd77a", "light green", "浅绿色", "qiǎn lǜ sè", ("green", "white")),
+    "peach":     ("#f6c39a", "peach", "桃色", "táo sè", ("orange", "white")),
+    "beige":     ("#cdb48c", "beige", "米色", "mǐ sè", ("brown", "white")),
+    "gold":      ("#c9a227", "gold", "金色", "jīn sè", ("yellow", "brown")),
+}

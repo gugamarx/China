@@ -25,3 +25,13 @@ Julia's Chinese name: 朱莉娅 (Zhū lì yà). Avoid swimwear photos on the ope
 - **Style:** 90s arcade (Press Start 2P + Baloo 2 fonts, bundled locally), original 8-bit music in WebAudio,
   intro animation with photos, confetti/rewards on every win, offline PWA (service worker + manifest).
 - **Test** in Playwright with Pixel 7 emulation before publishing.
+
+## Julia Paint (`juliapaint/` → juliapaint.netlify.app)
+25 public-domain paintings (+ Tarsila's Abaporu, owner's choice), 5 rooms that open 5 by 5
+(room 1 free, 2-3 ≥50%, 4 ≥60%, 5 ≥75%, Vermeer and Mona Lisa 100%). Dirty-brush mixing, water, mixing table, draggable answer key.
+- Multiple nieces: everything personal is in `js/kid.js` (name, Chinese name, cover, jokes). `python3 tools/build_kids.py <kid>`
+  creates `dist/<kid>/` (own icon/manifest/sw) to deploy as `<kid>paint`. Kids: julia, elisa, yasmin, valentina.
+- Coloring pages: `python3 tools/build_pages.py [ids]` (art/NN.jpg → pages/NN.png regions + NN.tex.jpg texture + NN.json targets).
+- Painter portraits: painters/<key>.webp (HuggingFace Z-Image, same cartoon style); without an image it uses `cartoonSVG` from js/util.js.
+  Missing: all except mondrian, kandinsky, afklint, klee, vangogh → generate when the quota allows and set `img:` in js/data.js.
+- art/, pages/, kids/, painters/, dist/ do not go to git (public repo).
