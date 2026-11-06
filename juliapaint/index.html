@@ -183,6 +183,16 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 .cicon{font-size:110px;line-height:1;animation:jel 1s infinite}
 .cname{font-family:"Arcade";font-size:20px;color:#c41d6e}.cpt{font-size:24px}.czh{font-size:18px}.czh b{font-size:26px;color:#c41d6e}
 .cfaces{font-size:30px;animation:bob .3s infinite alternate}
+
+.pfloat{position:absolute;right:8px;top:8px;display:flex;gap:6px;z-index:5}
+.pfloat .ibtn{min-width:44px;height:44px;font-size:20px}
+.pfloat .donebtn{height:44px}
+#bwrap{min-width:0}#bname{font-size:14px;line-height:1.1;white-space:nowrap;text-align:left}
+.potwrap{position:relative;width:100%;flex-shrink:0}
+.parr{position:absolute;top:8px;width:30px;height:50px;border-radius:14px;background:#ff4fa0;color:#fff;font-size:16px;z-index:3;box-shadow:0 3px 0 #a3125a;display:none}
+.parr.on{display:block}
+.parr.l{left:2px;animation:nudgeL 1s ease-in-out infinite}.parr.r{right:2px;animation:nudgeR 1s ease-in-out infinite}
+@keyframes nudgeR{50%{transform:translateX(5px)}}@keyframes nudgeL{50%{transform:translateX(-5px)}}
 </style>
 </head>
 <body>
@@ -201,14 +211,13 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 <section id="paint" class="screen">
   <div class="bar"><button class="ibtn" id="pback">🏛️</button><div class="ttl" id="ptitle"></div><div id="pscore"></div><button id="gwrap"><img id="gthumb" alt=""></button></div>
   <div class="progress"><div id="pfill"></div></div>
-  <div id="parea"><canvas id="pcv"></canvas><canvas id="ov"></canvas></div>
+  <div id="parea"><canvas id="pcv"></canvas><canvas id="ov"></canvas><div class="pfloat"><button class="ibtn" id="zin">🔍</button><button class="donebtn" id="finishBtn">✅<span>I'm done!</span></button></div></div>
   <div class="tools">
     <button id="bwrap"><div id="brushico"><div id="btip"></div><span>🖌️</span></div><div id="bname"></div></button>
     <button id="water"><i></i><span>💧</span></button>
     <button class="ibtn" id="mixbtn">🥣</button><button class="ibtn" id="undo">↩️</button>
-    <button class="ibtn" id="zin">🔍</button><button class="donebtn" id="finishBtn">✅<span>I'm done!</span></button>
-  </div>
-  <div id="pots"></div>
+      </div>
+  <div class="potwrap"><button class="parr l" id="parrL">◀</button><div id="pots"></div><button class="parr r" id="parrR">▶</button></div>
 </section>
 <div id="gback"></div>
 <div id="gbig"><button id="gx">✕</button><img alt=""><div class="gh">✋ drag me · tap outside to close</div></div>

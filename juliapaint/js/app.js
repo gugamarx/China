@@ -192,13 +192,17 @@ function renderScore() {
 function renderPots() {
   const f = found(), need = new Set(colorsOf(P8.meta)); const order = [...BASE, ...f.filter(c => !BASE.includes(c))];
   $("#pots").innerHTML = order.map(c => `<button class="pot${need.has(c) && mode === "exact" ? " want" : ""}" data-c="${c}"><i style="background:${PAINT[c][0]}"></i><small>${PAINT[c][1]}</small></button>`).join("");
-  $$("#pots .pot").forEach(b => b.onclick = () => dip(b.dataset.c, b));
+  $$("#pots .pot").forEach(b => b.onclick = () => dip(b.dataset.c, b)); setTimeout(potArrows, 50);
 }
 function renderBrush() {
   const c = P8.brush; $("#btip").style.background = c ? PAINT[c][0] : "#f2ece0";
   $("#bname").innerHTML = c ? `${PAINT[c][1]}<br><b>${PAINT[c][2]}</b> ${pyHTML(PAINT[c][3])}` : "clean";
   $("#water i").style.opacity = Math.min(.85, P8.water * .14); $("#water i").style.background = P8.lastWash ? PAINT[P8.lastWash][0] : "transparent";
 }
+function potArrows() { const p = $("#pots"); $("#parrL").classList.toggle("on", p.scrollLeft > 6); $("#parrR").classList.toggle("on", p.scrollLeft + p.clientWidth < p.scrollWidth - 6); }
+$("#pots").addEventListener("scroll", potArrows); addEventListener("resize", potArrows);
+$("#parrL").onclick = () => { $("#pots").scrollBy({ left: -200, behavior: "smooth" }); Audio8.fx("tap"); };
+$("#parrR").onclick = () => { $("#pots").scrollBy({ left: 200, behavior: "smooth" }); Audio8.fx("tap"); };
 let dirtyWarned = false;
 async function dip(c, btn) {
   const [x, y] = centerOf(btn); Audio8.fx("dip");
