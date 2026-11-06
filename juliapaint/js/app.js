@@ -6,13 +6,13 @@ document.title = `${NAME} Paint`;
 const UI = {
   busy: false,
   async go(id, color, onSwap) {
-    if (UI.busy) return; UI.busy = true; Voice.cancel();
+    if (UI.busy) return false; UI.busy = true; Voice.cancel();
     const w = $("#wipe"); w.style.background = color || pick(Object.values(PAINT).map(p => p[0]).slice(0, 10)); w.style.display = "block"; Audio8.fx("splash");
     w.animate([{ clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)" }], { duration: 380, easing: "ease-in", fill: "forwards" });
     await sleep(390); $$(".screen").forEach(s => s.classList.toggle("on", s.id === id)); UI.cur = id;
     if (onSwap) try { await onSwap(); } catch (e) { console.error(e); }
     await sleep(80); w.animate([{ clipPath: "circle(75% at 50% 50%)" }, { clipPath: "circle(0% at 50% 50%)" }], { duration: 420, easing: "ease-out", fill: "forwards" });
-    await sleep(430); w.style.display = "none"; UI.busy = false;
+    await sleep(430); w.style.display = "none"; UI.busy = false; return true;
   },
   bubble(target, html, ms = 2800) {
     $$(".bubble").forEach(b => b.remove()); const b = el("div", "bubble", html); document.body.appendChild(b);
@@ -79,7 +79,8 @@ function renderMuseum() {
 let cur = null, mode = "exact";
 async function meet(a) {
   cur = a; const P = PAINTERS[a.p], C = COUNTRY[P.flag], perfect = a.need === 100;
-  await UI.go("meet", null, async () => {
+  if (UI.busy) return;
+  const went = await UI.go("meet", null, async () => {
     Audio8.play(a.music, a.amb);
     const meta = await getMeta(a); const cols = colorsOf(meta);
     $("#meetBox").innerHTML = `<div class="mtop"><div class="painter jump">${painterHTML(a.p)}</div>
@@ -94,6 +95,7 @@ async function meet(a) {
     $("#goExact").onclick = () => { mode = "exact"; startPaint(a); };
     if (!perfect) $("#goFree").onclick = () => { mode = "free"; startPaint(a); };
   });
+  if (!went || !$(".painter")) return;
   const lines = [`${P.hi}, ${NAME}! I am ${P.n}!`, `I am from ${C[0]}!`, a.say]; if (KID.jokes[a.i]) lines.push(KID.jokes[a.i]);
   $(".painter").classList.add("talk"); const items = [];
   for (const l of lines) { items.push([l, P.v, { rate: .92 }]); if (l.startsWith("I am from")) items.push([C[1], "zh-CN"]); }
