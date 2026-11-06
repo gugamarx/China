@@ -31,7 +31,8 @@ Julia's Chinese name: 朱莉娅 (Zhū lì yà). Avoid swimwear photos on the ope
 (room 1 free, 2-3 ≥50%, 4 ≥60%, 5 ≥75%, Vermeer and Mona Lisa 100%). Dirty-brush mixing, water, mixing table, draggable answer key.
 - Multiple nieces: everything personal is in `js/kid.js` (name, Chinese name, cover, jokes). `python3 tools/build_kids.py <kid>`
   creates `dist/<kid>/` (own icon/manifest/sw) to deploy as `<kid>paint`. Kids: julia, elisa, yasmin, valentina.
-- Coloring pages: `python3 tools/build_pages.py [ids]` (art/NN.jpg → pages/NN.png regions + NN.tex.jpg texture + NN.json targets).
+- v3 (current): artworks in `art2/<key>.jpg`; `python3 tools/build_v3.py [keys]` → `pages3/` (16-bit region png, painter lines, orig, json).
+  Area targets per painting in JOBS; colour naming in tools/kidcolor.py; painting data/hidden words in js/art3.js. (v2 pipeline build_pages.py is legacy.)
 - Painter portraits: painters/<key>.webp (HuggingFace Z-Image, same cartoon style); without an image it uses `cartoonSVG` from js/util.js.
   Missing: all except mondrian, kandinsky, afklint, klee, vangogh → generate when the quota allows and set `img:` in js/data.js.
 - art/, pages/, kids/, painters/, dist/ do not go to git (public repo).
