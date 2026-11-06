@@ -1,7 +1,11 @@
 # Notes for Claude: Julia's games (owner: Gustavo)
 
 Julia is 6 years old and plays on an Android phone (Chrome, home-screen shortcut).
-Already published: `julia/` → julia-china-trip.netlify.app and `pink/` → julia-pink.netlify.app.
+Already published: `julia/` → julia-china-trip.netlify.app, `pink/` → julia-pink.netlify.app,
+`jujujump/` → jujujump.netlify.app (the main hub: island map, 11 games, Panda's house, shared word bank
+`js/words.js` with en/zh/pinyin/pt + invisible spaced repetition `SRS`). New games go into Juju Jump as new islands
+(GAMES.push in js/games*.js + id in ISLANDS in js/hub.js) and new words go into js/words.js.
+Julia's Chinese name: 朱莉娅 (Zhū lì yà). Avoid swimwear photos on the open link.
 
 ## Standards for every new game/project
 - **Language:** UI in simple English, big buttons with emoji; English voice (speechSynthesis en-US).
