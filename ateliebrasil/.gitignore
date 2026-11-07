@@ -5,3 +5,5 @@ dist/
 icons/
 __pycache__/
 *.zip
+comfy/teste/
+comfy/out/
