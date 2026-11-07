@@ -34,29 +34,39 @@ table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px
 #exp .box{background:#fff;border-radius:16px;max-width:760px;width:100%;max-height:92vh;display:flex;flex-direction:column;padding:12px;gap:8px}
 #exp textarea{flex:1;min-height:40vh;font:12px/1.35 ui-monospace,Menlo,monospace}
 ul{padding-left:20px}li{margin:4px 0}
+.lb{display:flex;align-items:center;gap:6px}.lb .dur{font-weight:600;text-transform:none;letter-spacing:0;color:#a08c74}
+.ouv{padding:2px 8px;font-size:13px;border-radius:999px;background:#fff3c4}
+.lendo{outline:3px solid #ffd23f;background:#fffbe6!important}
+#play{white-space:nowrap;position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:8;background:#2a1a10;color:#fff;border-radius:999px;padding:8px 14px;display:none;gap:10px;align-items:center;font-weight:700;box-shadow:0 6px 18px #0005}
+#play.on{display:flex}#play button{background:#ffd23f;padding:6px 12px}
+#semvoz{display:none;background:#fff0f0;border:2px solid #f3b3b3;border-radius:12px;padding:8px 10px;margin:8px 0;font-size:14px}
 </style></head><body>
 <header><h1>🎨 Ateliê Brasil: mesa de decisões</h1>
 <nav><a href="#dec">Decisões</a><a href="#regras">Regras da arte</a><a href="#telas">Telas</a><a href="#av">Avatares</a><a href="#voz">Voz</a><a href="#fim">Enviar</a></nav>
 <div class="bar"><span id="cnt"></span><div class="prog"><i id="pg"></i></div><span class="sp"></span><button class="p" id="bExp">📤 Exportar</button></div></header>
 <main>
-<p class="small">Mude o que quiser nos textos (fica laranja), marque ✅ Aprovar ou 🔁 Refazer e escolha as imagens para conferir o tamanho. No fim, toque em <b>📤 Exportar</b> e cole o resultado no chat. As imagens você manda no chat com o nome indicado em cada cartão.</p>
+<div id="semvoz">🔇 Este navegador não tem voz, então o 🔈 não lê. Baixe o arquivo e abra no Chrome do celular ou do computador para ouvir.</div>
+<p class="small">Toque em 🔈 para ouvir um texto, ou em ▶️ para ouvir o cartão na ordem do jogo (o campo lido fica amarelo). Mude o que quiser nos textos (fica laranja), marque ✅ Aprovar ou 🔁 Refazer e escolha as imagens para conferir o tamanho. No fim, toque em <b>📤 Exportar</b> e cole o resultado no chat. As imagens você manda no chat com o nome indicado em cada cartão.</p>
 <section id="dec"><h2>Decisões</h2><div id="decs"></div></section>
 <section id="regras"><h2>Regras da arte</h2><div class="card"><ul id="regs"></ul></div></section>
 <section id="telas"><h2>Telas</h2><div id="tls"></div></section>
 <section id="av"><h2>Avatares (9)</h2><p class="small">A tela de escolha vira uma grade 3×3 de quadrados. Cada menina pode escolher qualquer uma.</p><div id="avs"></div></section>
 <section id="voz"><h2>Voz: custo para o jogo inteiro (~30 mil caracteres, ~35 min)</h2><div class="card"><table id="vz"></table><p class="small">A escolha fica em Decisões → Motor de voz. Sugestão: gerar 3 falas de teste (Curupira, Boi, Gralha) nos dois favoritos e decidir de ouvido.</p></div></section>
 <section id="fim"><h2>Enviar</h2><div class="card"><label>Observações gerais</label><textarea id="geral" rows="3" placeholder="Qualquer coisa que não caiba nos cartões"></textarea>
-<div class="btns"><button class="p" id="bExp2">📤 Exportar decisões</button><button id="bImp">📥 Importar</button><button id="bZera">🗑️ Limpar tudo</button></div></div></section>
+<div class="btns"><button class="p" id="bExp2">📤 Exportar para o chat</button><button id="bImp">📥 Importar</button><button id="bZera">🗑️ Limpar tudo</button></div></div></section>
 </main>
+<div id="play"><span id="playT">lendo…</span><button id="bStop">⏹ Parar</button></div>
 <div id="exp"><div class="box"><b id="expT">Copie e cole no chat</b><textarea id="expTx"></textarea>
-<div class="btns"><button class="p" id="bCopy">📋 Copiar</button><button id="bDown">💾 Baixar .json</button><button id="bApply" style="display:none">✔ Importar este texto</button><button id="bClose">Fechar</button></div></div></div>
+<div class="btns"><button class="p" id="bCopy">📋 Copiar para colar no chat</button><button id="bApply" style="display:none">✔ Importar este texto</button><button id="bClose">Fechar</button></div></div></div>
 <script>
 "use strict";
 const DATA = /*DATA*/null;
+const $$ = s => [...document.querySelectorAll(s)];
 const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const KEY = "mesa_atelie_v1";
+const KEY = "mesa_atelie_v2";
 let S = { dec: {}, it: {}, geral: "" };
 try { S = Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { }
+if (!Object.keys(S.dec).length && DATA.preset) for (const [id, d] of Object.entries(DATA.preset.decisoes || {})) S.dec[id] = { v: d.escolha, n: d.obs };   // o que você já respondeu
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } count(); };
 const it = k => S.it[k] || (S.it[k] = { st: "", nota: "", mud: {}, img: null });
 const CAMPOS = [["nome", "Nome", 1], ["adv", "Adivinha (O que é, o que é?)", 2], ["fala", "Fala de chegada", 2], ["lenda", "Lenda", 3],
@@ -86,21 +96,47 @@ function card(t, av) {
   const head = av ? `<span class="e">👧</span><span>${esc(t.quem)}<br><span class="tag">avatar-${k}.jpg · ${esc(t.tam)}</span></span>`
     : `<span class="e">${t.e}</span><span>${esc(t.nome)}<br><span class="tag">${esc(t.regNome)}${t.ufNome ? ` · mora ${t.prep} ${esc(t.ufNome)}` : ""}${t.estado ? ` · ${t.estado}` : ""}</span></span>`;
   let body = "";
-  if (tx) body += CAMPOS.map(([f, l, r]) => `<label>${l}</label>${r === 1 ? `<input type="text" data-f="${f}">` : `<textarea data-f="${f}" rows="${r}"></textarea>`}`).join("");
+  if (tx) body += `<div class="btns" style="margin-top:4px"><button class="ouvC">▶️ Ouvir o cartão na ordem do jogo</button></div>` + CAMPOS.map(([f, l, r]) => `<label class="lb">${l}${LER[f] ? ` <button class="ouv" data-ler="${f}">🔈</button><span class="dur" data-dur="${f}"></span>` : ""}</label>${r === 1 ? `<input type="text" data-f="${f}">` : `<textarea data-f="${f}" rows="${r}"></textarea>`}`).join("");
   if (t.prompt) body += `<label>Prompt (${esc(t.tam)})</label><textarea class="prompt" data-f="prompt"></textarea><div class="btns"><button class="cp">📋 Copiar prompt</button></div>` + imgSlot(k, av ? `avatar-${k}.jpg` : `${k}.jpg`, av);
   return `<details class="card" data-k="${k}"><summary>${head}<span class="st"></span></summary>${body}
   <label>Observação</label><input type="text" class="nt" placeholder="opcional">
   <div class="btns"><button class="a">✅ Aprovar</button><button class="r">🔁 Refazer</button></div></details>`;
 }
 const ORIG = {};
+/* ---- leitura em voz alta, campo a campo (pari passu) ---- */
+const LER = { adv: "narr", fala: "pers", lenda: "pers", parlenda: "narr", fig: "narr", rima: "narr", palavras: "narr" };
+const SS = window.speechSynthesis, temVoz = !!SS && typeof SpeechSynthesisUtterance !== "undefined";
+let vozes = []; const carrega = () => { try { vozes = SS.getVoices() || []; } catch (e) { } }; if (temVoz) { carrega(); SS.onvoiceschanged = carrega; } else document.getElementById("semvoz").style.display = "block";
+let leitura = 0;
+const textoDe = (f, v) => f === "palavras" ? v.split("\n").map(l => l.replace(/[^\p{L}\- ]/gu, "").trim().split("-").join("... ")).join(". ")
+  : f === "fig" ? v.split("\n").map(l => l.split("—").pop()).join(" ") : f === "rima" ? `O que rima com ${v.toLowerCase()}?` : v;
+function falar(txt, quem) {
+  return new Promise(res => { if (!temVoz || !txt.trim()) return res();
+    const u = new SpeechSynthesisUtterance(txt), v = vozes.find(x => /pt[-_]BR/i.test(x.lang)) || vozes.find(x => /^pt/i.test(x.lang));
+    u.lang = v ? v.lang : "pt-BR"; if (v) u.voice = v; u.rate = quem === "pers" ? 1 : .95; u.pitch = quem === "pers" ? 1.25 : 1.05;
+    u.onend = u.onerror = () => res(); SS.speak(u); });
+}
+async function lerCampos(c, fs) {
+  const id = ++leitura; try { SS.cancel(); } catch (e) { } if (!temVoz) { document.getElementById("semvoz").scrollIntoView({ block: "center" }); return; }
+  $("#play").classList.add("on");
+  for (const f of fs) { if (id !== leitura) break; const e = c.querySelector(`[data-f="${f}"]`); if (!e || !e.value.trim()) continue;
+    e.classList.add("lendo"); e.scrollIntoView({ behavior: "smooth", block: "center" }); $("#playT").textContent = "lendo: " + (CAMPOS.find(x => x[0] === f) || [f, f])[1].split("(")[0];
+    await new Promise(r => setTimeout(r, 120)); await falar(textoDe(f, e.value), LER[f]); e.classList.remove("lendo"); }
+  if (id === leitura) $("#play").classList.remove("on");
+}
+document.getElementById("bStop").onclick = () => { leitura++; try { SS.cancel(); } catch (e) { } $$(".lendo").forEach(e => e.classList.remove("lendo")); $("#play").classList.remove("on"); };
+const dur = v => Math.max(1, Math.round(v.length / 14));
 function wire(root, list, av) {
   list.forEach(t => {
     const c = root.querySelector(`[data-k="${t.k}"]`), s = it(t.k), o = ORIG[t.k] = { ...(t.textos || {}), prompt: t.prompt };
     c.querySelectorAll("[data-f]").forEach(e => {
       const f = e.dataset.f; e.value = f in s.mud ? s.mud[f] : (o[f] ?? "");
-      const upd = () => { if (e.value === (o[f] ?? "")) delete s.mud[f]; else s.mud[f] = e.value; e.classList.toggle("mod", f in s.mud); paint(c, s); save(); };
-      e.oninput = upd; e.classList.toggle("mod", f in s.mud);
+      const dd = c.querySelector(`[data-dur="${f}"]`), sd = () => { if (dd) dd.textContent = e.value.trim() ? `~${dur(textoDe(f, e.value))} s` : ""; };
+      const upd = () => { if (e.value === (o[f] ?? "")) delete s.mud[f]; else s.mud[f] = e.value; e.classList.toggle("mod", f in s.mud); sd(); paint(c, s); save(); };
+      e.oninput = upd; e.classList.toggle("mod", f in s.mud); sd();
     });
+    c.querySelectorAll(".ouv").forEach(b => b.onclick = ev => { ev.preventDefault(); lerCampos(c, [b.dataset.ler]); });
+    const oc = c.querySelector(".ouvC"); if (oc) oc.onclick = () => lerCampos(c, ["adv", "fala", "lenda", "parlenda", "rima"]);
     const cp = c.querySelector(".cp"); if (cp) cp.onclick = () => copiar(c.querySelector("[data-f=prompt]").value, cp);
     const n = c.querySelector(".nt"); n.value = s.nota || ""; n.oninput = () => { s.nota = n.value; save(); };
     c.querySelector("button.a").onclick = () => { s.st = s.st === "ok" ? "" : "ok"; paint(c, s); save(); };
@@ -147,7 +183,7 @@ function resumo() {
     out.cartoes[k] = { status: s.st || "", ...(s.nota ? { obs: s.nota } : {}), ...(Object.keys(s.mud).length ? { mudou: s.mud } : {}), ...(s.img ? { imagem: s.img } : {}) }; }
   return JSON.stringify(out, null, 1);
 }
-const abrir = (tx, imp) => { $("#expTx").value = tx; $("#expT").textContent = imp ? "Cole aqui um resumo exportado antes" : "Copie e cole no chat"; $("#bApply").style.display = imp ? "" : "none"; $("#bCopy").style.display = $("#bDown").style.display = imp ? "none" : ""; $("#exp").classList.add("on"); };
+const abrir = (tx, imp) => { $("#expTx").value = tx; $("#expT").textContent = imp ? "Cole aqui um resumo exportado antes" : "Copie e cole no chat"; $("#bApply").style.display = imp ? "" : "none"; $("#bCopy").style.display = imp ? "none" : ""; $("#exp").classList.add("on"); };
 $("#bExp").onclick = $("#bExp2").onclick = () => abrir(resumo());
 $("#bImp").onclick = () => abrir("", true);
 $("#bClose").onclick = () => $("#exp").classList.remove("on");
@@ -162,5 +198,4 @@ function copiar(tx, b) {
   try { navigator.clipboard.writeText(tx).then(done, fb); } catch (e) { fb(); }
 }
 $("#bCopy").onclick = () => { $("#expTx").select(); copiar($("#expTx").value, $("#bCopy")); };
-$("#bDown").onclick = () => { try { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([$("#expTx").value], { type: "application/json" })); a.download = "mesa-atelie.json"; a.click(); } catch (e) { } };
 </script></body></html>

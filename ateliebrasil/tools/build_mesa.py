@@ -3,7 +3,10 @@ espaço para as imagens, decisões de arte e de voz; exporta um JSON para colar 
 uso: python3 tools/build_mesa.py"""
 import os, sys, json, subprocess
 sys.path.insert(0, os.path.dirname(__file__))
-from arte_spec import TAM, BASE, BASE_LADO, BASE_AVATAR, ART, RASCUNHOS, PALAVRAS_NOVAS, AVATARES, ORDEM_REG, NOME_REG
+from arte_spec import TAM, BASE, BASE_LADO, BASE_AVATAR, ART, AVATARES, ORDEM_REG, NOME_REG
+from textos_v2 import T as TX
+from comfy_spec import VOZES
+UF_RASCUNHO = {"caju": "rn", "maracatu": "pe", "ciranda": "pe", "tuiuiu": "mt", "cavalhadas": "go", "pequi": "go", "mula": "es", "junina": "sp", "gralha": "pr", "teiniagua": "rs", "ervamate": "sc"}
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 js = r'''const fs=require("fs");const g=s=>s.replace(/^(const|let) /gm,"global.");const R=process.argv[1];
@@ -20,15 +23,12 @@ def prompt_tela(k):
 
 telas = []
 for t in D["telas"]:
-    k = t["k"]; r = RASCUNHOS.get(k, {})
-    uf = t["uf"] or r.get("uf", "")
-    txt = {"adv": t["adv"] or r.get("adv", ""), "fala": t["fala"] or r.get("fala", ""), "lenda": t["lenda"] or r.get("lenda", ""),
-           "palavras": PALAVRAS_NOVAS.get(k) or t["palavras"] or r.get("palavras", []), "fig": t["fig"] or r.get("fig", []),
-           "rima": t["rima"] or r.get("rima"), "parlenda": t["parlenda"] or r.get("parlenda", [])}
+    k = t["k"]; txt = TX[k]
+    uf = t["uf"] or UF_RASCUNHO.get(k, "")
     rima = txt["rima"] or {"w": "", "ok": ["", ""], "no": [["", ""], ["", ""]]}
     telas.append({"k": k, "nome": t["nome"], "e": t["e"], "reg": t["reg"], "regNome": NOME_REG[t["reg"]],
                   "uf": uf, "ufNome": D["uf"].get(uf, ""), "prep": UF_PREP.get(uf, "em"),
-                  "estado": "rascunho novo" if (t["breve"] and k in RASCUNHOS) else ("texto pronto" if t["adv"] else ""),
+                  "estado": "texto novo" if t["breve"] else "texto encurtado", "voz": f"{VOZES[txt['voz']]['preset']}, sotaque {VOZES[txt['voz']]['sotaque']}",
                   "arte": k in ART, "prompt": prompt_tela(k) if k in ART else "", "tam": TAM["tela"] if k in ART else "gerado pelo jogo (mapa)",
                   "textos": {"nome": t["nome"], "adv": txt["adv"], "fala": txt["fala"], "lenda": txt["lenda"],
                              "palavras": "\n".join(f"{a} {b}" for a, b in txt["palavras"]),
@@ -56,13 +56,11 @@ DEC = [
  {"id": "avatares", "q": "Avatares", "ops": [["grade9", "9 avatares, escolha em grade 3×3 de quadrados (recomendado)", "Cada menina escolhe qualquer uma."], ["carrossel", "9 avatares em carrossel", ""]]},
  {"id": "encontre", "q": "\"Encontre\" no desenho depois de terminar", "ops": [["fora", "Fora (já tirei)", "Depois do PRONTO vem só o 'Monte o nome'."], ["volta", "Voltar com ele", ""]]},
  {"id": "rima", "q": "Pergunta da rima", "ops": [["lida", "Sem botão 🔈: a pergunta é lida sozinha e tocar nela lê de novo (já fiz)", ""], ["botao", "Voltar o botão", ""]]},
- {"id": "voz", "q": "Motor de voz", "ops": [
-   ["elevenlabs", "ElevenLabs (Eleven v3 ou Multilingual v2)", "Melhor expressão e cadência; vozes brasileiras prontas e Voice Design para criar cada personagem. Starter US$ 6/mês (30 mil créditos ≈ uma passada no jogo inteiro); Creator US$ 22/mês (121 mil, dá para refazer falas). Você já usou nos podcasts da China."],
-   ["gemini", "Gemini TTS (Google)", "Dirige estilo, sotaque e ritmo por texto ('fale como uma vovó paraense contando história'). Cerca de US$ 0,50 para o jogo inteiro."],
-   ["openai", "OpenAI gpt-4o-mini-tts", "Também aceita instruções de tom e sotaque, ~US$ 0,015 por minuto (~US$ 0,50 o jogo todo). Em português às vezes soa com sotaque estrangeiro."],
-   ["chirp", "Google Chirp 3 HD", "Natural, pouco controle de sotaque. US$ 30 por milhão de caracteres, com 1 milhão grátis por mês: na prática, grátis."],
-   ["azure", "Azure Neural (Microsoft)", "Muitas vozes pt-BR, controle fino por SSML. US$ 15 por milhão; 500 mil caracteres grátis por mês: grátis para nós."],
-   ["navegador", "Continuar com a voz do celular", "Grátis, mas robótica, muda de celular para celular e não existe em alguns apps."]]},
+ {"id": "voz", "q": "Motor de voz (no Comfy Cloud)", "ops": [
+   ["eleven_v4", "ElevenLabs eleven_v4 nos personagens e lendas + v4 turbo nas falas curtas (recomendado)", "O mais expressivo, segue a direção de sotaque e emoção entre colchetes. O jogo inteiro (639 falas) sai por volta de US$ 9 em créditos do Comfy."],
+   ["fish", "Fish Audio s2.1-pro com vozes da biblioteca fish.audio", "Mais vozes diferentes (diversidade) e bem mais barato (~US$ 0,50), mas qualidade varia de voz para voz."],
+   ["misto", "Misto: ElevenLabs na narradora, Fish nos personagens", "Narradora sempre igual e bonita; personagens com vozes regionais variadas."]]},
+ {"id": "norte_oi", "q": "Saudação do Norte (no lugar de \"Égua!\")", "ops": [["maninha", "MANINHA!", "Bem paraense e carinhoso."], ["oi_mana", "OI, MANA!", ""], ["vixe", "VIXE!", "Mais nordestino."]]},
  {"id": "voz_modo", "q": "Como a voz entra no jogo", "ops": [
    ["mp3", "Gravar tudo uma vez em MP3 dentro do jogo (recomendado)", "Funciona offline, igual em todo celular, sem chave nem custo depois. O jogo tem cerca de 30 mil caracteres de fala (~35 minutos)."],
    ["ao_vivo", "Gerar na hora pela internet", "Precisa de chave de API no jogo e internet; custo a cada uso."]]},
@@ -91,7 +89,8 @@ REGRAS = [
  "Para os blocos saírem contíguos: se uma área sair com duas cores ou com sombra, peça de novo com 'flat colors, no shading, closed outlines'. Depois eu confiro cada uma na prévia de áreas antes de entrar no jogo.",
 ]
 
-data = {"decisoes": DEC, "telas": telas, "avatares": avs, "voz": VOZ, "regras": REGRAS, "base": BASE, "baseLado": BASE_LADO, "tam": TAM}
+PRESET = json.load(open(f"{ROOT}/mesa/respostas_1.json"))
+data = {"preset": PRESET, "decisoes": DEC, "telas": telas, "avatares": avs, "voz": VOZ, "regras": REGRAS, "base": BASE, "baseLado": BASE_LADO, "tam": TAM}
 
 # ---------- PROMPTS.md ----------
 L = ["# Ateliê Brasil: prompts das artes", "",

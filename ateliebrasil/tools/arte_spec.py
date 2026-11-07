@@ -4,13 +4,19 @@ AVATARES = as 9 pintoras. Os textos das telas que já existem vêm do js/lendas.
 
 TAM = {"tela": "1024 × 1536 px (retrato 2:3)", "avatar": "1024 × 1024 px (quadrado)", "capa": "1024 × 1536 px (retrato 2:3)"}
 
-BASE = ("Children's coloring-book illustration, ONE single image, portrait 2:3 (1024x1536). Pure plain white background, no scenery, no frame, no border. "
-        "One cute Brazilian folklore character for 6-year-olds, friendly and smiling, never scary, full body, centered, filling about 80% of the image height, "
-        "with one small companion next to it and a small simple patch of ground. "
+# cena padrão (decisão: paisagem simples de céu, SEMPRE no mesmo lugar, para o jogo achar e animar sol, nuvem e montanha)
+CENA = ("BACKGROUND, always the same simple layout: a flat light-blue sky; a round yellow SUN in the TOP-RIGHT corner with 8 separate "
+        "triangular rays around it (each ray its own closed shape); ONE simple white puffy CLOUD in the TOP-LEFT corner; ONE low rounded "
+        "green MOUNTAIN on the horizon behind the character; flat ground at the bottom. Nothing else in the background.")
+BASE = ("Children's coloring-book illustration, ONE single image, portrait 2:3 (1024x1536), no frame, no border. " + CENA + " "
+        "FOREGROUND: one cute Brazilian folklore character for 6-year-olds, friendly and smiling, never scary, full body, centered, "
+        "filling about 70% of the image height, with one small companion next to it. "
         "STYLE: flat solid colors only (every area is ONE flat color: no gradients, no shading, no highlights, no texture, no patterns), "
-        "thick uniform black outlines that fully close every shape with no gaps, large simple shapes, at most about 40 color areas, "
+        "thick uniform black outlines that fully close every shape with no gaps, large simple shapes, at most about 45 color areas, "
         "no tiny details (no freckles, no single hair strands, no small dots, no thin grass blades). "
         "Every color area must be completely enclosed by black outline. No text, no letters, no numbers, no watermark.")
+NEGATIVO = ("gradient, shading, shadow, highlight, glow, texture, halftone, pattern, tiny details, thin lines, sketch, broken outline, gaps in outline, "
+            "realistic, photo, 3d, text, letters, words, watermark, signature, frame, border, two suns, many clouds, scary, horror, blood")
 
 BASE_LADO = ("Side-by-side children's coloring book page, landscape 3:2 (1536x1024), pure white background: LEFT half is the full-color version, "
              "RIGHT half is the EXACT same drawing as black line art only (same pose, same size, same position, same outlines). "
@@ -24,8 +30,8 @@ BASE_AVATAR = ("Square avatar portrait 1:1 (1024x1024) of a cute 6-year-old Braz
 
 # objs = o que tem que aparecer separado no desenho (vira palavra escondida); comp = companheiro (vira figurinha)
 ART = {
- "curupira": "Curupira: a friendly boy guardian of the Amazon forest with bright orange flame-shaped hair and a leaf skirt. His FEET POINT BACKWARDS (heels in front, toes behind him). Companion: a golden lion tamarin. Clearly separate shapes: flame hair, a small tree, one big leaf, both backwards feet, one open hand.",
- "iara": "Iara: a sweet mermaid girl with very long brown hair and a pink flower in her hair, green fish tail, sitting on a smooth gray rock at the edge of a little blue water. Companion: a small orange fish. Clearly separate shapes: the flower, the tail, the rock, a big seashell, the long hair.",
+ "curupira": "Curupira: a friendly boy guardian of the Amazon forest with bright orange flame-shaped hair and a leaf skirt. His FEET POINT BACKWARDS (heels in front, toes behind him). Companion: a small squirrel monkey (macaco-de-cheiro). Clearly separate shapes: flame hair, a small tree, one big leaf, both backwards feet, one open hand.",
+ "iara": "Iara: a sweet mermaid girl with very long brown hair and a pink flower in her hair, green fish tail, sitting on a smooth gray rock at the edge of a little blue water. Companion: a small yellow tucunare fish with a round spot on its tail. Clearly separate shapes: the flower, the tail, the rock, a big seashell, the long hair.",
  "boto": "Boto cor-de-rosa: a smiling pink Amazon river dolphin wearing a white hat with a black band, jumping out of a big blue wave. Companion: a pink water lily on a round leaf. Clearly separate shapes: the hat, the wave, the flower, three big water drops.",
  "caipora": "Caipora: a small friendly Indigenous forest guardian girl with spiky red hair, a leaf skirt and a feather in her hair, riding a cute wild boar (caititu). Companion: a blue macaw. Clearly separate shapes: the boar, the macaw, a big feather, the red hair, one big leaf.",
  "vitoria": "Vitoria-regia: a giant round Amazon water lily leaf with a raised rim, holding one big flower with pink and white petals and a yellow center. Companion: a smiling little green frog sitting on the leaf. Clearly separate shapes: the flower, five big petals, the frog, the leaf, two water drops.",
@@ -33,7 +39,7 @@ ART = {
  "matinta": "Matinta Perera: a sweet old lady with long wavy gray hair, a wide purple hat, a purple dress with big yellow moons and stars, a red cape and a wooden walking cane. Companion: a small black anu bird on her shoulder. Clearly separate shapes: the hat, the bird, the cane, one big star, one big moon.",
  "boi": "Bumba meu Boi: a smiling brown ox (folk costume) with small white horns, a big colorful embroidered blanket decorated with big stars and triangles, and colorful ribbons hanging from the head. Companion: a small cazumba mask. Clearly separate shapes: a big star, one ribbon, the blanket, a horn, the snout.",
  "fulozinha": "Comadre Fulozinha: a small forest girl with VERY long black hair down to her feet, a green leaf dress and a crown of small flowers, whistling. Companion: a sabia thrush bird. Clearly separate shapes: the long hair, the dress, one foot, one big flower, the bird.",
- "caboclo": "Caboclo d'Agua: a friendly river spirit boy with brown skin, a leaf crown and a shell necklace, half inside a big blue wave of the Sao Francisco river. Companion: a small fish jumping. Clearly separate shapes: the leaf crown, the water, the necklace, one open hand, a big water drop.",
+ "caboclo": "Caboclo d'Agua: a friendly river spirit boy with brown skin, a leaf crown and a shell necklace, half inside a big blue wave of the Sao Francisco river. Companion: a spotted surubim fish jumping. Clearly separate shapes: the leaf crown, the water, the necklace, one open hand, a big water drop.",
  "caju": "Lenda do Caju: a smiling boy holding a big red-and-yellow cashew fruit with the gray nut hanging under it, next to a small cashew branch with leaves and a basket of cashews. Companion: a tiny common marmoset monkey. Clearly separate shapes: the cashew fruit, the nut, a leaf, the branch, the basket.",
  "maracatu": "Maracatu: a cheerful little Maracatu queen with a big golden crown and a wide purple cape decorated with big stars, holding a small doll (calunga). Companion: a big wooden drum (alfaia) with ropes. Clearly separate shapes: the crown, the drum, the cape, the doll, one big star.",
  "ciranda": "Ciranda: three happy children of different skin tones holding hands and dancing in a circle on a little sand patch, the girls with wide colorful skirts. Companion: a small red crab and a small coconut tree. Clearly separate shapes: the joined hands, one wide skirt, the coconut tree, the crab, a starfish.",
@@ -51,8 +57,8 @@ ART = {
  "gralha": "Gralha-azul: an azure jay bird (bright blue body, black head and black crest) burying a pine nut (pinhao) in a small mound of brown earth, with a young araucaria pine seedling growing beside it. Clearly separate shapes: the pine nut, one wing, the beak, the little araucaria, the earth mound.",
  "teiniagua": "Teiniagua: a magical friendly green lizard princess with a shining red ruby on her head, at the entrance of a small sparkly cave. Companion: a gaucho boy with a hat and a red scarf looking amazed. Clearly separate shapes: the ruby, the cave, the boy's hat, the lizard tail, one sparkle star.",
  "ervamate": "Lenda da Erva-mate: a smiling Guarani girl (Yari) holding a branch of yerba mate with shiny green leaves, beside a kind old grandfather holding a gourd (cuia) with a metal straw (bomba). Clearly separate shapes: one big leaf, the gourd, the grandfather, a small tree, one white flower.",
- "grupo": "Festa do Folclore (final challenge, may have up to 80 color areas): Saci (one leg, red cap), Curupira (orange flame hair, backwards feet), Iara (mermaid on a small rock), a cute little wolf (Lobisomem), a jaguar cub and a toucan, all dancing together in a circle, small colorful paper flags above them. Clearly separate shapes for each character.",
- "capa": "Game cover (NOT a coloring page, full color allowed but same flat cartoon style): Saci, Curupira, Iara and the pink river dolphin painting together with big brushes, colorful paint splashes, an empty white space in the upper third for the title. No text.",
+ "grupo": "Festa do Folclore (final challenge, may have up to 70 color areas): six famous characters dancing together in ONE simple circle, holding hands or wings, nothing else: Curupira (boy with orange flame hair, feet pointing backwards), Iara (mermaid sitting on a small rock), Bumba meu Boi (smiling ox with a colorful star blanket), Tuiuiu (tall jabiru stork with a red neck band), Saci (Black boy with ONE leg and a red cap) and Boitata (friendly fire snake with one head). A short string of 5 big colorful paper flags above them. Each character clearly separate, no overlapping crowd.",
+ "capa": "Game cover (NOT a coloring page: fully colored, same flat cartoon style and thick outlines): Saci, Curupira, Iara, Bumba meu Boi and a little girl painter with a big brush painting a giant map of Brazil together, colorful paint splashes, an empty light sky area in the upper third for the title. No text.",
 }
 
 # textos das telas que ainda não existem (rascunho para aprovar/editar na mesa)
