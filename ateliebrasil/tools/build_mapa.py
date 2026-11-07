@@ -1,5 +1,5 @@
 """Página de colorir do MAPA DO BRASIL (uma área por estado; o DF entra junto com Goiás).
-Desenha o js/mapa.js no Chrome (Playwright) e gera pages/mapa.{png,lines.jpg,orig.jpg,json} no mesmo formato das outras.
+Desenha o js/mapa.js no Chrome (Playwright) e gera pages/mapa.{lines.jpg,orig.jpg,json} no mesmo formato das outras.
 Cada estado tem a cor da sua região; o json traz "words" (nome do estado em sílabas) para as palavras escondidas.
 uso: python3 tools/build_mapa.py"""
 import os, re, json, asyncio
@@ -50,12 +50,13 @@ def main():
         dd = cv2.distanceTransform(np.pad(m, 1).astype(np.uint8), cv2.DIST_L2, 5)[1:-1, 1:-1]; y, x = np.unravel_index(dd.argmax(), dd.shape)
         regions.append({"id": i, "c": COR[REG_OF[u]], "x": int(x), "y": int(y), "r": round(float(dd.max()), 1), "a": int(m.sum()), "uf": u})
         words.append([SIL[u], round(x / w, 3), round(y / h, 3), "📍"])
-    png = np.zeros((h, w, 3), np.uint8); png[..., 2] = ids & 255; png[..., 1] = ids >> 8
-    cv2.imwrite(f"{OUT}/mapa.png", png, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+    f = ids.ravel().astype(np.int64); cut = np.flatnonzero(np.diff(f)) + 1; st = np.r_[0, cut]
+    rle = np.stack([f[st], np.diff(np.r_[st, f.size])], 1).ravel().tolist()
+    if os.path.exists(f"{OUT}/mapa.png"): os.remove(f"{OUT}/mapa.png")
     cv2.imwrite(f"{OUT}/mapa.lines.jpg", lines, [cv2.IMWRITE_JPEG_QUALITY, 85])
     cv2.imwrite(f"{OUT}/mapa.orig.jpg", orig, [cv2.IMWRITE_JPEG_QUALITY, 88])
     used = sorted({r["c"] for r in regions})
-    json.dump({"w": w, "h": h, "cols": used, "regions": regions, "words": words}, open(f"{OUT}/mapa.json", "w"), ensure_ascii=False, separators=(",", ":"))
+    json.dump({"w": w, "h": h, "cols": used, "regions": regions, "words": words, "rle": rle}, open(f"{OUT}/mapa.json", "w"), ensure_ascii=False, separators=(",", ":"))
     print("mapa", len(regions), "estados", w, "x", h)
 
 if __name__ == "__main__":

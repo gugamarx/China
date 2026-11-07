@@ -16,9 +16,13 @@ for f in sorted(os.listdir(f"{ROOT}/kids")):
         Image.open(f"{ROOT}/kids/{f}").crop((110, 720, 850, 1460)).save(f"{ROOT}/kids/avatar-{f[6:]}", quality=90)
 for f in sorted(os.listdir(f"{ROOT}/kids")):
     if f.startswith("avatar-"):
-        ImageOps.fit(Image.open(f"{ROOT}/kids/{f}").convert("RGB"), (320, 320), Image.LANCZOS).save(f"{D}/kids/{f[:-4]}.jpg", quality=86)
-saci = Image.open(f"{ROOT}/pages/saci.orig.jpg").convert("RGB"); W, H = saci.size  # ícone: rosto do Saci
-face = saci.crop((int(W * .46), int(H * .22), int(W * .46) + int(W * .44), int(H * .22) + int(W * .44)))
+        im = Image.open(f"{ROOT}/kids/{f}").convert("RGB"); W_, H_ = im.size
+        if os.path.exists(f"{ROOT}/kids/cover-{f[7:]}"):      # avatar tirado da capa: o rosto fica à direita e um pouco abaixo -> centraliza no círculo
+            s_ = int(W_ * .74); cx, cy = int(W_ * .61), int(H_ * .56); im = im.crop((cx - s_ // 2, cy - s_ // 2, cx - s_ // 2 + s_, cy - s_ // 2 + s_))
+        ImageOps.fit(im, (320, 320), Image.LANCZOS).save(f"{D}/kids/{f[:-4]}.jpg", quality=86)
+festa = Image.open(f"{ROOT}/pages/grupo.orig.jpg").convert("RGB"); W, H = festa.size  # ícone: o Saci da Festa do Folclore
+sz_ = int(W * .3); cx, cy = int(W * .315), int(H * .27)
+face = festa.crop((max(0, cx - sz_ // 2), max(0, cy - sz_ // 2), max(0, cx - sz_ // 2) + sz_, max(0, cy - sz_ // 2) + sz_))
 for sz in (192, 512): ImageOps.fit(face, (sz, sz)).save(f"{D}/icons/icon-{sz}.png")
 json.dump({"name": "Ateliê Brasil", "short_name": "Ateliê Brasil", "start_url": "./index.html", "scope": "./", "display": "fullscreen",
            "orientation": "portrait", "background_color": "#21a050", "theme_color": "#21a050", "lang": "pt-BR",

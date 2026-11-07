@@ -152,29 +152,42 @@ const Audio8 = (() => {
 
 /* ============ VOZES em pt-BR (cada personagem com pitch e rate próprios) ============ */
 const Voice = (() => {
-  const S = window.speechSynthesis; let voices = [], gen = 0;
-  const load = () => { try { voices = S.getVoices() || []; } catch (e) { } }; if (S) { load(); S.onvoiceschanged = load; }
+  const S = window.speechSynthesis, OK = !!S && typeof SpeechSynthesisUtterance !== "undefined";
+  let voices = [], gen = 0, worked = false, fails = 0, warned = false;
+  const load = () => { try { voices = S.getVoices() || []; } catch (e) { } }; if (OK) { load(); try { S.addEventListener ? S.addEventListener("voiceschanged", load) : (S.onvoiceschanged = load); } catch (e) { } }
   const find = l => voices.find(v => v.lang && v.lang.replace("_", "-").toLowerCase() === l.toLowerCase()) || voices.find(v => v.lang && v.lang.toLowerCase().startsWith(l.slice(0, 2)));
+  const fail = () => { if (worked || warned) return; if (++fails >= 2) { warned = true; V.onFail && V.onFail(); } };
   function speak(text, lang, o = {}) {
     return new Promise(res => {
-      if (!S || !Audio8.sfxOn || !text) return res();
-      try { const u = new SpeechSynthesisUtterance(text); const v = find(lang) || find("pt-BR"); u.lang = v ? v.lang : lang; if (v) u.voice = v;
+      if (!OK) { fail(); return res(); }
+      if (!Audio8.sfxOn || !text) return res();
+      try {
+        try { S.resume(); } catch (e) { }            // Chrome no Android às vezes fica "pausado" sozinho
+        const u = new SpeechSynthesisUtterance(text); const v = find(lang) || find("pt-BR"); u.lang = v ? v.lang : lang; if (v) u.voice = v;
         u.rate = o.rate || 1; u.pitch = o.pitch || 1.1;
-        let done = false; const fin = () => { if (!done) { done = true; Audio8.duck(false); res(); } };
-        u.onend = fin; u.onerror = fin; Audio8.duck(true); S.speak(u); setTimeout(fin, 2500 + text.length * 110 / (u.rate || 1));
-      } catch (e) { res(); }
+        let done = false, started = false; const fin = () => { if (!done) { done = true; Audio8.duck(false); res(); } };
+        u.onstart = () => { started = true; worked = true; };
+        u.onend = fin; u.onerror = e => { if (e && e.error !== "interrupted" && e.error !== "canceled") fail(); fin(); };
+        Audio8.duck(true); S.speak(u);
+        setTimeout(() => { if (!started && !done && !S.speaking) { fail(); fin(); } }, 2500);
+        setTimeout(fin, 3000 + text.length * 110 / (u.rate || 1));
+      } catch (e) { fail(); res(); }
     });
   }
   /* talk([[texto, opções], ...]): para o que estava falando e fala em ordem (a não ser que algo mais novo interrompa) */
   async function talk(items) {
-    const g = ++gen; try { S && S.cancel(); } catch (e) { }
+    const g = ++gen;
+    if (OK) { let busy = false; try { busy = S.speaking || S.pending; S.cancel(); } catch (e) { } if (busy) await sleep(120); }   // falar logo depois de cancelar se perde no Chrome
     for (const [t, o] of items) { if (g !== gen) return false; await speak(t, "pt-BR", o || {}); }
     return g === gen;
   }
-  return { talk, say: (t, o) => talk([[t, o]]), get gen() { return gen; },
+  const V = { ok: OK, talk, say: (t, o) => talk([[t, o]]), get gen() { return gen; }, get worked() { return worked; }, get failed() { return warned || !OK; }, onFail: null,
     color: c => talk([[PAINT[c][1]]]),
     /* lê as sílabas devagar e depois a palavra inteira: "gor... ro... GORRO!" */
     syl: (s, o) => talk([...silabas(s).map(p => [p.toLowerCase(), { rate: .7, ...(o || {}) }]), [palavra(s).toLowerCase() + "!", { rate: .95, ...(o || {}) }]]),
-    cancel() { gen++; try { S && S.cancel(); } catch (e) { } Audio8.duck(false); },
+    cancel() { gen++; try { OK && S.cancel(); } catch (e) { } Audio8.duck(false); },
+    /* no primeiro toque: uma fala muda "destrava" a voz em alguns celulares */
+    unlock() { if (!OK || V._u) return; V._u = 1; try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "pt-BR"; S.speak(u); } catch (e) { } },
     has: l => { load(); return !!voices.find(v => v.lang && v.lang.toLowerCase().startsWith(l.slice(0, 2))); } };
+  return V;
 })();

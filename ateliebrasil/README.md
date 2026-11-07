@@ -54,19 +54,21 @@ art/ kids/ pages/ dist/   fora do git
 ```
 
 ## Ilustrações novas
-1. A imagem vem como "colorida | preto e branco" lado a lado (ou colorida em cima e traço embaixo); fundo branco vira papel. Salve em `art/<chave>.jpg` (só a metade colorida é usada;
-   o corte entre as metades é achado sozinho).
-2. Ponha a chave e o alvo de áreas em `JOBS` no `tools/build_folk.py` (40 a 70 para começar; a final tem 140).
-3. `python3 tools/build_folk.py <chave>` e confira `python3 tools/preview_folk.py <chave>`.
-4. Em `js/lendas.js`, troque o item `breve: 1` pelos dados do personagem (as coordenadas x,y vão de 0 a 1 na ilustração).
-5. `python3 tools/build_site.py` e publique o `ateliebrasil.zip`.
+1. A imagem vem como "colorida | só traço" lado a lado (ou colorida em cima e traço embaixo), fundo branco, o MESMO desenho nas duas.
+   Salve em `art/<chave>.jpg` (o corte entre as metades é achado sozinho).
+2. Ponha a chave em `KEYS` no `tools/build_folk.py` e rode `python3 tools/build_folk.py <chave>`; confira `python3 tools/preview_folk.py <chave>`.
+3. Em `js/lendas.js`, tire o `breve: 1` do personagem e acerte as coordenadas (x,y de 0 a 1) de palavras, figurinha e rosto.
+4. `python3 tools/build_site.py` (gera os recortes, dist/ e `ateliebrasil.zip`).
 
-Como funciona o `build_folk.py`: traço = pixels escuros e finos; cores chapadas agrupadas por k-means em Lab
-(a pele fica uma cor só); áreas = mesma cor separadas pelo traço; as áreas pequenas e finas são juntadas à vizinha
-de maior fronteira até chegar ao alvo; o nome da cor vem do grupo de cor que mais aparece na área (`kidcolor.py`).
+Como funciona o `build_folk.py`: o **contorno é a metade de traço, como veio** (vai para `pages/<k>.lines.jpg` e é desenhado por cima
+da tinta, sem engrossar nem clarear). As áreas são os espaços que o traço fecha (frestas de até ~6 px são fechadas só para separar as áreas);
+a metade colorida é encaixada sobre o traço (ECC afim) e dá a cor de cada área (`kidcolor.py`). Onde uma fresta junta duas partes de
+cores diferentes (corpo + árvore), a área é separada pela cor da colorida. Áreas minúsculas se juntam à vizinha (de preferência da mesma cor).
+O mapa de áreas vai dentro do json em `rle` (números puros, sem PNG que o navegador ou o servidor possam recomprimir).
 
 ## Pendências
-- Refazer o **Saci** (está com duas pernas) e o **Curupira** (pés para a frente; precisam ser virados para trás).
-- Ilustrações que faltam: Vitória-régia; Comadre Fulozinha, Lenda do Caju, Maracatu, Ciranda; Tuiuiú, Pé de Garrafa,
-  Cavalhadas, Lenda do Pequi, Mãe do Ouro; Mula sem Cabeça, Festa Junina; Gralha-azul, Teiniaguá, Lenda da Erva-mate.
+- Telas em breve (lista e prompts no doc "Ateliê Brasil: imagens para gerar"): Saci, Caipora e Boitatá no estilo novo (os dados deles
+  continuam em `lendas.js` com `breve: 1`); Lenda do Caju, Maracatu, Ciranda; Tuiuiú, Cavalhadas, Lenda do Pequi; Mula sem Cabeça,
+  Festa Junina; Gralha-azul, Teiniaguá, Lenda da Erva-mate. Opcional: Curupira com os pés para trás. 2 avatares novos.
+- Sem voz no navegador (ex.: visualizador dentro de outro app): aparece um aviso e o 🔈 mostra o texto num balão.
 - Publicar no Netlify (ex.: `ateliebrasil.netlify.app`) e desligar a "Team protection".

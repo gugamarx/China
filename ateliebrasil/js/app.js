@@ -28,14 +28,23 @@ const UI = {
 };
 /* 🔈 botão pequeno de "ouvir de novo" ao lado de cada texto */
 const REPS = [];
-const rep = items => { REPS.push(items); return `<button class="rep" data-i="${REPS.length - 1}" aria-label="ouvir de novo">🔈</button>`; };
+const SPK = `<svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#2a1a10"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" fill="none" stroke="#2a1a10" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+const rep = items => { REPS.push(items); return `<button class="rep" data-i="${REPS.length - 1}" aria-label="ouvir de novo">${SPK}</button>`; };
 const limpa = t => t.replace(/<[^>]+>/g, " ").replace(/[^\p{L}\p{N} ,.!?'()-]/gu, " ").replace(/\s+/g, " ").trim();
 document.addEventListener("click", e => {
   const b = e.target.closest && e.target.closest(".rep"); if (!b) return;
   e.stopPropagation(); e.preventDefault(); Audio8.unlock(); Audio8.fx("tap"); const it = REPS[+b.dataset.i];
   b.animate([{ transform: "scale(1)" }, { transform: "scale(1.35)" }, { transform: "scale(1)" }], { duration: 400 });
+  if (Voice.failed && Array.isArray(it)) UI.bubble(b, it.map(x => x[0]).join(" "), 2600 + it.reduce((n, x) => n + x[0].length, 0) * 45);   // sem voz: mostra o texto
   typeof it === "function" ? it() : Voice.talk(it);
 }, true);
+/* voz: destrava no primeiro toque; se o navegador não tiver voz, avisa uma vez */
+document.addEventListener("pointerdown", () => { Audio8.unlock(); Voice.unlock(); }, { once: true, capture: true });
+Voice.onFail = () => {
+  if ($("#semvoz")) return;
+  const d = el("div", "", `<span>🔇 Este navegador está sem voz. Abra o jogo no <b>Chrome</b> para ouvir as histórias! Até lá, o ${SPK} mostra o texto.</span><button aria-label="fechar">✖</button>`);
+  d.id = "semvoz"; document.body.appendChild(d); d.querySelector("button").onclick = () => d.remove(); setTimeout(() => d.remove(), 12000);
+};
 const FX = {
   parts: [], run: false,
   loop() { const cv = $("#fx"), g = cv.getContext("2d"); g.clearRect(0, 0, cv.width, cv.height); this.parts = this.parts.filter(p => p.l > 0);
@@ -282,7 +291,7 @@ async function getMeta(t) { return metaCache[t.k] || (metaCache[t.k] = await (aw
 function colorsOf(meta) { const area = {}; meta.regions.forEach(r => { if (!r.lock) area[r.c] = (area[r.c] || 0) + r.a; }); return Object.keys(area).sort((x, y) => area[y] - area[x]); }
 
 /* ================= PINTAR ================= */
-const P8 = { cv: null, g: null, W: 0, H: 0, reg: null, lines: null, edge: null, orig: null, img: null, pix: [], box: [], fills: [], meta: null, brush: null, water: 0, zoom: 1, panX: 0, panY: 0, hist: [], objs: [], seen: new Set() };
+const P8 = { cv: null, g: null, W: 0, H: 0, reg: null, lines: null, orig: null, img: null, pix: [], box: [], fills: [], meta: null, brush: null, water: 0, zoom: 1, panX: 0, panY: 0, hist: [], objs: [], seen: new Set() };
 function loadPix(src) { return new Promise((res, rej) => { const i = new Image(); i.onerror = () => rej(new Error("imagem " + src)); i.onload = () => { const c = document.createElement("canvas"); c.width = i.width; c.height = i.height; const g = c.getContext("2d"); g.drawImage(i, 0, 0); res(g.getImageData(0, 0, i.width, i.height).data); }; i.src = src; }); }
 const okFor = r => r.ok ? [r.c, ...r.ok] : [r.c];
 const isRight = (r, c) => !!c && okFor(r).includes(c);
@@ -290,15 +299,16 @@ async function startPaint(t) {
   await UI.go("paint", null, async () => {
     $("#ploading").style.display = "flex";
     const meta = await getMeta(t); P8.meta = meta; const W = meta.w, H = meta.h; P8.W = W; P8.H = H;
-    const [rp, lp, op] = await Promise.all([loadPix(`pages/${t.k}.png`), loadPix(`pages/${t.k}.lines.jpg`), loadPix(`pages/${t.k}.orig.jpg`)]);
-    const N = W * H, reg = new Uint16Array(N), lines = new Uint8Array(N), edge = new Uint8Array(N);
-    for (let p = 0; p < N; p++) { reg[p] = rp[p * 4] + 256 * rp[p * 4 + 1]; lines[p] = 255 - lp[p * 4]; }
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const p = y * W + x, r = reg[p]; if ((x < W - 1 && reg[p + 1] !== r) || (y < H - 1 && reg[p + W] !== r)) edge[p] = 1; }
+    const [lp, op] = await Promise.all([loadPix(`pages/${t.k}.lines.jpg`), loadPix(`pages/${t.k}.orig.jpg`)]);
+    const N = W * H, reg = new Uint16Array(N), lines = new Uint8Array(N);
+    // mapa de áreas em números puros (rle: id, quantos, id, quantos...): nada de PNG que o navegador possa recomprimir
+    for (let i = 0, p = 0, R = meta.rle; i < R.length; i += 2) { reg.fill(R[i], p, p + R[i + 1]); p += R[i + 1]; }
+    for (let p = 0; p < N; p++) lines[p] = lp[p * 4];          // o traço exatamente como no desenho (0 = preto, 255 = papel)
     const nR = meta.regions.length + 1, cnt = new Int32Array(nR); for (let p = 0; p < N; p++) cnt[reg[p]]++;
     P8.pix = [...cnt].map(c => new Int32Array(c)); const k = new Int32Array(nR); P8.box = [...Array(nR)].map(() => [W, H, 0, 0]);
     for (let p = 0; p < N; p++) { const r = reg[p]; P8.pix[r][k[r]++] = p; const b = P8.box[r], x = p % W, y = (p / W) | 0; if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y; if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y; }
     window.resetPointers && resetPointers();
-    Object.assign(P8, { reg, lines, edge, orig: op, brush: null, hist: [], zoom: 1, panX: 0, panY: 0, seen: new Set(), tricked: false, stolen: null });
+    Object.assign(P8, { reg, lines, orig: op, brush: null, hist: [], zoom: 1, panX: 0, panY: 0, seen: new Set(), tricked: false, stolen: null });
     P8.objs = (t.palavras || meta.words || []).map(o => ({ o, id: reg[Math.min(H - 1, Math.round(o[2] * (H - 1))) * W + Math.min(W - 1, Math.round(o[1] * (W - 1)))] }));
     const saved = prog(t.k); P8.fills = Array(nR).fill(null);
     if (saved && saved.fills && saved.mode === mode && !saved.passed && saved.fills.length === nR) saved.fills.forEach((c, i) => { if (c) P8.fills[i] = c; });
@@ -322,12 +332,13 @@ function applyZoom() {
   const st = `width:${w}px;height:${h}px;left:${(aw - w) / 2 + P8.panX}px;top:${(ah - h) / 2 + P8.panY}px`; $("#pcv").style.cssText = st; $("#ov").style.cssText = st;
 }
 const PAPER = [252, 250, 244];
-/* um pixel: papel / tinta lisa (cor errada ou do meu jeito) / a ILUSTRAÇÃO de verdade (cor certa no modo copiar) */
+/* um pixel: papel / tinta lisa (cor errada ou do meu jeito) / a cor da ILUSTRAÇÃO (cor certa no modo copiar).
+   O traço é sempre o do desenho original, por cima (multiplica): nem mais forte, nem mais fraco. */
 function shadeInto(D, p, c, reveal) {
-  const o = p * 4, L = P8.lines[p] / 255;
-  if (reveal) { D[o] = P8.orig[o]; D[o + 1] = P8.orig[o + 1]; D[o + 2] = P8.orig[o + 2]; D[o + 3] = 255; return; }
-  let r, g, b; if (c) [r, g, b] = c; else [r, g, b] = PAPER;
-  const k = (1 - .9 * L) * (P8.edge[p] && L < .3 ? .8 : 1);
+  const o = p * 4, k = P8.lines[p] / 255, O = P8.orig;
+  let r, g, b;
+  if (reveal && Math.max(O[o], O[o + 1], O[o + 2]) > 80) { r = O[o]; g = O[o + 1]; b = O[o + 2]; }   // a sombra/luz da colorida (sem o contorno dela)
+  else if (c) [r, g, b] = c; else [r, g, b] = PAPER;
   D[o] = r * k; D[o + 1] = g * k; D[o + 2] = b * k; D[o + 3] = 255;
 }
 const revealOf = id => mode === "exact" && isRight(P8.meta.regions[id - 1] || {}, P8.fills[id]);
@@ -511,7 +522,7 @@ const Saci = {
     await v.animate([{ left: "-80px", top: a.top + a.height * .7 + "px", transform: "rotate(0)" }, { left: innerWidth + "px", top: a.top + a.height * .3 + "px", transform: "rotate(720deg)" }], { duration: 1600, easing: "ease-in-out" }).finished;
     v.style.display = "none"; if (UI.cur !== "paint" || finishing) return;
     P8.stolen = c; renderPots(); this.tries = 0;
-    const s = $("#saci"); s.innerHTML = `${cropHTML("saci", ...TELAS.find(x => x.k === "saci").rosto, "crop cara")}<i class="pote" style="background:${PAINT[c][0]}"></i><div class="sfala">PEGUEI O<br>${silabasHTML(PAINT[c][2])}!<br>ME PEGA! 😜</div>`;
+    const s = $("#saci"); s.innerHTML = `${cropHTML("grupo", .315, .26, .25, "crop cara")}<i class="pote" style="background:${PAINT[c][0]}"></i><div class="sfala">PEGUEI O<br>${silabasHTML(PAINT[c][2])}!<br>ME PEGA! 😜</div>`;
     this.mover(); s.classList.add("on"); Audio8.fx("giggle");
     Voice.say(`Hihihi! Eu sou o Saci! Peguei a sua tinta ${N(c)}! Toque em mim pra pegar de volta!`, VOZ.saci);
     clearTimeout(this.volta); this.volta = setTimeout(() => { if (P8.stolen) { this.tries = 9; this.pegar(true); } }, 30000);   // não deixa ela sem a cor

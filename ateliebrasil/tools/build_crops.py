@@ -4,7 +4,7 @@ import os, json, subprocess
 from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); OUT = f"{ROOT}/pages/c"; os.makedirs(OUT, exist_ok=True)
 js = r'''const fs=require("fs");const src=fs.readFileSync(process.argv[1]+"/js/lendas.js","utf8").replace(/^(const|let) /gm,"global.");eval(src);
-const out=[];for(const t of TELAS){if(t.breve)continue;out.push([t.k,...t.rosto]);(t.fig||[]).forEach(f=>out.push([t.k,f[1],f[2],f[3]]));
+const out=[];for(const t of TELAS){if(t.breve)continue;out.push([t.k,...t.rosto]);(t.fig||[]).forEach(f=>out.push([t.k,f[1],f[2],f[3]]));(t.crops||[]).forEach(f=>out.push([t.k,...f]));
 if(!t.semCrop)(t.palavras||[]).forEach(o=>out.push([t.k,o[1],o[2],.28]));}console.log(JSON.stringify(out));'''
 tuples = json.loads(subprocess.check_output(["node", "-e", js, ROOT]))
 key = lambda k, x, y, z: k + "_" + "_".join(str(round(v * 1000)) for v in (x, y, z))
