@@ -5,7 +5,7 @@ import os, sys, re, json, subprocess, unicodedata
 sys.path.insert(0, os.path.dirname(__file__))
 from arte_spec import TAM, BASE, NEGATIVO, CENA, ART, AVATARES, BASE_AVATAR
 from textos_v2 import T, REGIOES
-from comfy_spec import MODELOS, VOZES, ANIM_CENA, ANIM_TELA, EFEITOS
+from comfy_spec import MODELOS, VOZES, MODELO_VOZ, ANIM_CENA, ANIM_TELA, EFEITOS
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 js = r'''const fs=require("fs");const g=s=>s.replace(/^(const|let) /gm,"global.");const R=process.argv[1];
@@ -27,8 +27,8 @@ def silabado(sil):  # "GOR-RO" -> "gor... ro... gorro!"
     p = [x.lower() for x in re.split(r"[- ]", sil) if x]; return "... ".join(p) + "... " + palavra(sil).lower().replace(" ", " ") + "!"
 
 falas, banco = [], {}
-def fala(id_, voz, texto, grupo, modelo="eleven_v4", ritmo=None):
-    v = VOZES[voz]; falas.append({"id": id_, "arquivo": f"audio/{id_}.mp3", "grupo": grupo, "voz": voz, "texto": texto,
+def fala(id_, voz, texto, grupo, modelo=None, ritmo=None):
+    v = VOZES[voz]; modelo = modelo or MODELO_VOZ.get(voz, "eleven_v4"); falas.append({"id": id_, "arquivo": f"audio/{id_}.mp3", "grupo": grupo, "voz": voz, "texto": texto,
         "eleven": {"modelo": modelo, "voz": v["preset"], "texto": f"{v['tag'] if not ritmo else v['tag'][:-1] + ', ' + ritmo + ']'} {texto}"},
         "fish": {"modelo": "s2.1-pro", "buscar_voz": v["fish"], "texto": texto}})
 def palavra_banco(sil):
@@ -90,7 +90,7 @@ avatares = [{"k": a["k"], "arquivo": f"kids/avatar-{a['k']}.jpg", "tamanho": TAM
 capa = {"arquivo": "art/capa.jpg", "tamanho": TAM["capa"], "largura": 1024, "altura": 1536,
         "prompt": BASE.replace("Children's coloring-book illustration", "Children's game cover illustration").replace("SUBJECT", "") + "\n\nSUBJECT: " + ART["capa"], "negativo": NEGATIVO}
 
-def custo(modelo, chars): return round(chars / 1000 * {"eleven_v4": 24.14, "eleven_v4_turbo": 12.07}[modelo], 1)
+def custo(modelo, chars): return round(chars / 1000 * {"eleven_v4": 24.14, "eleven_v4_turbo": 12.07, "eleven_v3": 50.64}[modelo], 1)
 cred_eleven = sum(custo(f["eleven"]["modelo"], len(f["eleven"]["texto"])) for f in falas)
 cred_fish = round(sum(len(f["texto"].encode()) for f in falas) / 1000 * 4.53, 1)
 out = {

@@ -1,0 +1,147 @@
+<title>Revisão Ateliê Brasil</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+/* mesa de revisão: uma coluna de seções (personagem por região), cada item com aprovar/refazer; barra fixa com o placar */
+:root{--bg:#f2f5ef;--card:#ffffff;--fg:#1c2a21;--mut:#5d6d62;--line:#d5dfd3;--accent:#d9541c;--ok:#2d7a45;--ok-bg:#e1f2e5;--no:#b4361f;--no-bg:#fbe6df;--chip:#e6ece3;
+--disp:"Baloo 2",system-ui,sans-serif;--body:"Nunito Sans",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111914;--card:#1a251e;--fg:#e5eee7;--mut:#9db0a3;--line:#2b3a30;--accent:#ff7b3e;--ok:#6ccb8a;--ok-bg:#1d3a27;--no:#ff8a70;--no-bg:#43221b;--chip:#243128;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111914;--card:#1a251e;--fg:#e5eee7;--mut:#9db0a3;--line:#2b3a30;--accent:#ff7b3e;--ok:#6ccb8a;--ok-bg:#1d3a27;--no:#ff8a70;--no-bg:#43221b;--chip:#243128;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--body);padding-block:20px calc(120px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:860px;margin:0 auto;display:grid;gap:18px}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(26px,6vw,38px);line-height:1.05;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.intro{color:var(--mut);margin:6px 0 0;max-width:62ch}
+.filtros{display:flex;flex-wrap:wrap;gap:8px}
+.filtros button{font:600 14px var(--body);border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 14px;cursor:pointer}
+.filtros button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px}
+summary{list-style:none;cursor:pointer;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary h2{font-family:var(--disp);font-weight:800;font-size:21px;line-height:1.15;margin:0}
+summary small{color:var(--mut);font-size:13px;grid-column:1}
+.placar{grid-row:1/3;grid-column:2;display:flex;gap:6px;font-variant-numeric:tabular-nums;font-size:13px;font-weight:700}
+.placar span{border-radius:999px;padding:2px 9px;background:var(--chip)}
+.placar .o{background:var(--ok-bg);color:var(--ok)} .placar .r{background:var(--no-bg);color:var(--no)}
+.corpo{border-top:1px solid var(--line);padding:12px 14px 14px;display:grid;gap:10px}
+.acoes-sec{display:flex;flex-wrap:wrap;gap:8px}
+.acoes-sec button{font:600 13px var(--body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:8px;padding:6px 10px;cursor:pointer}
+.imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.item{display:grid;gap:8px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.item[data-s="ok"]{border-color:var(--ok);background:var(--ok-bg)} .item[data-s="refazer"]{border-color:var(--no);background:var(--no-bg)}
+.item img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;background:var(--line)}
+.item.quad img{aspect-ratio:1}
+.linha{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.txt{min-width:0} .txt b{font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.txt p{margin:1px 0 0;overflow-wrap:anywhere} .txt small{color:var(--mut);font-size:12px}
+.play{width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:16px;cursor:pointer;display:grid;place-items:center}
+.play[aria-busy="true"]{opacity:.6} .play.tocando{background:var(--fg);color:var(--bg)}
+.btns{display:flex;gap:8px}
+.btns button{flex:1;font:700 14px var(--body);border-radius:8px;padding:8px;cursor:pointer;border:2px solid var(--ok);background:var(--card);color:var(--ok)}
+.btns button.r{border-color:var(--no);color:var(--no)}
+.item[data-s="ok"] .btns button.a,.item[data-s="refazer"] .btns button.r{color:var(--card);background:var(--ok)}
+.item[data-s="refazer"] .btns button.r{background:var(--no)}
+textarea{width:100%;font:14px var(--body);color:var(--fg);background:var(--card);border:1px solid var(--no);border-radius:8px;padding:8px;min-height:56px;resize:vertical}
+.falta{font-size:13px;color:var(--no);font-weight:600}
+.barra{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:5}
+.barra div{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.barra .t{font-variant-numeric:tabular-nums;font-size:14px;flex:1;min-width:0}
+.barra .t b.o{color:var(--ok)} .barra .t b.r{color:var(--no)}
+.barra button{font:700 15px var(--body);background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 16px;cursor:pointer}
+#saida{display:none;width:100%;min-height:160px;margin-top:8px;border-color:var(--line)}
+#saida.v{display:block}
+button:focus-visible,summary:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.esconde{display:none!important}
+</style>
+<main>
+<header><h1>Revisão do lote, <em>item por item</em></h1>
+<p class="intro">Toque em ✓ para aprovar ou em ↻ para refazer. Ao refazer, diga o que mudar. Suas marcações ficam salvas neste aparelho. No fim, toque em <b>Copiar avaliação</b> e cole no chat.</p></header>
+<div class="filtros" role="group" aria-label="Mostrar">
+<button id="f-todos" data-f="todos" aria-pressed="true">Todos</button>
+<button id="f-pend" data-f="pend" aria-pressed="false">Pendentes</button>
+<button id="f-ref" data-f="refazer" aria-pressed="false">Refazer</button>
+<button id="f-ok" data-f="ok" aria-pressed="false">Aprovados</button>
+</div>
+<div id="lista" style="display:grid;gap:12px"></div>
+</main>
+<div class="barra"><div><span class="t" id="tot"></span><button id="copiar">Copiar avaliação</button>
+<textarea id="saida" readonly aria-label="Avaliação em Markdown"></textarea></div></div>
+<script>
+const SEC=/*DADOS*/[];
+const KEY="atelie_revisao_v1";let E={};try{E=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify(E))}catch(e){}};
+let filtro="todos";const packs={},audio=new Audio();let tocandoBtn=null;
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const st=id=>(E[id]||{}).s||"";
+function itemHTML(it,sid){
+  const s=st(it.id),c=(E[it.id]||{}).c||"";
+  const btns=`<div class="btns"><button class="a" data-a="ok">✓ Aprovar</button><button class="r" data-a="refazer">↻ Refazer</button></div>
+   <textarea placeholder="O que mudar?" aria-label="Comentário para refazer ${esc(it.rotulo)}" ${s==="refazer"?"":'class="esconde"'}>${esc(c)}</textarea>`;
+  if(it.tipo==="imagem") return `<div class="item${it.rotulo.startsWith("Avatar")?" quad":""}" data-id="${esc(it.id)}" data-s="${s}">
+   ${it.ok?`<a href="${esc(it.src)}" target="_blank" rel="noopener"><img src="${esc(it.src)}" alt="${esc(it.rotulo)}" loading="lazy"></a>`:'<span class="falta">Não gerou</span>'}
+   <div class="txt"><b>${esc(it.rotulo)}</b>${it.texto?`<small><br>${esc(it.texto)}</small>`:""}</div>${btns}</div>`;
+  return `<div class="item" data-id="${esc(it.id)}" data-s="${s}"><div class="linha">
+   <button class="play" data-sec="${esc(sid)}" aria-label="Ouvir ${esc(it.rotulo)}" ${it.ok?"":"disabled"}>▶</button>
+   <div class="txt"><b>${esc(it.rotulo)}</b><p>${esc(it.texto)}</p><small>${esc(it.meta)}${it.ok?"":' · <span class="falta">não gerou</span>'}</small></div></div>${btns}</div>`;
+}
+function render(){
+  const L=document.getElementById("lista"),abertos=new Set([...L.querySelectorAll("details[open]")].map(d=>d.dataset.sec));
+  L.innerHTML=SEC.map(s=>{
+    const imgs=s.itens.filter(i=>i.tipo==="imagem"),voz=s.itens.filter(i=>i.tipo==="voz");
+    return `<details data-sec="${s.id}" ${abertos.has(s.id)?"open":""}><summary><h2>${esc(s.titulo)}</h2><small>${esc(s.sub)} · ${s.itens.length} itens</small><span class="placar"></span></summary>
+     <div class="corpo"><div class="acoes-sec"><button data-todos="${s.id}">✓ Aprovar o que falta nesta seção</button>${voz.length?`<button data-seq="${s.id}">▶ Ouvir a seção em sequência</button>`:""}</div>
+     ${imgs.length?`<div class="imgs">${imgs.map(i=>itemHTML(i,s.id)).join("")}</div>`:""}${voz.map(i=>itemHTML(i,s.id)).join("")}</div></details>`}).join("");
+  atualiza();
+}
+function atualiza(){
+  let o=0,r=0,n=0;
+  SEC.forEach(s=>{let so=0,sr=0;s.itens.forEach(i=>{n++;const x=st(i.id);if(x==="ok"){o++;so++}else if(x==="refazer"){r++;sr++}});
+    const d=document.querySelector(`details[data-sec="${s.id}"] .placar`);if(d)d.innerHTML=`<span class="o">${so}</span><span class="r">${sr}</span><span>${s.itens.length-so-sr}</span>`;});
+  document.getElementById("tot").innerHTML=`<b class="o">${o}</b> aprovados · <b class="r">${r}</b> refazer · ${n-o-r} pendentes de ${n}`;
+  document.querySelectorAll(".item").forEach(el=>{const x=el.dataset.s;
+    el.classList.toggle("esconde",filtro==="pend"?!!x:filtro==="todos"?false:x!==filtro)});
+}
+function marca(id,s){E[id]=Object.assign(E[id]||{},{s});salvar();
+  document.querySelectorAll(`.item[data-id="${CSS.escape(id)}"]`).forEach(el=>{el.dataset.s=s;el.querySelector("textarea").classList.toggle("esconde",s!=="refazer");if(s==="refazer")el.querySelector("textarea").focus()});atualiza()}
+async function pack(sid){if(!packs[sid]){const r=await fetch(`som/${sid}.json`);packs[sid]=await r.json()}return packs[sid]}
+async function toca(btn){
+  const el=btn.closest(".item"),id=el.dataset.id,sid=btn.dataset.sec;
+  if(tocandoBtn===btn&&!audio.paused){audio.pause();return}
+  btn.setAttribute("aria-busy","true");
+  try{const p=await pack(sid);const k=id.replace(/^audio\//,"");audio.src=p[k];
+    if(tocandoBtn){tocandoBtn.classList.remove("tocando");tocandoBtn.textContent="▶"}
+    tocandoBtn=btn;btn.classList.add("tocando");btn.textContent="❚❚";await audio.play()}catch(e){btn.textContent="!"}
+  btn.removeAttribute("aria-busy");
+  return new Promise(res=>{audio.onended=audio.onpause=()=>{btn.classList.remove("tocando");btn.textContent="▶";res()}});
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.a){marca(b.closest(".item").dataset.id,b.dataset.a)}
+  else if(b.classList.contains("play")){toca(b)}
+  else if(b.dataset.f){filtro=b.dataset.f;document.querySelectorAll(".filtros button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    if(filtro!=="todos")document.querySelectorAll("details").forEach(d=>d.open=true);atualiza()}
+  else if(b.dataset.todos){const s=SEC.find(x=>x.id===b.dataset.todos);s.itens.forEach(i=>{if(!st(i.id))E[i.id]={s:"ok"}});salvar();
+    document.querySelectorAll(`details[data-sec="${s.id}"] .item`).forEach(el=>{if(!el.dataset.s)el.dataset.s="ok"});atualiza()}
+  else if(b.dataset.seq){for(const p of document.querySelectorAll(`details[data-sec="${b.dataset.seq}"] .play:not([disabled])`)){
+    if(p.closest(".item").classList.contains("esconde"))continue;p.scrollIntoView({block:"center",behavior:"smooth"});await toca(p);if(audio.error)break;
+    if(!audio.ended)break}}
+  else if(b.id==="copiar"){copiar()}
+});
+document.addEventListener("input",e=>{if(e.target.tagName==="TEXTAREA"&&e.target.id!=="saida"){const id=e.target.closest(".item").dataset.id;E[id]=Object.assign(E[id]||{s:"refazer"},{c:e.target.value});salvar()}});
+function md(){
+  const all=SEC.flatMap(s=>s.itens.map(i=>({...i,sec:s.titulo})));
+  const ok=all.filter(i=>st(i.id)==="ok"),ref=all.filter(i=>st(i.id)==="refazer"),pend=all.filter(i=>!st(i.id));
+  const hoje=new Date().toLocaleDateString("pt-BR");
+  let t=`# Avaliação do lote: Ateliê Brasil (${hoje})\n\n- Aprovados: ${ok.length}\n- Refazer: ${ref.length}\n- Pendentes: ${pend.length}\n- Total: ${all.length}\n\n## Refazer\n\n`;
+  t+=ref.length?ref.map(i=>`- \`${i.id}\` (${i.sec}, ${i.rotulo}${i.meta?", "+i.meta:""})${i.texto&&i.tipo==="voz"?`: "${i.texto}"`:""}\n  - Comentário: ${((E[i.id]||{}).c||"(sem comentário)").replace(/\n+/g," ")}`).join("\n"):"Nada a refazer.";
+  if(pend.length){t+=`\n\n## Pendentes (sem avaliação)\n\n`;const por={};pend.forEach(i=>(por[i.sec]=por[i.sec]||[]).push(i.id));
+    t+=Object.entries(por).map(([s,ids])=>`- ${s}: ${ids.length<=12?ids.map(x=>"`"+x+"`").join(", "):ids.length+" itens"}`).join("\n")}
+  return t+"\n";
+}
+async function copiar(){const t=md(),o=document.getElementById("saida"),b=document.getElementById("copiar");o.value=t;
+  try{await navigator.clipboard.writeText(t);b.textContent="Copiado ✓";o.classList.remove("v")}
+  catch(e){o.classList.add("v");o.focus();o.select();b.textContent="Selecione e copie abaixo"}
+  setTimeout(()=>b.textContent="Copiar avaliação",2500)}
+render();
+</script>

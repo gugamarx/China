@@ -144,7 +144,9 @@ def rodar_um(j):
     if r.get("node_errors"): return j["id"], "ERRO nós: " + json.dumps(r["node_errors"], ensure_ascii=False)[:500]
     pid = r["prompt_id"]; t0 = time.time()
     while True:
-        time.sleep(4); st = req("GET", f"/api/job/{pid}/status").get("status", "")
+        time.sleep(4)
+        try: st = req("GET", f"/api/jobs/{pid}").get("status", "")
+        except Exception: st = req("GET", f"/api/job/{pid}/status").get("status", "")
         if st in ("completed", "success"): break
         if st in ("failed", "error", "cancelled"):
             det = ""
