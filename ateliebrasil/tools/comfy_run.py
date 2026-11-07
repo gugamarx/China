@@ -6,6 +6,7 @@
   python3 tools/comfy_run.py audio  --workflow comfy/wf_fish_api.json --motor fish --ids curupira/fala
   python3 tools/comfy_run.py imagem --workflow comfy/wf_img_api.json --ids curupira --variacoes 3
   python3 tools/comfy_run.py imagem --workflow comfy/wf_img_ref_api.json --ref comfy/out/art/curupira.jpg --todas
+  python3 tools/comfy_run.py orcamento --variacoes 3 --img gpt2-alta      (só calcula; não chama nada)
 
 O script acha sozinho os nós pelo tipo: Text to Speech (texto/modelo), Voice Selector (voz), o nó com "prompt" (imagem),
 LoadImage (referência) e o nó de salvar (nome do arquivo). Já existe? Pula (dá para parar e continuar).
@@ -91,7 +92,27 @@ def rodar(wf, destino):
         print("  ->", os.path.relpath(dest, ROOT))
     return True
 
+# preços dos Partner Nodes (docs.comfy.org/tutorials/partner-nodes/pricing; 211 créditos = US$ 1). Imagem: créditos por imagem 1024x1536, estimados pelos tokens.
+PRECO_IMG = {"gpt2-alta": 47.0, "gpt2-media": 12.0, "nano-pro": 34.0, "nano2": 17.0, "recraft4": 12.07, "recraft4-vetor": 24.14}
+PRECO_VOZ = {"eleven_v4": 24.14, "eleven_v4_turbo": 12.07, "fish": 4.53}
+REF_IMG = 2.47 * 1.5   # imagem de referência 1024x1536 na entrada
+
+def orcamento(d, variacoes, img, motor, refazer):
+    n_img = sum(1 for t in d["telas"] if t["imagem"]) + 1 + len(d["avatares"])
+    c_img = n_img * variacoes * (PRECO_IMG[img] + REF_IMG)
+    if motor == "fish": c_voz = sum(len(f["fish"]["texto"].encode()) for f in d["falas"]) / 1000 * PRECO_VOZ["fish"]
+    else: c_voz = sum(len(f["eleven"]["texto"]) / 1000 * PRECO_VOZ[f["eleven"]["modelo"]] for f in d["falas"])
+    c_voz *= 1 + refazer
+    print(f"Imagens: {n_img} x {variacoes} variações com {img}: {c_img:,.0f} créditos = US$ {c_img / 211:,.2f}")
+    print(f"Vozes:   {len(d['falas'])} falas com {motor} (+{int(refazer * 100)}% para refazer): {c_voz:,.0f} créditos = US$ {c_voz / 211:,.2f}")
+    print(f"Total:   {c_img + c_voz:,.0f} créditos = US$ {(c_img + c_voz) / 211:,.2f}  (fora a mensalidade do plano do Comfy Cloud)")
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "orcamento":
+        op = argparse.ArgumentParser(); op.add_argument("orcamento"); op.add_argument("--variacoes", type=int, default=3)
+        op.add_argument("--img", choices=list(PRECO_IMG), default="gpt2-alta"); op.add_argument("--motor", choices=["eleven", "fish"], default="eleven")
+        op.add_argument("--refazer", type=float, default=.5); o = op.parse_args()
+        orcamento(json.load(open(f"{ROOT}/comfy/atelie_comfy.json")), o.variacoes, o.img, o.motor, o.refazer); sys.exit()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("tipo", choices=["audio", "imagem"]); ap.add_argument("--workflow", required=True)
     ap.add_argument("--ids", default=""); ap.add_argument("--grupo", default=""); ap.add_argument("--todas", action="store_true")
