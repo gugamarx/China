@@ -42,3 +42,18 @@ Fork do Julia Paint: 5 salas = regiões do Brasil, personagens do folclore, tudo
 Um site só com 4 perfis (Julia, Elisa, Yasmin, Valentina) no localStorage (`atelie_<prima>_`), teclado que fala as letras do nome.
 Ilustrações "colorida | P&B" em `art/<k>.jpg` → `python3 tools/build_folk.py` → `pages/`; conteúdo em `js/lendas.js`;
 `python3 tools/build_site.py` → `dist/` + `ateliebrasil.zip`. Detalhes e pendências em `ateliebrasil/README.md`.
+
+### Estado (nov/2026) e próximos passos: TODAS as artes e vozes serão refeitas no Comfy Cloud
+- Decisões do Gustavo: `ateliebrasil/mesa/respostas_1.json` (mesa de decisões = `mesa/mesa.html`, gerada por `tools/build_mesa.py`).
+  Arte = UMA imagem colorida 1024×1536 (2:3), contorno preto grosso, cena padrão de céu (sol em cima à direita, nuvem à esquerda,
+  montanha) para animar; o jogo vai tirar o contorno da própria colorida (falta adaptar `build_folk.py`). 9 avatares 1024×1024
+  em grade 3×3. Capa nova. Festa = Curupira, Iara, Boi, Tuiuiú, Saci, Boitatá. Vozes em MP3 pré-gravadas com sotaque por região.
+  Norte sem "Égua" (MANINHA!). Sem o "Encontre" depois do PRONTO. Textos devem ser curtos.
+- Fontes únicas: `tools/arte_spec.py` (prompts), `tools/textos_v2.py` (textos curtos, ainda em revisão pelo Gustavo),
+  `tools/comfy_spec.py` (elenco de vozes ElevenLabs v4 + Fish, animações). `tools/build_comfy.py` → `comfy/atelie_comfy.json`
+  (639 falas, prompts, nomes de arquivo). `tools/comfy_run.py` roda em lote no Comfy Cloud (API, plano Standard+; `orcamento`
+  calcula o custo sem chamar nada). Fluxo combinado: orçamento → ok do Gustavo → teste (âncora Curupira + 3 vozes) → lote →
+  baixar → adaptar pipeline/coordenadas/animações → testar no Pixel 7 → um deploy no Netlify.
+- Precisa no ambiente: secrets `COMFY_CLOUD_API_KEY` e `NETLIFY_AUTH_TOKEN`; rede liberada para cloud.comfy.org, api.comfy.org,
+  api.netlify.com. Nunca pedir chave no chat.
+- Fora do git (privado): `art/` (13 ilustrações novas + old/), `kids/` (capas e avatares das primas), `pages/`, `dist/`.
