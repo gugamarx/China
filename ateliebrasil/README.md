@@ -30,6 +30,11 @@ Mesmo motor do Julia Paint (`juliapaint/`), mas o museu virou uma **viagem pelo 
 
 - **Janelas com moldura e barra de rolagem** (▲ ▼ e seta "TEM MAIS AQUI EMBAIXO") no final, no álbum, nas opções e na mesa de misturar.
 
+- **Todas as regiões abertas.** O **Grande Desafio** fica numa sala especial: o **Mapa do Brasil** (uma área por estado, cor de cada região,
+  palavras escondidas com o nome do estado) sempre aberto, e a **Festa do Folclore** (100%) só abre depois de pintar todos os outros.
+- **Narração:** todo texto é lido em voz alta e tem um botão 🔈 pequeno para ouvir de novo.
+- **Pintura livre de botões:** 💡 🔍 ✔️ ficam na barra de cima; "Encontre!" e "Monte o nome" aparecem no lugar da paleta, nunca sobre o desenho.
+
 ## Arquivos
 ```
 index.html        telas e CSS
@@ -42,12 +47,14 @@ js/app.js         o jogo
 js/paginas.js     gerado: tamanho de cada página
 tools/build_folk.py   gera as páginas de colorir
 tools/preview_folk.py prévia em pages/_prev/
+tools/build_mapa.py   gera a página do mapa do Brasil (desenha js/mapa.js no Chrome)
+tools/build_crops.py  gera os recortes redondos (pages/c/) a partir das coordenadas de js/lendas.js
 tools/build_site.py   monta dist/ e ateliebrasil.zip (ícones, avatares, manifest, service worker)
 art/ kids/ pages/ dist/   fora do git
 ```
 
 ## Ilustrações novas
-1. A imagem vem como "colorida | preto e branco" lado a lado. Salve em `art/<chave>.jpg` (só a metade colorida é usada;
+1. A imagem vem como "colorida | preto e branco" lado a lado (ou colorida em cima e traço embaixo); fundo branco vira papel. Salve em `art/<chave>.jpg` (só a metade colorida é usada;
    o corte entre as metades é achado sozinho).
 2. Ponha a chave e o alvo de áreas em `JOBS` no `tools/build_folk.py` (40 a 70 para começar; a final tem 140).
 3. `python3 tools/build_folk.py <chave>` e confira `python3 tools/preview_folk.py <chave>`.

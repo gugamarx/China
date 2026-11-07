@@ -15,27 +15,29 @@ from kidcolor import classify_rgb, NAMES
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = f"{ROOT}/pages"; os.makedirs(OUT, exist_ok=True)
 # chave: alvo de áreas pintáveis (poucas = fácil)
-JOBS = {"saci": 45, "curupira": 50, "iara": 55, "boto": 60, "lobisomem": 60, "boitata": 95,
-        "caipora": 70, "cuca": 75, "boi": 95, "grupo": 140}
+JOBS = {"saci": 45, "curupira": 40, "iara": 40, "boto": 40, "lobisomem": 40, "boitata": 95, "caipora": 70, "cuca": 45, "boi": 50,
+        "grupo": 110, "vitoria": 35, "caboclo": 40, "joaodebarro": 35, "matinta": 50, "paidomato": 40, "fulozinha": 40, "mapinguari": 35}
 
 
 def colored_half(img):
-    """devolve só a metade colorida (esquerda), sem a linha divisória nem bordas brancas"""
-    h, w = img.shape[:2]
+    """devolve só a parte colorida. Aceita "colorida | traço" (lado a lado) ou "colorida em cima / traço embaixo".
+    A parte colorida é a que tem cor (saturação); o corte é a primeira faixa sem cor depois dela."""
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    white = ((hsv[..., 1] < 25) & (hsv[..., 2] > 225)).mean(0)
-    seam = w
-    for x in range(int(w * .3), w - 12):
-        if white[x:x + 12].min() > .55: seam = x; break
-    x1 = seam
-    for _ in range(30):   # tira a linha preta divisória e a borda branca (no máximo 30 px)
-        col = img[:, x1 - 1]
-        if (col.max(1) < 70).mean() > .7 or white[x1 - 1] > .3: x1 -= 1
-        else: break
-    half = img[:, :max(1, x1 - 4)]
-    # tira margens brancas ou pretas finas
-    m = ~((half.min(2) > 235) | (half.max(2) < 30))
-    ys, xs = np.where(m); return half[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+    sat = (hsv[..., 1] > 60) & (hsv[..., 2] > 40)
+    h, w = sat.shape
+    lr = sat[:, :w // 2].sum() / max(1, sat[:, w // 2:].sum()); tb = sat[:h // 2].sum() / max(1, sat[h // 2:].sum())
+    vert = tb > lr                       # cor concentrada em cima -> corte horizontal
+    prof = sat.mean(1 if vert else 0); n = len(prof); run = max(6, int(n * .015))
+    seam = n
+    for x in range(int(n * .3), n - run):
+        if prof[x:x + run].max() < .004 and prof[x + run:].sum() < prof[:x].sum() * .08: seam = x; break
+    part = img[:seam] if vert else img[:, :seam]
+    m = ~((part.min(2) > 232) | (part.max(2) < 25))   # tira margens brancas (e a linha divisória preta das antigas)
+    ys, xs = np.where(m); y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    if not vert:   # imagens antigas: uma linha preta vertical colada no corte
+        while x1 - x0 > 50 and (part[y0:y1, x1 - 1].max(1) < 70).mean() > .7: x1 -= 1
+    pad = 12
+    return part[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad]
 
 
 def comps(idx, n, barrier):
@@ -117,13 +119,15 @@ def build(key, target, W=900):
         dd = cv2.distanceTransform(np.pad(m, 1).astype(np.uint8), cv2.DIST_L2, 5)[1:-1, 1:-1]; y, x = np.unravel_index(dd.argmax(), dd.shape)
         r = {"id": i, "c": c, "x": int(x), "y": int(y), "r": round(float(dd.max()), 1), "a": int(areas[i])}
         if ok: r["ok"] = ok
+        if c == "white" and (m[0].any() or m[-1].any() or m[:, 0].any() or m[:, -1].any()) and areas[i] > H * Wd * .05: r["lock"] = 1   # fundo
+        regions.append(r); continue
         regions.append(r)
     png = np.zeros((H, Wd, 3), np.uint8); png[..., 2] = reg & 255; png[..., 1] = reg >> 8
     cv2.imwrite(f"{OUT}/{key}.png", png, [cv2.IMWRITE_PNG_COMPRESSION, 9])
     ln = cv2.GaussianBlur((line * 255).astype(np.uint8), (3, 3), 0)
     cv2.imwrite(f"{OUT}/{key}.lines.jpg", 255 - ln, [cv2.IMWRITE_JPEG_QUALITY, 80])
     cv2.imwrite(f"{OUT}/{key}.orig.jpg", cv2.cvtColor(img, cv2.COLOR_RGB2BGR), [cv2.IMWRITE_JPEG_QUALITY, 84])
-    used = sorted({r["c"] for r in regions} | {o for r in regions for o in r.get("ok", [])})
+    used = sorted({r["c"] for r in regions if not r.get("lock")} | {o for r in regions if not r.get("lock") for o in r.get("ok", [])})
     json.dump({"w": Wd, "h": H, "cols": used, "regions": regions}, open(f"{OUT}/{key}.json", "w"), separators=(",", ":"))
     return n, used
 

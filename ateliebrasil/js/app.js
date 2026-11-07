@@ -26,6 +26,16 @@ const UI = {
   float(x, y, t) { const f = el("div", "floaty", t); f.style.left = x + "px"; f.style.top = y + "px"; document.body.appendChild(f); setTimeout(() => f.remove(), 1100); },
   flash() { const f = $("#flash"); f.animate([{ opacity: .85 }, { opacity: 0 }], { duration: 500 }); },
 };
+/* 🔈 botão pequeno de "ouvir de novo" ao lado de cada texto */
+const REPS = [];
+const rep = items => { REPS.push(items); return `<button class="rep" data-i="${REPS.length - 1}" aria-label="ouvir de novo">🔈</button>`; };
+const limpa = t => t.replace(/<[^>]+>/g, " ").replace(/[^\p{L}\p{N} ,.!?'()-]/gu, " ").replace(/\s+/g, " ").trim();
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest(".rep"); if (!b) return;
+  e.stopPropagation(); e.preventDefault(); Audio8.unlock(); Audio8.fx("tap"); const it = REPS[+b.dataset.i];
+  b.animate([{ transform: "scale(1)" }, { transform: "scale(1.35)" }, { transform: "scale(1)" }], { duration: 400 });
+  typeof it === "function" ? it() : Voice.talk(it);
+}, true);
 const FX = {
   parts: [], run: false,
   loop() { const cv = $("#fx"), g = cv.getContext("2d"); g.clearRect(0, 0, cv.width, cv.height); this.parts = this.parts.filter(p => p.l > 0);
@@ -65,7 +75,8 @@ const centerOf = e => { const r = e.getBoundingClientRect(); return [r.left + r.
 (() => { const d = el("div", "", `<svg width="0" height="0" style="position:absolute"><defs>${Object.entries(MAPA.uf).map(([k, [, p]]) => `<path id="uf_${k}" d="${p}"/>`).join("")}</defs></svg>`); document.body.appendChild(d.firstChild); })();
 /* cores: {uf: cor}; o resto fica cinza */
 const mapSVG = (cores, cls = "") => `<svg class="${cls}" viewBox="${MAPA.vb}">${Object.keys(MAPA.uf).map(k => `<use href="#uf_${k}" fill="${cores[k] || "#d6dccf"}"/>`).join("")}</svg>`;
-const regMap = (rid, cls) => mapSVG(Object.fromEntries(REG[rid].uf.map(u => [u, REG[rid].cor])), cls);
+const brMap = cls => mapSVG(Object.fromEntries(REGIOES.flatMap(r => r.uf.map(u => [u, r.cor]))), cls);   // Brasil inteiro, cada região com a sua cor
+const regMap = (rid, cls) => rid === "especial" ? brMap(cls) : mapSVG(Object.fromEntries(REG[rid].uf.map(u => [u, REG[rid].cor])), cls);
 const ufMap = (uf, cls) => { const r = REG[UF_REG[uf]]; return mapSVG({ ...Object.fromEntries(r.uf.map(u => [u, r.cor + "66"])), [uf]: r.cor }, cls); };
 const ufNome = uf => MAPA.uf[uf][0].toUpperCase();
 
@@ -82,7 +93,10 @@ const saveFound = f => store.set("found", f);
 const prog = k => store.get("art_" + k, null);
 const passed = t => !t.breve && !!(prog(t.k) || {}).passed;
 const avail = l => TELAS.filter(t => t.lvl === l && !t.breve);
-const roomOpen = l => l === 1 || (roomOpen(l - 1) && avail(l - 1).every(passed));
+const roomOpen = l => true;   // todas as regiões abertas desde o começo
+/* a Festa do Folclore (final) só abre quando todo o resto estiver pintado */
+const faltamFesta = () => TELAS.filter(x => !x.breve && !x.final && !passed(x));
+const telaOpen = t => !t.final || faltamFesta().length === 0;
 const regDone = rid => { const l = REGIOES.findIndex(r => r.id === rid) + 1; const a = avail(l); return a.length > 0 && a.every(passed); };
 const figs = () => store.get("figs", []);
 const fantasias = () => store.get("fantasias", []);
@@ -102,6 +116,7 @@ $("#press").onclick = async () => {
 /* ================= QUEM VAI PINTAR? (qualquer menina cria a sua pintora) ================= */
 const listaPintoras = () => Object.entries(perfis()).filter(([, p]) => p && p.nome).sort((a, b) => (a[1].criada || 0) - (b[1].criada || 0)).map(([id]) => id);
 function goPerfis() { UI.go("perfis", "#21a050", () => {
+  $("#perfis h2").innerHTML = `QUEM VAI PINTAR? ${rep([["Quem vai pintar hoje? Toque no seu retrato, ou no mais para criar uma pintora nova!"]])}`;
   const ids = listaPintoras();
   $("#plist").innerHTML = ids.map(id => `<button class="pcard" data-id="${id}">${avHTML(id)}<div class="pn">${silabasHTML(perfil(id).nome)}</div><div class="pp">toque para pintar!</div></button>`).join("")
     + (ids.length < MAX_PINTORAS ? `<button class="pcard novo" id="novaP"><div class="mais">＋</div><div class="pn" style="font-size:18px">NOVA PINTORA</div></button>` : "");
@@ -130,6 +145,7 @@ async function soletrar(nome, cells) {
 /* ================= ESCREVER O NOME (teclado grande, sem sugestão; cada letra é falada) ================= */
 let nomeId = null, typed = "", avEsc = null;
 function goNome(id) { nomeId = id; typed = id ? perfil(id).nome || "" : ""; UI.go("nome", "#ffd23f", renderNome);
+  $("#nome h2").innerHTML = `ESCREVA O SEU NOME! ${rep(() => Voice.talk([["Escreva o seu nome! Toque nas letras."], ...(typed ? [["Até agora você escreveu:"], ...[...typed].map(c => [LETRA[c] || c, { rate: .9 }])] : [])]))}`;
   setTimeout(() => Voice.say(id ? "Escreva o seu nome de novo!" : "Escreva o seu nome! Toque nas letras!"), 900); }
 const TECLAS = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZÇ"];
 function renderNome() {
@@ -149,7 +165,7 @@ $("#nomeOk").onclick = async () => {
 };
 
 /* ================= ESCOLHER O RETRATO (qualquer avatar) ================= */
-function goAvatar() { UI.go("avatar", "#ff8fbf", renderAvatar); setTimeout(() => Voice.say(`${typed.charAt(0) + typed.slice(1).toLowerCase()}, agora escolha o seu retrato!`), 900); }
+function goAvatar() { UI.go("avatar", "#ff8fbf", renderAvatar); $("#avatar h2").innerHTML = `ESCOLHA O SEU RETRATO! ${rep([["Escolha o seu retrato! Toque na menina que parece com você, e depois em: essa sou eu!"]])}`; setTimeout(() => Voice.say(`${typed.charAt(0) + typed.slice(1).toLowerCase()}, agora escolha o seu retrato!`), 900); }
 function renderAvatar() {
   $("#avNome").innerHTML = [...typed].map(c => `<div class="slot">${c}</div>`).join("");
   $("#avGrid").innerHTML = AVATARES.map(a => `<button class="avpick${a.k === avEsc ? " sel" : ""}" data-k="${a.k}">${avImg(a.k)}</button>`).join("");
@@ -170,20 +186,21 @@ function renderMuseum() {
   const aw = store.get("awards", {});
   $("#mcolors").textContent = `${aw.trophy ? "🏆" : ""}🎨${found().length} 📒${figs().length}`;
   const box = $("#rooms"); box.innerHTML = "";
-  REGIOES.forEach((R, i) => {
-    const l = i + 1, open = roomOpen(l), ts = TELAS.filter(t => t.lvl === l), done = ts.filter(passed).length;
-    const sub = open ? (regDone(R.id) ? `REGIÃO COMPLETA! Você ganhou ${R.fantasia.nome} ${R.fantasia.e}` : avail(l).length ? "Pinte todos para seguir viagem!" : "Os personagens daqui estão chegando! ✈️") : "Termine a região de antes para chegar aqui!";
-    const r = el("div", "room" + (open ? "" : " locked"), `<div class="rhead"><b>${regMap(R.id, "rmap")}${open ? "" : "🔒"} ${silabasHTML(R.sil)}<span class="rsot">${R.sotaque}</span></b><span>${done}/${avail(l).length} ⭐</span></div><div class="rsub">${sub}</div><div class="frames"></div>`);
+  [...REGIOES, ESPECIAL].forEach((R, i) => {
+    const l = i + 1, esp = R === ESPECIAL, ts = TELAS.filter(t => t.lvl === l), done = ts.filter(passed).length, falta = faltamFesta().length;
+    const sub = esp ? (falta ? `Pinte o mapa! A Festa do Folclore abre quando você pintar todos os personagens (faltam ${falta}).` : "A FESTA DO FOLCLORE ESTÁ ABERTA! 🎉")
+      : regDone(R.id) ? `REGIÃO COMPLETA! Você ganhou ${R.fantasia.nome} ${R.fantasia.e}` : avail(l).length ? "Pinte todos e ganhe uma fantasia!" : "Os personagens daqui estão chegando! ✈️";
+    const r = el("div", "room" + (esp ? " esp" : ""), `<div class="rhead"><b>${regMap(R.id, "rmap")} ${esp ? "🏆 " : ""}${silabasHTML(R.sil)}<span class="rsot">${R.sotaque}</span></b><span>${done}/${avail(l).length} ⭐</span></div><div class="rsub">${sub} ${rep([[`${R.nome.toLowerCase()}! ${sub.replace(/[^\p{L}\p{N} ,.!?()-]/gu, "")}`]])}</div><div class="frames"></div>`);
     r.style.setProperty("--rc", R.cor);
     ts.forEach(t => {
-      const f = el("button", "frame" + (passed(t) ? " done" : "") + (t.breve ? " breve" : ""));
+      const open = telaOpen(t), f = el("button", "frame" + (passed(t) ? " done" : "") + (t.breve ? " breve" : "") + (open ? "" : " fechada"));
       if (t.breve) f.innerHTML = `<div class="pic"><i>${t.e}<small>EM BREVE</small></i></div><div class="plate">${t.nome}</div>`;
       else { const p = prog(t.k), img = p && p.thumb ? p.thumb : `pages/${t.k}.orig.jpg`;
-        f.innerHTML = `<div class="pic"><img src="${img}" alt="" class="${p && p.thumb ? "" : "orig"}">${open ? "" : "<i>🔒</i>"}</div><div class="plate">${t.nome}<small>${t.e} ${ufNome(t.uf)}${t.need === 100 ? " · 💯" : ""}</small></div>
+        f.innerHTML = `<div class="pic"><img src="${img}" alt="" class="${p && p.thumb ? "" : "orig"}">${open ? "" : "<i>🔒</i>"}</div><div class="plate">${t.nome}<small>${t.e} ${esp ? "BRASIL" : ufNome(t.uf)}${t.need === 100 ? " · 💯" : ""}</small></div>
           <div class="fstars">${passed(t) ? (t.need === 100 ? "🏆" : p.mode === "free" ? "🌈" : "⭐") : ""}</div>`; }
       f.onclick = () => {
         if (t.breve) { Audio8.fx("pop"); UI.bubble(f, `${t.e} ${t.nome}<br>está chegando! ✈️`); Voice.say(`${t.nome.toLowerCase()} está chegando! Em breve!`); return; }
-        if (!open) { Audio8.fx("oops"); UI.bubble(f, `🔒 Termine a região de antes!`); Voice.say(`Primeiro termine a região de antes!`); return; }
+        if (!open) { const n = faltamFesta().length; Audio8.fx("oops"); UI.bubble(f, `🔒 Pinte todos os outros primeiro!<br>Faltam ${n}.`); Voice.say(`A Festa do Folclore é o grande desafio! Pinte todos os outros primeiro. Faltam ${n}!`); return; }
         Audio8.fx("tap"); meet(t);
       };
       r.querySelector(".frames").appendChild(f);
@@ -211,16 +228,17 @@ async function meet(t) {
 function boasVindas(R) {
   return new Promise(res => {
     store.set("reg_" + R.id, 1);
-    $("#regBox").innerHTML = `<h3>BEM-VINDA AO</h3><div class="rn">${silabasHTML(R.sil)}</div><div class="bigmap">${regMap(R.id)}</div><div class="sot">${R.sotaque}</div><div class="small">${R.oi}</div><button class="nextbtn" id="regGo">VAMOS! ➡️</button>`;
+    $("#regBox").innerHTML = `<h3>${R === ESPECIAL ? "BEM-VINDA AO" : "BEM-VINDA AO"}</h3><div class="rn">${silabasHTML(R.sil)}</div><div class="bigmap">${regMap(R.id)}</div><div class="sot">${R.sotaque}</div><div class="small">${R.oi} ${rep([[R.oi]])}</div><button class="nextbtn" id="regGo">VAMOS! ➡️</button>`;
     $("#regiao").classList.add("on"); Audio8.fx("unlock"); FX.burst(innerWidth / 2, innerHeight * .4, ["🗺️", "⭐", "✨"], 20);
-    Voice.talk([[R.sotaque.toLowerCase().replace("!", "") + "!", { pitch: 1.3 }], [R.oi], [`Esta é a região ${R.nome.toLowerCase()}! Olha ela no mapa!`]]);
+    Voice.talk([[R.sotaque.toLowerCase().replace("!", "") + "!", { pitch: 1.3 }], [R.oi], ...(R === ESPECIAL ? [] : [[`Esta é a região ${R.nome.toLowerCase()}! Olha ela no mapa!`]])]);
     $("#regGo").onclick = () => { Audio8.fx("tap"); Voice.cancel(); $("#regiao").classList.remove("on"); res(); };
   });
 }
 function renderAdivinha(t) {
   // as opções mostram o retrato de verdade de cada personagem (só os que já têm ilustração)
-  const outros = shuffle(TELAS.filter(x => x !== t && !x.breve && x.k !== "grupo")).slice(0, 2), ops = shuffle([t, ...outros]);
-  $("#meetBox").innerHTML = `<div class="adv"><b>O QUE É, O QUE É?</b>${t.adv.replace(/^O que é, o que é\? ?/, "")}</div><div class="opts">${ops.map(o => `<button class="opt" data-k="${o.k}">${cropHTML(o.k, ...o.rosto)}${o.nome}</button>`).join("")}</div><div class="small" style="margin-top:10px">🔈 Toque em quem você acha que é!</div>`;
+  const outros = shuffle(TELAS.filter(x => x !== t && !x.breve && x.reg !== "especial")).slice(0, 2), ops = shuffle([t, ...outros]);
+  const advTxt = t.adv.replace(/^O que é, o que é\? ?/, "");
+  $("#meetBox").innerHTML = `<div class="adv"><b>O QUE É, O QUE É? ${rep([["O que é, o que é?", { rate: .95 }], [advTxt, { rate: .95 }], ["Toque em quem você acha que é!"]])}</b>${advTxt}</div><div class="opts">${ops.map(o => `<button class="opt" data-k="${o.k}">${cropHTML(o.k, ...o.rosto)}${o.nome}</button>`).join("")}</div><div class="small" style="margin-top:10px">🔈 Toque em quem você acha que é!</div>`;
   $$("#meetBox .opt").forEach(b => b.onclick = async () => {
     if (b.classList.contains("no")) return;
     const o = TELAS.find(x => x.k === b.dataset.k);
@@ -234,8 +252,8 @@ function renderAdivinha(t) {
 function renderIntro(t) {
   const perfect = t.need === 100;
   $("#meetBox").innerHTML = `<div class="mtop">${cropHTML(t.k, ...t.rosto, "crop retrato jump")}
-      <div class="minfo"><div class="pname">${silabasHTML(t.sil)}</div><div class="pmap">${ufMap(t.uf)}<div>MORO EM<br><b>${ufNome(t.uf)}</b></div></div></div></div>
-    <div class="msay" id="msay"></div>
+      <div class="minfo"><div class="pname">${silabasHTML(t.sil)}</div><div class="pmap">${t.reg === "especial" ? `${brMap()}<div>O BRASIL<br><b>INTEIRINHO!</b></div>` : `${ufMap(t.uf)}<div>MORO EM<br><b>${ufNome(t.uf)}</b></div>`}</div></div></div>
+    <div class="msay"><span id="msay"></span> ${rep(() => falarIntro(t))}</div>
     ${perfect ? `<div class="perfect">💯 Nesta pintura você precisa copiar <b>todas</b> as cores! Você consegue, ${NAME}! 💪</div>` : ""}
     <div class="mycolors"><div class="small">MINHAS CORES:</div><div class="chips">${colorsOf(metaCache[t.k]).map(c => chipHTML(c)).join("")}</div></div>
     <div class="modes"><button class="mbtn exact" id="goExact">🎯 <span>COPIAR AS CORES</span></button>
@@ -246,7 +264,7 @@ function renderIntro(t) {
   $(".retrato").onclick = () => falarIntro(t);
 }
 async function falarIntro(t) {
-  const R = REG[t.reg], lines = [t.fala, `Eu moro em ${MAPA.uf[t.uf][0]}, na região ${R.nome.toLowerCase()}!`, t.lenda];
+  const R = REG[t.reg], lines = [t.fala, ...(t.reg === "especial" ? [] : [`Eu moro em ${MAPA.uf[t.uf][0]}, na região ${R.nome.toLowerCase()}!`]), t.lenda];
   if (t.extra) lines.push(t.extra); if ((PIADAS[NAME] || {})[t.k]) lines.push(PIADAS[NAME][t.k]);
   if (t.need === 100) lines.push(`Nesta pintura você precisa copiar todas as cores! Você consegue, ${Nome()}!`);
   $(".retrato")?.classList.add("talk");
@@ -281,7 +299,7 @@ async function startPaint(t) {
     for (let p = 0; p < N; p++) { const r = reg[p]; P8.pix[r][k[r]++] = p; const b = P8.box[r], x = p % W, y = (p / W) | 0; if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y; if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y; }
     window.resetPointers && resetPointers();
     Object.assign(P8, { reg, lines, edge, orig: op, brush: null, hist: [], zoom: 1, panX: 0, panY: 0, seen: new Set(), tricked: false, stolen: null });
-    P8.objs = (t.palavras || []).map(o => ({ o, id: reg[Math.min(H - 1, Math.round(o[2] * (H - 1))) * W + Math.min(W - 1, Math.round(o[1] * (W - 1)))] }));
+    P8.objs = (t.palavras || meta.words || []).map(o => ({ o, id: reg[Math.min(H - 1, Math.round(o[2] * (H - 1))) * W + Math.min(W - 1, Math.round(o[1] * (W - 1)))] }));
     const saved = prog(t.k); P8.fills = Array(nR).fill(null);
     if (saved && saved.fills && saved.mode === mode && !saved.passed && saved.fills.length === nR) saved.fills.forEach((c, i) => { if (c) P8.fills[i] = c; });
     P8.objs.forEach(ob => { if (P8.fills[ob.id]) P8.seen.add(ob.o[0]); });
@@ -402,7 +420,7 @@ $("#helpBtn").onclick = async () => {
   const area = $("#parea"); let stroke = null, pinch = null; const pts = new Map();
   const startPinch = () => { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: P8.zoom, mx: (a[0] + b[0]) / 2, my: (a[1] + b[1]) / 2, px: P8.panX, py: P8.panY }; };
   window.resetPointers = () => { pts.clear(); pinch = null; stroke = null; };
-  area.addEventListener("pointerdown", e => { if (e.target.closest(".pfloat") || e.target.closest("#monte")) return;
+  area.addEventListener("pointerdown", e => {
     if (e.isPrimary || !pts.size) { pts.clear(); pinch = null; stroke = null; }   // um toque novo nunca herda dedo "preso" de antes
     try { area.setPointerCapture(e.pointerId); } catch (err) { } pts.set(e.pointerId, [e.clientX, e.clientY]);
     if (pts.size === 2) { if (stroke) { endStroke(); } startPinch(); return; }
@@ -441,8 +459,8 @@ async function afterPaint(list) {
 }
 /* palavra escondida: aparece com sílabas coloridas e a voz lê devagar */
 async function wordPop(o) {
-  const d = el("div", "wordpop", `${cropHTML(cur.k, o[1], o[2], .28, "crop we")}<div><span style="font-size:30px">${o[3]}</span><br><b style="font-size:30px">${silabasHTML(o[0])}</b></div>`);
-  d.querySelector(".we").style.cssText += ";width:70px;height:70px"; document.body.appendChild(d);
+  const d = el("div", "wordpop", `${cur.semCrop ? `<span class="we">${o[3]}</span>` : cropHTML(cur.k, o[1], o[2], .28, "crop we")}<div>${cur.semCrop ? "" : `<span style="font-size:30px">${o[3]}</span><br>`}<b style="font-size:${o[0].length > 12 ? 24 : 30}px">${silabasHTML(o[0])}</b></div>`);
+  if (!cur.semCrop) d.querySelector(".we").style.cssText += ";width:70px;height:70px"; document.body.appendChild(d);
   Audio8.fx("pop"); setTimeout(() => d.classList.add("out"), 4200); setTimeout(() => d.remove(), 4600);
   await Voice.syl(o[0]);
 }
@@ -493,7 +511,7 @@ const Saci = {
     await v.animate([{ left: "-80px", top: a.top + a.height * .7 + "px", transform: "rotate(0)" }, { left: innerWidth + "px", top: a.top + a.height * .3 + "px", transform: "rotate(720deg)" }], { duration: 1600, easing: "ease-in-out" }).finished;
     v.style.display = "none"; if (UI.cur !== "paint" || finishing) return;
     P8.stolen = c; renderPots(); this.tries = 0;
-    const s = $("#saci"); s.innerHTML = `${cropHTML("saci", .67, .4, .3, "crop cara")}<i class="pote" style="background:${PAINT[c][0]}"></i><div class="sfala">PEGUEI O<br>${silabasHTML(PAINT[c][2])}!<br>ME PEGA! 😜</div>`;
+    const s = $("#saci"); s.innerHTML = `${cropHTML("saci", ...TELAS.find(x => x.k === "saci").rosto, "crop cara")}<i class="pote" style="background:${PAINT[c][0]}"></i><div class="sfala">PEGUEI O<br>${silabasHTML(PAINT[c][2])}!<br>ME PEGA! 😜</div>`;
     this.mover(); s.classList.add("on"); Audio8.fx("giggle");
     Voice.say(`Hihihi! Eu sou o Saci! Peguei a sua tinta ${N(c)}! Toque em mim pra pegar de volta!`, VOZ.saci);
     clearTimeout(this.volta); this.volta = setTimeout(() => { if (P8.stolen) { this.tries = 9; this.pegar(true); } }, 30000);   // não deixa ela sem a cor
@@ -529,14 +547,15 @@ async function alive(t) {
   await Voice.talk([[`Uau, ${Nome()}! Você copiou todas as cores! Eu ganhei vida!`, t.voz]]); await sleep(500);
 }
 /* missões do final (Encontre e Monte): se ela sair da pintura no meio, tudo é desfeito, senão o toque fica preso */
+const setMissao = on => { $("#paint").classList.toggle("missao", on); if (UI.cur === "paint") fitCanvas(); };
 const Missao = { id: 0, h: null, res: null,
-  abort() { this.id++; if (this.h) $("#parea").removeEventListener("pointerdown", this.h, true); this.h = null;
+  abort() { this.id++; setMissao(false); if (this.h) $("#parea").removeEventListener("pointerdown", this.h, true); this.h = null;
     $("#quest").classList.remove("on"); $("#monte").classList.remove("on"); const r = this.res; this.res = null; r && r(); } };
 /* encontre: 1 palavra escondida */
 async function quest(t) {
   const objs = shuffle(P8.objs.filter(o => P8.pix[o.id] && P8.pix[o.id].length)).slice(0, 1); if (!objs.length) return;
   for (const ob of objs) {
-    const o = ob.o; $("#quest").innerHTML = `<b>ENCONTRE: ${silabasHTML(o[0])}</b> ${o[3]} 👆`; $("#quest").classList.add("on");
+    const o = ob.o; $("#quest").innerHTML = `<b>ENCONTRE: ${silabasHTML(o[0])}</b> ${o[3]} 👆 ${rep([[`Encontre: ${palavra(o[0]).toLowerCase()}! Toque no desenho onde está.`]])}`; $("#quest").classList.add("on"); setMissao(true);
     Voice.talk([[`Encontre: ${palavra(o[0]).toLowerCase()}! Onde está?`]]);
     await new Promise(res => {
       let tries = 0; const area = $("#parea"); Missao.res = res;
@@ -547,26 +566,26 @@ async function quest(t) {
       area.addEventListener("pointerdown", h, true); Missao.h = h;
     });
   }
-  $("#quest").classList.remove("on");
+  $("#quest").classList.remove("on"); setMissao(false);
 }
 /* monte a palavra: toque nas sílabas na ordem certa */
 function montar(t) {
   const sy = silabas(t.sil); if (sy.length < 2) return Promise.resolve();
   return new Promise(res => {
     let k = 0; const m = $("#monte"); Missao.res = res;
-    m.innerHTML = `<b>MONTE O NOME! 🧩</b><div class="mw">${sy.map(() => `<div class="ms"></div>`).join("")}</div><div class="tiles">${shuffle(sy.map((s, i) => [s, i])).map(([s, i]) => `<button data-s="${s}" style="color:${SYLC[i % SYLC.length]}">${s}</button>`).join("")}</div>`;
-    m.classList.add("on"); Voice.talk([["Agora monte o meu nome! Toque nas sílabas na ordem certa!"], ...sy.map(s => [s.toLowerCase(), { rate: .7 }])]);
+    m.innerHTML = `<b>MONTE O NOME! 🧩 ${rep([["Monte o nome! Toque nas sílabas na ordem certa:"], ...sy.map(x => [x.toLowerCase(), { rate: .7 }]), [palavra(t.sil).toLowerCase() + "!"]])}</b><div class="mw">${sy.map(() => `<div class="ms"></div>`).join("")}</div><div class="tiles">${shuffle(sy.map((s, i) => [s, i])).map(([s, i]) => `<button data-s="${s}" style="color:${SYLC[i % SYLC.length]}">${s}</button>`).join("")}</div>`;
+    m.classList.add("on"); setMissao(true); Voice.talk([["Agora monte o meu nome! Toque nas sílabas na ordem certa!"], ...sy.map(s => [s.toLowerCase(), { rate: .7 }])]);
     m.querySelectorAll(".tiles button").forEach(b => b.onclick = async () => {
       if (b.dataset.s === sy[k]) {
         const slot = m.querySelectorAll(".ms")[k]; slot.textContent = sy[k]; slot.style.color = SYLC[k % SYLC.length]; b.classList.add("used"); k++;
         Audio8.fx("pop"); FX.burst(...centerOf(slot), ["✨"], 6);
-        if (k === sy.length) { Audio8.fx("good"); FX.burst(...centerOf(m), [t.e, "⭐", "✨"], 26); await Voice.syl(t.sil); m.classList.remove("on"); res(); }
+        if (k === sy.length) { Audio8.fx("good"); FX.burst(...centerOf(m), [t.e, "⭐", "✨"], 26); await Voice.syl(t.sil); m.classList.remove("on"); setMissao(false); res(); }
         else Voice.say(b.dataset.s.toLowerCase(), { rate: .7 });
       } else { b.classList.add("bad"); setTimeout(() => b.classList.remove("bad"), 450); Audio8.fx("oops"); Voice.say(`${b.dataset.s.toLowerCase()} vem depois! Qual vem agora?`); }
     });
   });
 }
-const nextArt = () => TELAS.find(x => !x.breve && x.pos > cur.pos && roomOpen(x.lvl) && !passed(x)) || TELAS.find(x => !x.breve && roomOpen(x.lvl) && !passed(x));
+const nextArt = () => TELAS.find(x => !x.breve && x.pos > cur.pos && telaOpen(x) && !passed(x)) || TELAS.find(x => !x.breve && telaOpen(x) && !passed(x));
 async function finish(byButton) {
   if (UI.cur !== "paint" || $("#done").classList.contains("on") || finishing) return; finishing = true; Saci.stop(); try { const s = score(), t = cur;
   const perfect = t.need === 100;
@@ -577,38 +596,43 @@ async function finish(byButton) {
   }
   if (mode === "exact" && s.pct >= 100) await alive(t); else if (mode === "exact" && s.pct >= 80) renderAll();
   const mid = Missao.id; await quest(t); if (mid !== Missao.id) return; await montar(t); if (mid !== Missao.id) return;
-  const old = prog(t.k) || {}, wasDone = REGIOES.map(R => regDone(R.id)), wasOpen = REGIOES.map((_, i) => roomOpen(i + 1));
+  const old = prog(t.k) || {}, wasDone = REGIOES.map(R => regDone(R.id)), festaAntes = TELAS.filter(x => x.final).every(telaOpen);
   const rec = { fills: P8.fills, mode, pct: s.pct, thumb: thumbData(), passed: true };
   if (!store.set("art_" + t.k, rec)) store.set("art_" + t.k, { ...rec, thumb: thumbData(160) });
   // figurinhas novas
   const fg = figs(), novas = (t.fig || []).filter(f => !fg.includes(f[0])); novas.forEach(f => fg.push(f[0])); store.set("figs", fg);
   $("#dmine").src = rec.thumb; $("#dorig").src = `pages/${t.k}.orig.jpg`; $("#dpainter").innerHTML = cropHTML(t.k, ...t.rosto, "crop retrato");
-  $("#dtitle").innerHTML = `MUITO BEM, ${NAME}!`; $("#dstars").textContent = perfect ? "💯" : mode === "free" ? "🌈" : "⭐";
-  $("#dmsg").innerHTML = mode === "exact" && s.pct >= 100 && !perfect ? `100%! ✨ ${t.nome} ganhou vida!` : perfect ? `Perfeito! Igualzinho!` : `Que lindo! 💖`;
-  $("#dfig").innerHTML = novas.map(f => `<div class="newfig">${cropHTML(t.k, f[1], f[2], f[3])}<div>📒 FIGURINHA NOVA!<br><b>${silabasHTML(f[0])}</b></div></div>`).join("");
-  $("#dparl").innerHTML = `<div class="parl">${t.parlenda.map(l => `<div>${l}</div>`).join("")}</div>`;
+  const msg = mode === "exact" && s.pct >= 100 && !perfect ? `100%! ${t.nome} ganhou vida!` : perfect ? `Perfeito! Igualzinho!` : `Que lindo!`;
+  const msgFala = msg.replace("100%!", "Cem por cento!").replace(t.nome, t.nome.toLowerCase());
+  $("#dtitle").innerHTML = `MUITO BEM, ${NAME}! ${rep([[`Muito bem, ${Nome()}! ${msgFala}`, t.voz]])}`; $("#dstars").textContent = perfect ? "💯" : mode === "free" ? "🌈" : "⭐";
+  $("#dmsg").innerHTML = `${msg} ${mode === "exact" && s.pct >= 100 ? "✨" : "💖"}`;
+  $("#dfig").innerHTML = novas.map(f => `<div class="newfig">${cropHTML(t.k, f[1], f[2], f[3])}<div>📒 FIGURINHA NOVA!<br><b>${silabasHTML(f[0])}</b></div>${rep([...silabas(f[0]).map(x => [x.toLowerCase(), { rate: .7 }]), [palavra(f[0]).toLowerCase() + "!"], [f[4]]])}</div>`).join("");
+  $("#dparl").innerHTML = `<div class="parl">${t.parlenda.map(l => `<div>${l}</div>`).join("")}${rep(() => lerParlenda(t))}</div>`;
   renderRima(t);
   const nx = nextArt(); $("#dnext").style.display = nx ? "" : "none"; if (nx) $("#dnext").innerHTML = `➡️ PRÓXIMA: <small>${nx.e} ${nx.nome}</small>`;
   Audio8.play("win"); Audio8.fx("applause"); FX.confetti(); setTimeout(() => FX.burst(innerWidth / 2, innerHeight * .3), 500);
   $("#done").classList.add("on"); scrollify($("#done .obox"));
-  await Voice.talk([[`Muito bem, ${Nome()}! Ficou lindo!`, t.voz]]);
+  await Voice.talk([[`Muito bem, ${Nome()}! ${msgFala}`, t.voz]]);
   for (const f of novas) { if (!$("#done").classList.contains("on")) break; await Voice.talk([["Figurinha nova!"], [palavra(f[0]).toLowerCase() + "!"]]); }
-  // parlenda com ritmo, acendendo cada verso
-  const vs = $$("#dparl .parl div");
-  for (let i = 0; i < vs.length; i++) { if (!$("#done").classList.contains("on")) break; vs.forEach((v, j) => v.classList.toggle("on", j === i)); const ok = await Voice.talk([[t.parlenda[i], { rate: .95, pitch: 1.2 }]]); if (!ok) break; }
-  vs.forEach(v => v.classList.remove("on"));
+  if ($("#done").classList.contains("on")) await lerParlenda(t);
   if ($("#done").classList.contains("on")) Voice.say(`Agora me diga: o que rima com ${t.rima.w.toLowerCase()}?`);
   // região completa = fantasia nova; viagem completa = troféu
   const reg = REGIOES.findIndex((R, i) => regDone(R.id) && !wasDone[i]);
-  const nowOpen = REGIOES.map((_, i) => roomOpen(i + 1)), newRoom = nowOpen.findIndex((o, i) => o && !wasOpen[i]);
-  if (newRoom >= 0) $("#dmsg").innerHTML += `<div class="newroom">🗺️ ${REGIOES[newRoom].nome} liberado!</div>`;
+  const festaAbriu = !festaAntes && TELAS.filter(x => x.final).every(telaOpen);
+  if (festaAbriu) { $("#dmsg").innerHTML += `<div class="newroom">🎉 A FESTA DO FOLCLORE ABRIU!</div>`; Audio8.fx("unlock"); await Voice.talk([["Uau! Você pintou todos os personagens! A Festa do Folclore abriu! Vamos pra festa?", VOZ.saci]]); }
   if (perfect) setTimeout(() => ceremony("trophy"), 400);
   else if (reg >= 0) setTimeout(() => ceremony("fantasia", REGIOES[reg]), 400);
   } finally { finishing = false; }
 }
+/* parlenda com ritmo, acendendo cada verso */
+async function lerParlenda(t) {
+  const vs = $$("#dparl .parl div"); if ($("#done").classList.contains("on")) await Voice.talk([["Agora, uma parlenda!"]]);
+  for (let i = 0; i < vs.length; i++) { if (!$("#done").classList.contains("on")) break; vs.forEach((v, j) => v.classList.toggle("on", j === i)); const ok = await Voice.talk([[t.parlenda[i], { rate: .95, pitch: 1.2 }]]); if (!ok) break; }
+  vs.forEach(v => v.classList.remove("on"));
+}
 function renderRima(t) {
   const R = t.rima, ops = shuffle([R.ok, ...R.no]);
-  $("#drima").innerHTML = `<div class="rima"><div class="q">🎵 O QUE RIMA COM <b>${R.w}</b>?</div><div class="opts">${ops.map(([w, e]) => `<button class="opt" data-w="${w}"><span>${e}</span>${w}</button>`).join("")}</div></div>`;
+  $("#drima").innerHTML = `<div class="rima"><div class="q">🎵 O QUE RIMA COM <b>${R.w}</b>? ${rep([[`O que rima com ${R.w.toLowerCase()}?`], ...ops.map(([w]) => [w.toLowerCase() + "?", { rate: .9 }])])}</div><div class="opts">${ops.map(([w, e]) => `<button class="opt" data-w="${w}"><span>${e}</span>${w}</button>`).join("")}</div></div>`;
   $$("#drima .opt").forEach(b => b.onclick = () => {
     if (b.dataset.w === R.ok[0]) { b.classList.add("yes"); Audio8.fx("good"); FX.burst(...centerOf(b), ["🎵", "⭐", R.ok[1]], 20); Voice.say(`Isso! ${R.w.toLowerCase()} rima com ${R.ok[0].toLowerCase()}! ${R.w.toLowerCase()}... ${R.ok[0].toLowerCase()}!`); }
     else { b.classList.add("no"); Audio8.fx("oops"); Voice.say(`${b.dataset.w.toLowerCase()}? Hmm, ${b.dataset.w.toLowerCase()} não rima com ${R.w.toLowerCase()}. Tente outra!`); }
@@ -618,8 +642,8 @@ async function ceremony(kind, R) {
   const T = kind === "trophy";
   if (T) { const aw = store.get("awards", {}); aw.trophy = 1; store.set("awards", aw); }
   else { const f = fantasias(); if (!f.includes(R.fantasia.id)) f.push(R.fantasia.id); store.set("fantasias", f); setPerfil(WHO, { veste: R.fantasia.id }); }
-  $("#cbox").innerHTML = T ? `<div class="cicon">🏆</div><h3>GUARDIÃ DO FOLCLORE!</h3><div class="cname">${NAME}</div><div class="cpt">Você conhece o Brasil inteirinho! 🇧🇷</div><div class="cfaces">👏🧢🧜‍♀️🐬🐺🐍👏</div><button class="orow" id="cok">💚 OBRIGADA!</button>`
-    : `<h3>REGIÃO ${R.nome} COMPLETA!</h3><div style="margin:auto">${avHTML(WHO, 150)}</div><div class="cpt">Você ganhou: <b>${R.fantasia.nome}</b> ${R.fantasia.e}</div><div class="small">Toque no seu retrato lá no mapa para trocar de fantasia!</div><div class="cfaces">👏👏🎉👏👏</div><button class="orow" id="cok">💚 OBA!</button>`;
+  $("#cbox").innerHTML = T ? `<div class="cicon">🏆</div><h3>GUARDIÃ DO FOLCLORE!</h3><div class="cname">${NAME}</div><div class="cpt">Você conhece o Brasil inteirinho! 🇧🇷</div><div class="cfaces">👏🧢🧜‍♀️🐬🐺🐍👏</div>${rep([[`Parabéns, ${Nome()}! Você é a Guardiã do Folclore!`]])}<button class="orow" id="cok">💚 OBRIGADA!</button>`
+    : `<h3>REGIÃO ${R.nome} COMPLETA!</h3><div style="margin:auto">${avHTML(WHO, 150)}</div><div class="cpt">Você ganhou: <b>${R.fantasia.nome}</b> ${R.fantasia.e}</div><div class="small">Toque no seu retrato lá no mapa para trocar de fantasia! ${rep([[`Você ganhou ${R.fantasia.nome.toLowerCase()}! Toque no seu retrato lá no mapa para trocar de fantasia.`]])}</div><div class="cfaces">👏👏🎉👏👏</div><button class="orow" id="cok">💚 OBA!</button>`;
   $("#done").classList.remove("on"); $("#ceremony").classList.add("on");
   Audio8.play("win"); Audio8.fx("ovation"); FX.confetti(); [0, 700, 1400, 2100].forEach(d => setTimeout(() => { FX.burst(innerWidth * (.2 + Math.random() * .6), innerHeight * .3, ["🌟", "✨", T ? "🏆" : R.fantasia.e, "🎉"], 26); FX.confetti(); }, d));
   $("#cok").onclick = () => { $("#ceremony").classList.remove("on"); goMuseum(); };
@@ -633,7 +657,7 @@ $("#dsave").onclick = () => { const a = document.createElement("a"); a.download 
 /* ================= ÁLBUM DE FIGURINHAS ================= */
 $("#bAlbum").onclick = () => {
   Audio8.fx("whoosh"); const fg = figs();
-  $("#albBox").innerHTML = `<h3>📒 FIGURINHAS ${fg.length}/${FIGS.length}</h3><div class="small">Bichos e plantas do Brasil! Toque para ouvir.</div><div class="figs">${FIGS.map((f, i) => { const tem = fg.includes(f.s);
+  $("#albBox").innerHTML = `<h3>📒 FIGURINHAS ${fg.length}/${FIGS.length}</h3><div class="small">Bichos e plantas do Brasil! Toque para ouvir. ${rep([[`Você tem ${fg.length} figurinhas de ${FIGS.length}. Toque numa figurinha para ouvir!`]])}</div><div class="figs">${FIGS.map((f, i) => { const tem = fg.includes(f.s);
     return `<button class="fig${tem ? "" : " no"}" data-i="${i}">${cropHTML(f.t.k, f.x, f.y, f.z)}<b>${tem ? silabasHTML(f.s) : "???"}</b></button>`; }).join("")}</div><button class="orow" id="albX">✖ FECHAR</button>`;
   $("#album").classList.add("on"); scrollify($("#albBox")); Voice.say("O seu álbum de figurinhas!");
   $$("#albBox .fig").forEach(b => b.onclick = () => { const f = FIGS[b.dataset.i]; Audio8.fx("pop");
@@ -644,7 +668,7 @@ $("#album").onclick = e => { if (e.target.id === "album") { Voice.cancel(); $("#
 /* ================= FANTASIAS ================= */
 function abrirRoupa() {
   const f = fantasias(), veste = perfil(WHO).veste;
-  $("#roupaBox").innerHTML = `<h3>👒 FANTASIAS</h3><div style="margin:auto">${avHTML(WHO, 140)}</div><div class="small">Complete uma região para ganhar uma fantasia!</div>
+  $("#roupaBox").innerHTML = `<h3>👒 FANTASIAS</h3><div style="margin:auto">${avHTML(WHO, 140)}</div><div class="small">Complete uma região para ganhar uma fantasia! ${rep([["Toque numa fantasia para vestir. Complete uma região para ganhar uma fantasia nova!"]])}</div>
     <div class="wardrobe"><button data-f="" class="${!veste ? "on" : ""}">🚫</button>${REGIOES.map(R => `<button data-f="${R.fantasia.id}" class="${f.includes(R.fantasia.id) ? "" : "no"}${veste === R.fantasia.id ? " on" : ""}">${R.fantasia.id === "gorro" ? `<span style="display:block;width:46px;margin:auto">${GORRO}</span>` : R.fantasia.e}</button>`).join("")}</div>
     <button class="orow" id="roupaX">✖ FECHAR</button>`;
   $("#roupa").classList.add("on");

@@ -23,15 +23,14 @@ function restoreAll(o) { let n = 0; for (const [k, v] of Object.entries(o || {})
 /* ---------- letras e sílabas (alfabetização) ---------- */
 const SYLC = ["#e3262e", "#2560d9", "#21a050", "#d27800", "#8a3fc4"];
 /* "GOR-RO" -> sílabas coloridas; "SA-CI PE-RE-RÊ" também funciona */
-const silabasHTML = (s, cls = "sy") => s.split(" ").map(w => w.split("-").map((p, i) => `<span class="${cls}" style="color:${SYLC[i % SYLC.length]}">${p}</span>`).join(`<i class="hif">-</i>`)).join(" ");
+const silabasHTML = (s, cls = "sy") => s.split(" ").map(w => `<span style="white-space:nowrap">${w.split("-").map((p, i) => `<span class="${cls}" style="color:${SYLC[i % SYLC.length]}">${p}</span>`).join(`<i class="hif">-</i>`)}</span>`).join(" ");
 const palavra = s => s.replace(/-/g, "");
 const silabas = s => s.split(/[-\s]/).filter(Boolean);
 const LETRA = { A: "á", B: "bê", C: "cê", D: "dê", E: "é", F: "éfe", G: "gê", H: "agá", I: "i", J: "jota", K: "cá", L: "éle", M: "ême", N: "êne", O: "ó", P: "pê", Q: "quê", R: "érre", S: "ésse", T: "tê",
   U: "u", V: "vê", W: "dáblio", X: "xis", Y: "ípsilon", Z: "zê", "Ç": "cê cedilha", "Á": "á", "É": "é", "Í": "i", "Ó": "ó", "Ú": "u", "Ã": "ã", "Õ": "õ", "Â": "â", "Ê": "ê", "Ô": "ô" };
 
-/* recorte redondo de um ponto da ilustração (bichos, rostos, figurinhas) */
-function cropHTML(k, x, y, z = .3, cls = "crop") {
-  const s = 100 / z, px = Math.max(0, Math.min(100, (x - z / 2) / (1 - z) * 100)), py = Math.max(0, Math.min(100, (y - z / 2 * (META_AR[k] || .67)) / (1 - z * (META_AR[k] || .67)) * 100));
-  return `<div class="${cls}" style="background-image:url(pages/${k}.orig.jpg);background-size:${s}% auto;background-position:${px}% ${py}%"></div>`;
-}
+/* recorte redondo de um ponto da ilustração (rostos, bichos, figurinhas): vem pronto como imagem (tools/build_crops.py),
+   assim o enquadramento é exato em qualquer celular. z = largura do recorte (fração da largura da página). */
+const cropKey = (k, x, y, z) => k + "_" + [x, y, z].map(v => Math.round(v * 1000)).join("_");
+function cropHTML(k, x, y, z = .3, cls = "crop") { return `<img class="${cls}" src="pages/c/${cropKey(k, x, y, z)}.jpg" alt="">`; }
 const META_AR = typeof PAGINAS !== "undefined" ? Object.fromEntries(Object.entries(PAGINAS).map(([k, [w, h]]) => [k, w / h])) : {};   // largura/altura de cada página
