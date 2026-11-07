@@ -264,8 +264,8 @@
   "estimativa": {
    "falas": 668,
    "caracteres": 27057,
-   "eleven_creditos": 1096,
-   "eleven_usd": 5.19,
+   "eleven_creditos": 1098,
+   "eleven_usd": 5.2,
    "fish_creditos": 126,
    "fish_usd": 0.6,
    "obs": "211 créditos Comfy = US$ 1. Conte mais uns 50% para refazer falas."
@@ -3803,9 +3803,9 @@
    "voz": "narradora",
    "texto": "ca... be... lo... cabelo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... be... lo... cabelo!",
+    "texto": "ca... be... lo... cabelo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -3821,9 +3821,9 @@
    "voz": "narradora",
    "texto": "ár... vo... re... árvore!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ár... vo... re... árvore!",
+    "texto": "ár... vo... re... árvore!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -3839,9 +3839,9 @@
    "voz": "narradora",
    "texto": "fo... lha... folha!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fo... lha... folha!",
+    "texto": "fo... lha... folha!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -3857,9 +3857,9 @@
    "voz": "narradora",
    "texto": "pé... pé!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pé... pé!",
+    "texto": "pé... pé!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -3875,9 +3875,9 @@
    "voz": "narradora",
    "texto": "mão... mão!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] mão... mão!",
+    "texto": "mão... mão!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -3893,9 +3893,9 @@
    "voz": "narradora",
    "texto": "ma... ca... co... de... chei... ro... macacodecheiro!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ma... ca... co... de... chei... ro... macacodecheiro!",
+    "texto": "ma... ca... co... de... chei... ro... macacodecheiro!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -3911,9 +3911,9 @@
    "voz": "narradora",
    "texto": "cu... ru... pi... ra... curupira!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cu... ru... pi... ra... curupira!",
+    "texto": "cu... ru... pi... ra... curupira!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4257,9 +4257,9 @@
    "voz": "narradora",
    "texto": "flor... flor!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] flor... flor!",
+    "texto": "flor... flor!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4275,9 +4275,9 @@
    "voz": "narradora",
    "texto": "cau... da... cauda!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cau... da... cauda!",
+    "texto": "cau... da... cauda!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4293,9 +4293,9 @@
    "voz": "narradora",
    "texto": "pe... dra... pedra!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pe... dra... pedra!",
+    "texto": "pe... dra... pedra!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4311,9 +4311,9 @@
    "voz": "narradora",
    "texto": "con... cha... concha!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] con... cha... concha!",
+    "texto": "con... cha... concha!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4329,9 +4329,9 @@
    "voz": "narradora",
    "texto": "tu... cu... na... ré... tucunaré!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] tu... cu... na... ré... tucunaré!",
+    "texto": "tu... cu... na... ré... tucunaré!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4347,9 +4347,9 @@
    "voz": "narradora",
    "texto": "i... a... ra... iara!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] i... a... ra... iara!",
+    "texto": "i... a... ra... iara!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4693,9 +4693,9 @@
    "voz": "narradora",
    "texto": "bo... to... boto!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bo... to... boto!",
+    "texto": "bo... to... boto!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4711,9 +4711,9 @@
    "voz": "narradora",
    "texto": "cha... péu... chapéu!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cha... péu... chapéu!",
+    "texto": "cha... péu... chapéu!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4729,9 +4729,9 @@
    "voz": "narradora",
    "texto": "on... da... onda!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] on... da... onda!",
+    "texto": "on... da... onda!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -4747,9 +4747,9 @@
    "voz": "narradora",
    "texto": "go... ta... gota!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] go... ta... gota!",
+    "texto": "go... ta... gota!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5111,9 +5111,9 @@
    "voz": "narradora",
    "texto": "por... co... porco!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] por... co... porco!",
+    "texto": "por... co... porco!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5129,9 +5129,9 @@
    "voz": "narradora",
    "texto": "a... ra... ra... arara!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] a... ra... ra... arara!",
+    "texto": "a... ra... ra... arara!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5147,9 +5147,9 @@
    "voz": "narradora",
    "texto": "pe... na... pena!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pe... na... pena!",
+    "texto": "pe... na... pena!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5165,9 +5165,9 @@
    "voz": "narradora",
    "texto": "a... ra... ra... a... zul... araraazul!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] a... ra... ra... a... zul... araraazul!",
+    "texto": "a... ra... ra... a... zul... araraazul!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5183,9 +5183,9 @@
    "voz": "narradora",
    "texto": "quei... xa... da... queixada!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] quei... xa... da... queixada!",
+    "texto": "quei... xa... da... queixada!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5201,9 +5201,9 @@
    "voz": "narradora",
    "texto": "cai... po... ra... caipora!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cai... po... ra... caipora!",
+    "texto": "cai... po... ra... caipora!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5547,9 +5547,9 @@
    "voz": "narradora",
    "texto": "sa... po... sapo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] sa... po... sapo!",
+    "texto": "sa... po... sapo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5565,9 +5565,9 @@
    "voz": "narradora",
    "texto": "pé... ta... la... pétala!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pé... ta... la... pétala!",
+    "texto": "pé... ta... la... pétala!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5583,9 +5583,9 @@
    "voz": "narradora",
    "texto": "sa... pi... nho... sapinho!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] sa... pi... nho... sapinho!",
+    "texto": "sa... pi... nho... sapinho!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5601,9 +5601,9 @@
    "voz": "narradora",
    "texto": "vi... tó... ri... a... ré... gia... vitóriarégia!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] vi... tó... ri... a... ré... gia... vitóriarégia!",
+    "texto": "vi... tó... ri... a... ré... gia... vitóriarégia!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5929,9 +5929,9 @@
    "voz": "narradora",
    "texto": "o... lho... olho!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] o... lho... olho!",
+    "texto": "o... lho... olho!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5947,9 +5947,9 @@
    "voz": "narradora",
    "texto": "bo... ca... boca!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bo... ca... boca!",
+    "texto": "bo... ca... boca!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5965,9 +5965,9 @@
    "voz": "narradora",
    "texto": "pe... lo... pelo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pe... lo... pelo!",
+    "texto": "pe... lo... pelo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -5983,9 +5983,9 @@
    "voz": "narradora",
    "texto": "bi... cho... pre... gui... ça... bichopreguiça!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bi... cho... pre... gui... ça... bichopreguiça!",
+    "texto": "bi... cho... pre... gui... ça... bichopreguiça!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6001,9 +6001,9 @@
    "voz": "narradora",
    "texto": "ma... pin... gua... ri... mapinguari!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ma... pin... gua... ri... mapinguari!",
+    "texto": "ma... pin... gua... ri... mapinguari!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6347,9 +6347,9 @@
    "voz": "narradora",
    "texto": "pás... sa... ro... pássaro!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pás... sa... ro... pássaro!",
+    "texto": "pás... sa... ro... pássaro!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6365,9 +6365,9 @@
    "voz": "narradora",
    "texto": "ben... ga... la... bengala!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ben... ga... la... bengala!",
+    "texto": "ben... ga... la... bengala!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6383,9 +6383,9 @@
    "voz": "narradora",
    "texto": "es... tre... la... estrela!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] es... tre... la... estrela!",
+    "texto": "es... tre... la... estrela!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6401,9 +6401,9 @@
    "voz": "narradora",
    "texto": "lu... a... lua!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] lu... a... lua!",
+    "texto": "lu... a... lua!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6419,9 +6419,9 @@
    "voz": "narradora",
    "texto": "a... nu... pre... to... anupreto!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] a... nu... pre... to... anupreto!",
+    "texto": "a... nu... pre... to... anupreto!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6437,9 +6437,9 @@
    "voz": "narradora",
    "texto": "ma... tin... ta... matinta!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ma... tin... ta... matinta!",
+    "texto": "ma... tin... ta... matinta!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6765,9 +6765,9 @@
    "voz": "narradora",
    "texto": "fi... ta... fita!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fi... ta... fita!",
+    "texto": "fi... ta... fita!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6783,9 +6783,9 @@
    "voz": "narradora",
    "texto": "man... ta... manta!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] man... ta... manta!",
+    "texto": "man... ta... manta!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6801,9 +6801,9 @@
    "voz": "narradora",
    "texto": "chi... fre... chifre!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] chi... fre... chifre!",
+    "texto": "chi... fre... chifre!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6819,9 +6819,9 @@
    "voz": "narradora",
    "texto": "fo... ci... nho... focinho!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fo... ci... nho... focinho!",
+    "texto": "fo... ci... nho... focinho!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6837,9 +6837,9 @@
    "voz": "narradora",
    "texto": "ca... zum... bá... cazumbá!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... zum... bá... cazumbá!",
+    "texto": "ca... zum... bá... cazumbá!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -6855,9 +6855,9 @@
    "voz": "narradora",
    "texto": "bum... ba... meu... boi... bumba meu boi!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bum... ba... meu... boi... bumba meu boi!",
+    "texto": "bum... ba... meu... boi... bumba meu boi!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7165,9 +7165,9 @@
    "voz": "narradora",
    "texto": "ves... ti... do... vestido!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ves... ti... do... vestido!",
+    "texto": "ves... ti... do... vestido!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7183,9 +7183,9 @@
    "voz": "narradora",
    "texto": "sa... bi... á... sabiá!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] sa... bi... á... sabiá!",
+    "texto": "sa... bi... á... sabiá!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7201,9 +7201,9 @@
    "voz": "narradora",
    "texto": "fu... lo... zi... nha... fulozinha!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fu... lo... zi... nha... fulozinha!",
+    "texto": "fu... lo... zi... nha... fulozinha!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7511,9 +7511,9 @@
    "voz": "narradora",
    "texto": "co... ro... a... coroa!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] co... ro... a... coroa!",
+    "texto": "co... ro... a... coroa!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7529,9 +7529,9 @@
    "voz": "narradora",
    "texto": "á... gua... água!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] á... gua... água!",
+    "texto": "á... gua... água!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7547,9 +7547,9 @@
    "voz": "narradora",
    "texto": "co... lar... colar!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] co... lar... colar!",
+    "texto": "co... lar... colar!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7565,9 +7565,9 @@
    "voz": "narradora",
    "texto": "su... ru... bim... surubim!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] su... ru... bim... surubim!",
+    "texto": "su... ru... bim... surubim!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7583,9 +7583,9 @@
    "voz": "narradora",
    "texto": "ca... bo... clo... caboclo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... bo... clo... caboclo!",
+    "texto": "ca... bo... clo... caboclo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7893,9 +7893,9 @@
    "voz": "narradora",
    "texto": "ca... ju... caju!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... ju... caju!",
+    "texto": "ca... ju... caju!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7911,9 +7911,9 @@
    "voz": "narradora",
    "texto": "cas... ta... nha... castanha!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cas... ta... nha... castanha!",
+    "texto": "cas... ta... nha... castanha!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7929,9 +7929,9 @@
    "voz": "narradora",
    "texto": "ga... lho... galho!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ga... lho... galho!",
+    "texto": "ga... lho... galho!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7947,9 +7947,9 @@
    "voz": "narradora",
    "texto": "ces... ta... cesta!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ces... ta... cesta!",
+    "texto": "ces... ta... cesta!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -7965,9 +7965,9 @@
    "voz": "narradora",
    "texto": "sa... gui... sagui!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] sa... gui... sagui!",
+    "texto": "sa... gui... sagui!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8275,9 +8275,9 @@
    "voz": "narradora",
    "texto": "tam... bor... tambor!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] tam... bor... tambor!",
+    "texto": "tam... bor... tambor!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8293,9 +8293,9 @@
    "voz": "narradora",
    "texto": "ca... pa... capa!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... pa... capa!",
+    "texto": "ca... pa... capa!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8311,9 +8311,9 @@
    "voz": "narradora",
    "texto": "bo... ne... ca... boneca!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bo... ne... ca... boneca!",
+    "texto": "bo... ne... ca... boneca!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8329,9 +8329,9 @@
    "voz": "narradora",
    "texto": "al... fai... a... alfaia!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] al... fai... a... alfaia!",
+    "texto": "al... fai... a... alfaia!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8603,9 +8603,9 @@
    "voz": "narradora",
    "texto": "sai... a... saia!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] sai... a... saia!",
+    "texto": "sai... a... saia!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8621,9 +8621,9 @@
    "voz": "narradora",
    "texto": "co... quei... ro... coqueiro!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] co... quei... ro... coqueiro!",
+    "texto": "co... quei... ro... coqueiro!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8639,9 +8639,9 @@
    "voz": "narradora",
    "texto": "ca... ran... gue... jo... caranguejo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... ran... gue... jo... caranguejo!",
+    "texto": "ca... ran... gue... jo... caranguejo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8949,9 +8949,9 @@
    "voz": "narradora",
    "texto": "bi... co... bico!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bi... co... bico!",
+    "texto": "bi... co... bico!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8967,9 +8967,9 @@
    "voz": "narradora",
    "texto": "ca... sa... casa!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... sa... casa!",
+    "texto": "ca... sa... casa!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -8985,9 +8985,9 @@
    "voz": "narradora",
    "texto": "por... ta... porta!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] por... ta... porta!",
+    "texto": "por... ta... porta!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9003,9 +9003,9 @@
    "voz": "narradora",
    "texto": "jo... ão... de... bar... ro... joãodebarro!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] jo... ão... de... bar... ro... joãodebarro!",
+    "texto": "jo... ão... de... bar... ro... joãodebarro!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9295,9 +9295,9 @@
    "voz": "narradora",
    "texto": "gra... ma... grama!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] gra... ma... grama!",
+    "texto": "gra... ma... grama!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9313,9 +9313,9 @@
    "voz": "narradora",
    "texto": "je... qui... ti... bá... jequitibá!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] je... qui... ti... bá... jequitibá!",
+    "texto": "je... qui... ti... bá... jequitibá!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9331,9 +9331,9 @@
    "voz": "narradora",
    "texto": "pai... do... ma... to... pai do mato!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pai... do... ma... to... pai do mato!",
+    "texto": "pai... do... ma... to... pai do mato!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9641,9 +9641,9 @@
    "voz": "narradora",
    "texto": "pes... co... ço... pescoço!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pes... co... ço... pescoço!",
+    "texto": "pes... co... ço... pescoço!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9659,9 +9659,9 @@
    "voz": "narradora",
    "texto": "a... sa... asa!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] a... sa... asa!",
+    "texto": "a... sa... asa!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9677,9 +9677,9 @@
    "voz": "narradora",
    "texto": "pei... xe... peixe!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pei... xe... peixe!",
+    "texto": "pei... xe... peixe!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9695,9 +9695,9 @@
    "voz": "narradora",
    "texto": "ni... nho... ninho!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ni... nho... ninho!",
+    "texto": "ni... nho... ninho!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -9713,9 +9713,9 @@
    "voz": "narradora",
    "texto": "ca... pi... va... ra... capivara!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... pi... va... ra... capivara!",
+    "texto": "ca... pi... va... ra... capivara!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10023,9 +10023,9 @@
    "voz": "narradora",
    "texto": "ca... va... lo... cavalo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... va... lo... cavalo!",
+    "texto": "ca... va... lo... cavalo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10041,9 +10041,9 @@
    "voz": "narradora",
    "texto": "más... ca... ra... máscara!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] más... ca... ra... máscara!",
+    "texto": "más... ca... ra... máscara!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10351,9 +10351,9 @@
    "voz": "narradora",
    "texto": "fru... ta... fruta!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fru... ta... fruta!",
+    "texto": "fru... ta... fruta!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10369,9 +10369,9 @@
    "voz": "narradora",
    "texto": "ces... to... cesto!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ces... to... cesto!",
+    "texto": "ces... to... cesto!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10387,9 +10387,9 @@
    "voz": "narradora",
    "texto": "a... ra... ra... ca... nin... dé... araracanindé!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] a... ra... ra... ca... nin... dé... araracanindé!",
+    "texto": "a... ra... ra... ca... nin... dé... araracanindé!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10715,9 +10715,9 @@
    "voz": "narradora",
    "texto": "gor... ro... gorro!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] gor... ro... gorro!",
+    "texto": "gor... ro... gorro!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10733,9 +10733,9 @@
    "voz": "narradora",
    "texto": "ta... tu... tatu!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ta... tu... tatu!",
+    "texto": "ta... tu... tatu!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10751,9 +10751,9 @@
    "voz": "narradora",
    "texto": "cal... ção... calção!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cal... ção... calção!",
+    "texto": "cal... ção... calção!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10769,9 +10769,9 @@
    "voz": "narradora",
    "texto": "re... de... moi... nho... redemoinho!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] re... de... moi... nho... redemoinho!",
+    "texto": "re... de... moi... nho... redemoinho!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10787,9 +10787,9 @@
    "voz": "narradora",
    "texto": "ta... tu... bo... la... tatubola!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ta... tu... bo... la... tatubola!",
+    "texto": "ta... tu... bo... la... tatubola!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -10805,9 +10805,9 @@
    "voz": "narradora",
    "texto": "sa... ci... saci!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] sa... ci... saci!",
+    "texto": "sa... ci... saci!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11115,9 +11115,9 @@
    "voz": "narradora",
    "texto": "cal... dei... rão... caldeirão!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cal... dei... rão... caldeirão!",
+    "texto": "cal... dei... rão... caldeirão!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11133,9 +11133,9 @@
    "voz": "narradora",
    "texto": "cin... to... cinto!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cin... to... cinto!",
+    "texto": "cin... to... cinto!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11151,9 +11151,9 @@
    "voz": "narradora",
    "texto": "ra... bo... rabo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ra... bo... rabo!",
+    "texto": "ra... bo... rabo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11169,9 +11169,9 @@
    "voz": "narradora",
    "texto": "ja... ca... ré... jacaré!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ja... ca... ré... jacaré!",
+    "texto": "ja... ca... ré... jacaré!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11187,9 +11187,9 @@
    "voz": "narradora",
    "texto": "cu... ca... cuca!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cu... ca... cuca!",
+    "texto": "cu... ca... cuca!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11479,9 +11479,9 @@
    "voz": "narradora",
    "texto": "o... re... lha... orelha!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] o... re... lha... orelha!",
+    "texto": "o... re... lha... orelha!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11497,9 +11497,9 @@
    "voz": "narradora",
    "texto": "na... riz... nariz!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] na... riz... nariz!",
+    "texto": "na... riz... nariz!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11515,9 +11515,9 @@
    "voz": "narradora",
    "texto": "pa... ta... pata!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pa... ta... pata!",
+    "texto": "pa... ta... pata!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11533,9 +11533,9 @@
    "voz": "narradora",
    "texto": "lín... gua... língua!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] lín... gua... língua!",
+    "texto": "lín... gua... língua!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11551,9 +11551,9 @@
    "voz": "narradora",
    "texto": "lo... bo... gua... rá... loboguará!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] lo... bo... gua... rá... loboguará!",
+    "texto": "lo... bo... gua... rá... loboguará!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11569,9 +11569,9 @@
    "voz": "narradora",
    "texto": "lo... bi... so... mem... lobisomem!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] lo... bi... so... mem... lobisomem!",
+    "texto": "lo... bi... so... mem... lobisomem!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11861,9 +11861,9 @@
    "voz": "narradora",
    "texto": "fo... go... fogo!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fo... go... fogo!",
+    "texto": "fo... go... fogo!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11879,9 +11879,9 @@
    "voz": "narradora",
    "texto": "cas... co... casco!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cas... co... casco!",
+    "texto": "cas... co... casco!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11897,9 +11897,9 @@
    "voz": "narradora",
    "texto": "se... la... sela!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] se... la... sela!",
+    "texto": "se... la... sela!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -11915,9 +11915,9 @@
    "voz": "narradora",
    "texto": "va... ga... lu... me... vagalume!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] va... ga... lu... me... vagalume!",
+    "texto": "va... ga... lu... me... vagalume!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12225,9 +12225,9 @@
    "voz": "narradora",
    "texto": "mi... lho... milho!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] mi... lho... milho!",
+    "texto": "mi... lho... milho!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12243,9 +12243,9 @@
    "voz": "narradora",
    "texto": "ban... dei... ri... nha... bandeirinha!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ban... dei... ri... nha... bandeirinha!",
+    "texto": "ban... dei... ri... nha... bandeirinha!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12261,9 +12261,9 @@
    "voz": "narradora",
    "texto": "fo... guei... ra... fogueira!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fo... guei... ra... fogueira!",
+    "texto": "fo... guei... ra... fogueira!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12279,9 +12279,9 @@
    "voz": "narradora",
    "texto": "pi... po... ca... pipoca!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pi... po... ca... pipoca!",
+    "texto": "pi... po... ca... pipoca!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12589,9 +12589,9 @@
    "voz": "narradora",
    "texto": "co... bra... cobra!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] co... bra... cobra!",
+    "texto": "co... bra... cobra!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12607,9 +12607,9 @@
    "voz": "narradora",
    "texto": "on... ça... onça!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] on... ça... onça!",
+    "texto": "on... ça... onça!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12625,9 +12625,9 @@
    "voz": "narradora",
    "texto": "on... ça... pin... ta... da... onçapintada!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] on... ça... pin... ta... da... onçapintada!",
+    "texto": "on... ça... pin... ta... da... onçapintada!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12643,9 +12643,9 @@
    "voz": "narradora",
    "texto": "boi... ta... tá... boitatá!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] boi... ta... tá... boitatá!",
+    "texto": "boi... ta... tá... boitatá!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12953,9 +12953,9 @@
    "voz": "narradora",
    "texto": "pi... nhão... pinhão!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pi... nhão... pinhão!",
+    "texto": "pi... nhão... pinhão!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12971,9 +12971,9 @@
    "voz": "narradora",
    "texto": "pi... nhei... ro... pinheiro!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pi... nhei... ro... pinheiro!",
+    "texto": "pi... nhei... ro... pinheiro!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -12989,9 +12989,9 @@
    "voz": "narradora",
    "texto": "ter... ra... terra!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ter... ra... terra!",
+    "texto": "ter... ra... terra!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -13007,9 +13007,9 @@
    "voz": "narradora",
    "texto": "a... rau... cá... ria... araucária!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] a... rau... cá... ria... araucária!",
+    "texto": "a... rau... cá... ria... araucária!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -13317,9 +13317,9 @@
    "voz": "narradora",
    "texto": "ca... ver... na... caverna!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ca... ver... na... caverna!",
+    "texto": "ca... ver... na... caverna!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -13335,9 +13335,9 @@
    "voz": "narradora",
    "texto": "la... gar... ti... xa... lagartixa!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] la... gar... ti... xa... lagartixa!",
+    "texto": "la... gar... ti... xa... lagartixa!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -13645,9 +13645,9 @@
    "voz": "narradora",
    "texto": "cui... a... cuia!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cui... a... cuia!",
+    "texto": "cui... a... cuia!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -13663,9 +13663,9 @@
    "voz": "narradora",
    "texto": "vo... vô... vovô!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] vo... vô... vovô!",
+    "texto": "vo... vô... vovô!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -13681,9 +13681,9 @@
    "voz": "narradora",
    "texto": "er... va... ma... te... ervamate!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] er... va... ma... te... ervamate!",
+    "texto": "er... va... ma... te... ervamate!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -13955,9 +13955,9 @@
    "voz": "narradora",
    "texto": "bra... sil... brasil!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bra... sil... brasil!",
+    "texto": "bra... sil... brasil!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -14247,9 +14247,9 @@
    "voz": "narradora",
    "texto": "boi... boi!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] boi... boi!",
+    "texto": "boi... boi!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -14265,9 +14265,9 @@
    "voz": "narradora",
    "texto": "tui... ui... ú... tuiuiú!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] tui... ui... ú... tuiuiú!",
+    "texto": "tui... ui... ú... tuiuiú!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -14283,9 +14283,9 @@
    "voz": "narradora",
    "texto": "fes... ta... festa!",
    "eleven": {
-    "modelo": "eleven_v4",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] fes... ta... festa!",
+    "texto": "fes... ta... festa!",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15183,9 +15183,9 @@
    "voz": "narradora",
    "texto": "á.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] á.",
+    "texto": "á.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15201,9 +15201,9 @@
    "voz": "narradora",
    "texto": "bê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] bê.",
+    "texto": "bê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15219,9 +15219,9 @@
    "voz": "narradora",
    "texto": "cê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cê.",
+    "texto": "cê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15237,9 +15237,9 @@
    "voz": "narradora",
    "texto": "dê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] dê.",
+    "texto": "dê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15255,9 +15255,9 @@
    "voz": "narradora",
    "texto": "é.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] é.",
+    "texto": "é.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15273,9 +15273,9 @@
    "voz": "narradora",
    "texto": "éfe.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] éfe.",
+    "texto": "éfe.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15291,9 +15291,9 @@
    "voz": "narradora",
    "texto": "gê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] gê.",
+    "texto": "gê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15309,9 +15309,9 @@
    "voz": "narradora",
    "texto": "agá.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] agá.",
+    "texto": "agá.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15327,9 +15327,9 @@
    "voz": "narradora",
    "texto": "i.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] i.",
+    "texto": "i.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15345,9 +15345,9 @@
    "voz": "narradora",
    "texto": "jota.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] jota.",
+    "texto": "jota.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15363,9 +15363,9 @@
    "voz": "narradora",
    "texto": "cá.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cá.",
+    "texto": "cá.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15381,9 +15381,9 @@
    "voz": "narradora",
    "texto": "éle.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] éle.",
+    "texto": "éle.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15399,9 +15399,9 @@
    "voz": "narradora",
    "texto": "ême.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ême.",
+    "texto": "ême.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15417,9 +15417,9 @@
    "voz": "narradora",
    "texto": "êne.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] êne.",
+    "texto": "êne.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15435,9 +15435,9 @@
    "voz": "narradora",
    "texto": "ó.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ó.",
+    "texto": "ó.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15453,9 +15453,9 @@
    "voz": "narradora",
    "texto": "pê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] pê.",
+    "texto": "pê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15471,9 +15471,9 @@
    "voz": "narradora",
    "texto": "quê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] quê.",
+    "texto": "quê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15489,9 +15489,9 @@
    "voz": "narradora",
    "texto": "érre.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] érre.",
+    "texto": "érre.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15507,9 +15507,9 @@
    "voz": "narradora",
    "texto": "ésse.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ésse.",
+    "texto": "ésse.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15525,9 +15525,9 @@
    "voz": "narradora",
    "texto": "tê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] tê.",
+    "texto": "tê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15543,9 +15543,9 @@
    "voz": "narradora",
    "texto": "u.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] u.",
+    "texto": "u.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15561,9 +15561,9 @@
    "voz": "narradora",
    "texto": "vê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] vê.",
+    "texto": "vê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15579,9 +15579,9 @@
    "voz": "narradora",
    "texto": "dáblio.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] dáblio.",
+    "texto": "dáblio.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15597,9 +15597,9 @@
    "voz": "narradora",
    "texto": "xis.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] xis.",
+    "texto": "xis.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15615,9 +15615,9 @@
    "voz": "narradora",
    "texto": "ípsilon.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ípsilon.",
+    "texto": "ípsilon.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15633,9 +15633,9 @@
    "voz": "narradora",
    "texto": "zê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] zê.",
+    "texto": "zê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15651,9 +15651,9 @@
    "voz": "narradora",
    "texto": "cê cedilha.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] cê cedilha.",
+    "texto": "cê cedilha.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15669,9 +15669,9 @@
    "voz": "narradora",
    "texto": "á.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] á.",
+    "texto": "á.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15687,9 +15687,9 @@
    "voz": "narradora",
    "texto": "é.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] é.",
+    "texto": "é.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15705,9 +15705,9 @@
    "voz": "narradora",
    "texto": "i.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] i.",
+    "texto": "i.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15723,9 +15723,9 @@
    "voz": "narradora",
    "texto": "ó.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ó.",
+    "texto": "ó.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15741,9 +15741,9 @@
    "voz": "narradora",
    "texto": "u.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] u.",
+    "texto": "u.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15759,9 +15759,9 @@
    "voz": "narradora",
    "texto": "ã.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ã.",
+    "texto": "ã.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15777,9 +15777,9 @@
    "voz": "narradora",
    "texto": "õ.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] õ.",
+    "texto": "õ.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15795,9 +15795,9 @@
    "voz": "narradora",
    "texto": "â.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] â.",
+    "texto": "â.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15813,9 +15813,9 @@
    "voz": "narradora",
    "texto": "ê.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ê.",
+    "texto": "ê.",
     "estabilidade": 0.65
    },
    "fish": {
@@ -15831,9 +15831,9 @@
    "voz": "narradora",
    "texto": "ô.",
    "eleven": {
-    "modelo": "eleven_v4_turbo",
+    "modelo": "eleven_multilingual_v2",
     "voz": "Matilda (female, american)",
-    "texto": "[warm, clear storyteller] ô.",
+    "texto": "ô.",
     "estabilidade": 0.65
    },
    "fish": {

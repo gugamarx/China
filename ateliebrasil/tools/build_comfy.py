@@ -34,13 +34,13 @@ def fala(id_, voz, texto, grupo, modelo=None, ritmo=None, corte=None):
     """ritmo: ignorado desde nov/2026 (as direções extras faziam a voz repetir). corte: fala tirada de um áudio maior."""
     v = VOZES[voz]; modelo = modelo or MODELO_VOZ.get(voz, "eleven_v4")
     f = {"id": id_, "arquivo": f"audio/{id_}.mp3", "grupo": grupo, "voz": voz, "texto": texto,
-         "eleven": {"modelo": modelo, "voz": v["preset"], "texto": f"{TAG_CURTA[voz]} {falado(texto)}", "estabilidade": ESTABILIDADE},
+         "eleven": {"modelo": modelo, "voz": v["preset"], "texto": falado(texto) if modelo == "eleven_multilingual_v2" else f"{TAG_CURTA[voz]} {falado(texto)}", "estabilidade": ESTABILIDADE},
          "fish": {"modelo": "s2.1-pro", "buscar_voz": v["fish"], "texto": texto}}
     if corte: f["corte"] = corte
     falas.append(f); return f
 def palavra_banco(sil):
     k = slug(palavra(sil))
-    if k not in banco: banco[k] = sil; fala(f"palavra/{k}", "narradora", silabado(sil), "palavras", ritmo="slowly, syllable by syllable, then the whole word happily")
+    if k not in banco: banco[k] = sil; fala(f"palavra/{k}", "narradora", silabado(sil), "palavras", modelo="eleven_multilingual_v2")  # v2: estável em sílabas soltas (teste A/B nov/2026)
     return k
 
 telas = []
@@ -81,7 +81,7 @@ ACENTO = {"\u0301": "agudo", "\u0300": "crase", "\u0303": "til", "\u0302": "circ
 def letra_id(L):
     m = [ACENTO.get(c, "") for c in unicodedata.normalize("NFD", L)[1:]]
     return slug(L) + ("_" + "_".join(x for x in m if x) if any(m) else "")
-for L, nome in J["letra"].items(): fala(f"letra/{letra_id(L)}", "narradora", nome + ".", "letras", modelo="eleven_v4_turbo")
+for L, nome in J["letra"].items(): fala(f"letra/{letra_id(L)}", "narradora", nome + ".", "letras", modelo="eleven_multilingual_v2")
 
 # falas do jogo (js/app.js): fixas viram áudio; as que têm nome da criança são gravadas para as 4 primas; as outras dinâmicas ficam listadas
 app = open(f"{ROOT}/js/app.js").read()

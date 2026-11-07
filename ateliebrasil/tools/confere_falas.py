@@ -22,6 +22,9 @@ for f in D["falas"]:
         if any(ctt[g] > c for g, c in ce.items()): rep = True; break
     if len(e) <= 2 and len(t) >= 2 * max(1, len(e)) and len(t) > len(e): rep = True
     tipo = "repete" if rep or extra >= max(2, len(e) * 0.4) else ("troca" if sim < 0.75 else "ok")
+    if f["grupo"] == "letras":  # o Scribe escreve a letra ("B"), não o nome ("bê"): basta uma letra, sem repetir
+        tipo = "ok" if 1 <= len(t) <= len(e) + 1 and len(set(t)) == len(t) else "repete"
+    if f["grupo"] == "palavras" and f["id"].startswith("palavra/") and t and t[-1] == e[-1] and sim >= 0.5: tipo = "ok" if tipo == "troca" else tipo
     R[f["id"]] = {"tipo": tipo, "sim": round(sim, 2), "esperado": f["texto"], "ouvido": T[f["id"]], "modelo": f["eleven"]["modelo"], "voz": f["voz"], "grupo": f["grupo"]}
 json.dump(R, open(f"{ROOT}/comfy/out/conferencia.json", "w"), ensure_ascii=False, indent=1)
 c = collections.Counter(r["tipo"] for r in R.values()); print(c)

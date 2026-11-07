@@ -32,16 +32,21 @@ secoes, packs = [], {}
 def _j(p, d):
     try: return json.load(open(p))
     except Exception: return d
-REFEITO = set(_j(f"{OUT}/refazer_motivo.json", {}))
+REFEITO = set(_j(f"{OUT}/refazer_motivo.json", {})) | {f["id"] for f in D["falas"] if f["grupo"] == "letras" or f["id"].startswith("palavra/")}
+V4OK = set(_j(f"{OUT}/palavras_escolha.json", {}).get("v4ok", []))
 CONF = _j(f"{OUT}/conferencia.json", {})
 PEND1, SEC1 = set(), set()
 try:
     for t in open(f"{OUT}/revisao1_pendentes.txt").read().split():
         (SEC1.add(t[4:]) if t.startswith("SEC:") else PEND1.add(t))
 except Exception: pass
+USER1 = set("curupira/adv iara/moro iara/parlenda_2 boto/adv boto/parlenda_3 boto/rima_certa caipora/adv caipora/parlenda_3 caipora/parlenda_4 vitoria/adv mapinguari/adv mapinguari/parlenda_4 matinta/adv matinta/parlenda_1 matinta/parlenda_2 matinta/parlenda_4 boi/adv boi/parlenda_1 boi/parlenda_2 boi/parlenda_4 boi/rima_certa fulozinha/adv fulozinha/parlenda_1 fulozinha/parlenda_2 fulozinha/parlenda_3 fulozinha/parlenda_4 caboclo/adv maracatu/parlenda_4 palavra/cabelo palavra/arvore jogo/errou_hihihi_tenta_de_novo jogo/escolha_o_seu_retrato_toque_na_menina_que_parece jogo/hihihi_ate_eu_o_saci_estou_batendo_palma jogo/hihihi_te_enganei_meus_pes_sao_virados_pra_tras_ cor/darkgreen cor/lightgreen cor/beige cor/gold mistura/orange letra/a letra/a_agudo letra/a_til letra/a_circunflexo regiao/norte_sotaque nome/elisa nome/yasmin".split())
 def pre(fid, sec):
-    """estado inicial: refeito ou pendente na 1ª revisão = sem marca; o resto foi aprovado na 1ª revisão."""
-    if fid in REFEITO or fid.endswith("/parlenda") or "/parlenda_" in fid or sec in SEC1 or ("audio/" + fid) in PEND1: return ""
+    """pendente: o que você mandou refazer (para confirmar a correção), o que a conferência automática ainda acusa,
+    e o que ficou sem ouvir na 1ª rodada. O resto vem aprovado (passou na transcrição)."""
+    if fid in USER1 or "monte_o_seu_nome" in fid: return ""
+    if CONF.get(fid, {}).get("tipo", "ok") != "ok": return ""
+    if sec in SEC1 or ("audio/" + fid) in PEND1: return ""
     return "ok"
 def secao(sid, titulo, sub=""):
     s = {"id": sid, "titulo": titulo, "sub": sub, "itens": []}; secoes.append(s); return s
@@ -49,6 +54,8 @@ def add_fala(s, f, rotulo):
     e = f["eleven"]; d = som(f)
     if d: packs.setdefault(s["id"], {})[f["id"]] = d
     c = CONF.get(f["id"], {})
+    if f["id"] in V4OK: e = dict(e, modelo="eleven_v4")   # palavra que ficou com a versão v4 (passou na conferência)
+    if f["grupo"] == "letras": e = dict(e, modelo="eleven_v4")  # letras: leitura única em v4, cortada pelas pausas
     s["itens"].append({"id": os.path.splitext(f["arquivo"])[0], "tipo": "voz", "rotulo": rotulo, "texto": f["texto"],
                        "meta": f"{MOD[e['modelo']]} · {e['voz'].split(' (')[0]}", "ok": bool(d), "pre": pre(f["id"], s["id"]),
                        "novo": f["id"] in REFEITO or "parlenda" in f["id"], "conf": c.get("tipo", ""), "ouvido": c.get("ouvido", "") if c.get("tipo") not in ("", "ok") else ""})
