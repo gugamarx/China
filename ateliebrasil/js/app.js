@@ -88,6 +88,9 @@ const brMap = cls => mapSVG(Object.fromEntries(REGIOES.flatMap(r => r.uf.map(u =
 const regMap = (rid, cls) => rid === "especial" ? brMap(cls) : mapSVG(Object.fromEntries(REG[rid].uf.map(u => [u, REG[rid].cor])), cls);
 const ufMap = (uf, cls) => { const r = REG[UF_REG[uf]]; return mapSVG({ ...Object.fromEntries(r.uf.map(u => [u, r.cor + "66"])), [uf]: r.cor }, cls); };
 const ufNome = uf => MAPA.uf[uf][0].toUpperCase();
+/* "moro NO Amazonas", "NA Bahia", "EM Minas Gerais": como se diz em cada estado */
+const UF_PREP = { ac: "no", ap: "no", am: "no", pa: "no", to: "no", ma: "no", pi: "no", ce: "no", rn: "no", es: "no", rj: "no", pr: "no", rs: "no", df: "no", ba: "na", pb: "na" };
+const ufEm = uf => UF_PREP[uf] || "em";
 
 /* ================= avatar com fantasia ================= */
 const GORRO = `<svg viewBox="0 0 100 70"><path d="M10 58 Q18 12 58 6 Q92 2 97 42 Q82 22 66 28 Q50 34 48 58Z" fill="#e3262e" stroke="#7a1010" stroke-width="4"/><path d="M4 54 Q48 42 54 58 Q30 70 6 66Z" fill="#c41d1d" stroke="#7a1010" stroke-width="3"/></svg>`;
@@ -261,7 +264,7 @@ function renderAdivinha(t) {
 function renderIntro(t) {
   const perfect = t.need === 100;
   $("#meetBox").innerHTML = `<div class="mtop">${cropHTML(t.k, ...t.rosto, "crop retrato jump")}
-      <div class="minfo"><div class="pname">${silabasHTML(t.sil)}</div><div class="pmap">${t.reg === "especial" ? `${brMap()}<div>O BRASIL<br><b>INTEIRINHO!</b></div>` : `${ufMap(t.uf)}<div>MORO EM<br><b>${ufNome(t.uf)}</b></div>`}</div></div></div>
+      <div class="minfo"><div class="pname">${silabasHTML(t.sil)}</div><div class="pmap">${t.reg === "especial" ? `${brMap()}<div>O BRASIL<br><b>INTEIRINHO!</b></div>` : `${ufMap(t.uf)}<div>MORO ${ufEm(t.uf).toUpperCase()}<br><b>${ufNome(t.uf)}</b></div>`}</div></div></div>
     <div class="msay"><span id="msay"></span> ${rep(() => falarIntro(t))}</div>
     ${perfect ? `<div class="perfect">💯 Nesta pintura você precisa copiar <b>todas</b> as cores! Você consegue, ${NAME}! 💪</div>` : ""}
     <div class="mycolors"><div class="small">MINHAS CORES:</div><div class="chips">${colorsOf(metaCache[t.k]).map(c => chipHTML(c)).join("")}</div></div>
@@ -273,7 +276,7 @@ function renderIntro(t) {
   $(".retrato").onclick = () => falarIntro(t);
 }
 async function falarIntro(t) {
-  const R = REG[t.reg], lines = [t.fala, ...(t.reg === "especial" ? [] : [`Eu moro em ${MAPA.uf[t.uf][0]}, na região ${R.nome.toLowerCase()}!`]), t.lenda];
+  const R = REG[t.reg], lines = [t.fala, ...(t.reg === "especial" ? [] : [`Eu moro ${ufEm(t.uf)} ${MAPA.uf[t.uf][0]}, na região ${R.nome.toLowerCase()}!`]), t.lenda];
   if (t.extra) lines.push(t.extra); if ((PIADAS[NAME] || {})[t.k]) lines.push(PIADAS[NAME][t.k]);
   if (t.need === 100) lines.push(`Nesta pintura você precisa copiar todas as cores! Você consegue, ${Nome()}!`);
   $(".retrato")?.classList.add("talk");
@@ -503,7 +506,7 @@ async function mixPick(c) {
   mixB = c; renderMixer(); const res = mix(mixA, mixB); await sleep(500);
   $("#wr").classList.add("swirl"); $("#wr").style.background = `conic-gradient(${PAINT[mixA][0]},${PAINT[mixB][0]},${PAINT[mixA][0]})`; Audio8.fx("swirl"); await sleep(1100);
   $("#wr").classList.remove("swirl"); $("#wr").style.background = PAINT[res][0]; $("#wr").innerHTML = "🖌️";
-  const f = found(), isNew = !f.includes(res); if (isNew) { f.push(res); saveFound(f); }
+  const f = found(), isNew = !f.includes(res); if (isNew) { f.push(res); saveFound(f); if (UI.cur === "paint" && P8.meta) renderPots(); }   // a cor nova já aparece nos potes de fora
   if (isNew) discover(mixA, mixB, res); else Voice.say(`${N(mixA)} com ${N(mixB)} faz ${N(res)}!`);
   renderMixer(); $("#wr").style.background = PAINT[res][0]; $("#wr").innerHTML = "🖌️<small>usar!</small>"; $("#wr").classList.add("ready");
   $("#wr").onclick = () => { P8.brush = res; renderBrush(); renderPots(); $("#mixer").classList.remove("on"); Audio8.fx("dip"); Voice.say(`O pincel está com ${N(res)}!`); };
@@ -606,7 +609,7 @@ async function finish(byButton) {
     Voice.say(`Quase lá, ${Nome()}! Nesta pintura você precisa copiar todas as cores. Use a lâmpada de ajuda e olhe a pintura lá em cima. Você consegue!`); finishing = false; return;
   }
   if (mode === "exact" && s.pct >= 100) await alive(t); else if (mode === "exact" && s.pct >= 80) renderAll();
-  const mid = Missao.id; await quest(t); if (mid !== Missao.id) return; await montar(t); if (mid !== Missao.id) return;
+  const mid = Missao.id; await montar(t); if (mid !== Missao.id) return;   // (o "Encontre" no desenho saiu: depois de terminar não precisa tocar na pintura)
   const old = prog(t.k) || {}, wasDone = REGIOES.map(R => regDone(R.id)), festaAntes = TELAS.filter(x => x.final).every(telaOpen);
   const rec = { fills: P8.fills, mode, pct: s.pct, thumb: thumbData(), passed: true };
   if (!store.set("art_" + t.k, rec)) store.set("art_" + t.k, { ...rec, thumb: thumbData(160) });
@@ -626,7 +629,7 @@ async function finish(byButton) {
   await Voice.talk([[`Muito bem, ${Nome()}! ${msgFala}`, t.voz]]);
   for (const f of novas) { if (!$("#done").classList.contains("on")) break; await Voice.talk([["Figurinha nova!"], [palavra(f[0]).toLowerCase() + "!"]]); }
   if ($("#done").classList.contains("on")) await lerParlenda(t);
-  if ($("#done").classList.contains("on")) Voice.say(`Agora me diga: o que rima com ${t.rima.w.toLowerCase()}?`);
+  if ($("#done").classList.contains("on")) { const q = $("#drima .rima"); q && q.scrollIntoView({ behavior: "smooth", block: "center" }); await Voice.talk([["Agora me diga:"]]); if ($("#done").classList.contains("on")) t._lerRima(); }
   // região completa = fantasia nova; viagem completa = troféu
   const reg = REGIOES.findIndex((R, i) => regDone(R.id) && !wasDone[i]);
   const festaAbriu = !festaAntes && TELAS.filter(x => x.final).every(telaOpen);
@@ -643,7 +646,9 @@ async function lerParlenda(t) {
 }
 function renderRima(t) {
   const R = t.rima, ops = shuffle([R.ok, ...R.no]);
-  $("#drima").innerHTML = `<div class="rima"><div class="q">🎵 O QUE RIMA COM <b>${R.w}</b>? ${rep([[`O que rima com ${R.w.toLowerCase()}?`], ...ops.map(([w]) => [w.toLowerCase() + "?", { rate: .9 }])])}</div><div class="opts">${ops.map(([w, e]) => `<button class="opt" data-w="${w}"><span>${e}</span>${w}</button>`).join("")}</div></div>`;
+  const lerRima = () => Voice.talk([[`O que rima com ${R.w.toLowerCase()}?`], ...ops.map(([w]) => [w.toLowerCase() + "?", { rate: .9 }])]); t._lerRima = lerRima;
+  $("#drima").innerHTML = `<div class="rima"><div class="q">🎵 O QUE RIMA COM <b>${R.w}</b>?</div><div class="opts">${ops.map(([w, e]) => `<button class="opt" data-w="${w}"><span>${e}</span>${w}</button>`).join("")}</div></div>`;
+  $("#drima .q").onclick = () => { Audio8.fx("tap"); lerRima(); };
   $$("#drima .opt").forEach(b => b.onclick = () => {
     if (b.dataset.w === R.ok[0]) { b.classList.add("yes"); Audio8.fx("good"); FX.burst(...centerOf(b), ["🎵", "⭐", R.ok[1]], 20); Voice.say(`Isso! ${R.w.toLowerCase()} rima com ${R.ok[0].toLowerCase()}! ${R.w.toLowerCase()}... ${R.ok[0].toLowerCase()}!`); }
     else { b.classList.add("no"); Audio8.fx("oops"); Voice.say(`${b.dataset.w.toLowerCase()}? Hmm, ${b.dataset.w.toLowerCase()} não rima com ${R.w.toLowerCase()}. Tente outra!`); }

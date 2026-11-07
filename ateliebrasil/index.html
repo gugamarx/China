@@ -160,7 +160,8 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 .dpics{display:flex;gap:8px;align-items:flex-end;justify-content:center}
 .dpics figure{margin:0;flex:1;font-size:12px;color:#999}
 .dpics img{width:100%;max-height:30vh;object-fit:contain;border:6px solid #e5b04a;border-radius:4px;box-shadow:0 4px 10px #0003;background:#fff}
-#dpainter{width:90px;height:90px;margin:-6px auto 0;animation:bob .5s infinite alternate}
+#dtitle{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px}
+#dpainter{width:90px;height:90px;margin:8px auto 0;animation:bob .5s infinite alternate}
 #dpainter .crop{width:100%;height:100%;border-width:4px}
 #dpainter .pimg,#dpainter svg{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
 #dstars{font-size:36px;letter-spacing:4px}
@@ -298,7 +299,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 .parl{background:#fffbe0;border-radius:16px;padding:8px;font-size:17px;line-height:1.25}
 .parl div{transition:.2s}.parl div.on{color:#c41d6e;transform:scale(1.06)}
 .rima{background:#eef7ff;border-radius:16px;padding:8px}
-.rima .q{font-size:18px}
+.rima .q{font-size:18px;cursor:pointer}
 .opt .crop{width:84px;height:84px}.rima .opts{margin-top:6px}.rima .opt span{font-size:34px}
 .newfig{display:flex;align-items:center;gap:10px;background:#f2fff0;border-radius:16px;padding:6px 10px;text-align:left;font-size:15px}
 .newfig .crop{width:64px;height:64px;flex-shrink:0}
@@ -326,7 +327,7 @@ button{font-family:inherit;font-weight:800;border:0;cursor:pointer;color:inherit
 #semvoz button{position:absolute;right:6px;top:6px;width:32px;height:32px;border-radius:50%;background:#ffd23f;font-size:15px;display:flex;align-items:center;justify-content:center}
 .msay{display:flex;align-items:center;gap:6px;justify-content:center}
 .newfig .rep{margin-left:auto}
-.parl{position:relative}.parl .rep{position:absolute;right:6px;bottom:6px}
+.parl{position:relative}.parl .rep{display:flex;margin:6px auto 0}
 .rhead b{flex-wrap:wrap}
 .wordpop{max-width:92vw}
 .room.esp{border-top-color:#c41d6e;background:linear-gradient(#fff6fb,#fffdf3)}

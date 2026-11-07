@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ateliê Brasil: mesa de decisões</title>
+<style>
+:root{--ink:#2a1a10;--mut:#7a6a5c;--bg:#fff7ea;--card:#fff;--ok:#1f9d55;--warn:#e08a00;--bad:#d33;--acc:#c41d6e;--line:#eadfce}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--line);padding:8px 12px}
+h1{font-size:18px;margin:0 0 6px}nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);background:#f4ecdf;border-radius:999px;padding:5px 11px;font-weight:600;font-size:14px}
+.bar{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:13px;color:var(--mut)}.bar .sp{flex:1}
+.prog{height:6px;background:#eee;border-radius:9px;overflow:hidden;flex:1;max-width:220px}.prog i{display:block;height:100%;background:var(--ok);width:0}
+main{max-width:860px;margin:0 auto;padding:12px}
+section{margin:18px 0 28px}h2{font-size:20px;margin:0 0 10px;color:var(--acc)}h3{font-size:16px;margin:16px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;box-shadow:0 1px 0 #0000000d}
+.card.aprovado{border-color:var(--ok);box-shadow:0 0 0 2px #1f9d5533}.card.editado{border-color:var(--warn);box-shadow:0 0 0 2px #e08a0033}.card.refazer{border-color:var(--bad);box-shadow:0 0 0 2px #dd333333}
+details>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-weight:700}
+details>summary::-webkit-details-marker{display:none}summary .e{font-size:22px}summary .tag{font-size:12px;font-weight:600;color:var(--mut)}summary .st{margin-left:auto;font-size:18px}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);margin:10px 0 3px;text-transform:uppercase;letter-spacing:.3px}
+textarea,input[type=text]{width:100%;font:inherit;border:1px solid #d9cbb6;border-radius:10px;padding:8px;background:#fffdf9;color:var(--ink)}
+textarea{resize:vertical;min-height:44px}textarea.mod,input.mod{border-color:var(--warn);background:#fff8e8}
+textarea.prompt{font:12px/1.4 ui-monospace,Menlo,monospace;min-height:120px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:8px 12px;cursor:pointer;background:#f1e7d8;color:var(--ink)}
+button.on.a{background:var(--ok);color:#fff}button.on.r{background:var(--bad);color:#fff}button.p{background:var(--acc);color:#fff}
+.small{font-size:12px;color:var(--mut)}
+.op{display:flex;gap:8px;align-items:flex-start;padding:8px;border-radius:10px;border:1px solid transparent;cursor:pointer}
+.op:hover{background:#faf3e7}.op input{margin-top:4px}.op.sel{border-color:var(--acc);background:#fff0f6}.op b{display:block}.op span{font-size:13px;color:var(--mut)}
+.img{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-top:6px}
+.img .pv{width:120px;height:180px;border:2px dashed #d9cbb6;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:12px;text-align:center;background:#fff center/contain no-repeat;overflow:hidden}
+.img .pv.q{width:140px;height:140px}.img .info{font-size:13px;flex:1;min-width:160px}.okk{color:var(--ok);font-weight:700}.nok{color:var(--bad);font-weight:700}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+#exp{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;z-index:9;padding:12px}#exp.on{display:flex}
+#exp .box{background:#fff;border-radius:16px;max-width:760px;width:100%;max-height:92vh;display:flex;flex-direction:column;padding:12px;gap:8px}
+#exp textarea{flex:1;min-height:40vh;font:12px/1.35 ui-monospace,Menlo,monospace}
+ul{padding-left:20px}li{margin:4px 0}
+</style></head><body>
+<header><h1>🎨 Ateliê Brasil: mesa de decisões</h1>
+<nav><a href="#dec">Decisões</a><a href="#regras">Regras da arte</a><a href="#telas">Telas</a><a href="#av">Avatares</a><a href="#voz">Voz</a><a href="#fim">Enviar</a></nav>
+<div class="bar"><span id="cnt"></span><div class="prog"><i id="pg"></i></div><span class="sp"></span><button class="p" id="bExp">📤 Exportar</button></div></header>
+<main>
+<p class="small">Mude o que quiser nos textos (fica laranja), marque ✅ Aprovar ou 🔁 Refazer e escolha as imagens para conferir o tamanho. No fim, toque em <b>📤 Exportar</b> e cole o resultado no chat. As imagens você manda no chat com o nome indicado em cada cartão.</p>
+<section id="dec"><h2>Decisões</h2><div id="decs"></div></section>
+<section id="regras"><h2>Regras da arte</h2><div class="card"><ul id="regs"></ul></div></section>
+<section id="telas"><h2>Telas</h2><div id="tls"></div></section>
+<section id="av"><h2>Avatares (9)</h2><p class="small">A tela de escolha vira uma grade 3×3 de quadrados. Cada menina pode escolher qualquer uma.</p><div id="avs"></div></section>
+<section id="voz"><h2>Voz: custo para o jogo inteiro (~30 mil caracteres, ~35 min)</h2><div class="card"><table id="vz"></table><p class="small">A escolha fica em Decisões → Motor de voz. Sugestão: gerar 3 falas de teste (Curupira, Boi, Gralha) nos dois favoritos e decidir de ouvido.</p></div></section>
+<section id="fim"><h2>Enviar</h2><div class="card"><label>Observações gerais</label><textarea id="geral" rows="3" placeholder="Qualquer coisa que não caiba nos cartões"></textarea>
+<div class="btns"><button class="p" id="bExp2">📤 Exportar decisões</button><button id="bImp">📥 Importar</button><button id="bZera">🗑️ Limpar tudo</button></div></div></section>
+</main>
+<div id="exp"><div class="box"><b id="expT">Copie e cole no chat</b><textarea id="expTx"></textarea>
+<div class="btns"><button class="p" id="bCopy">📋 Copiar</button><button id="bDown">💾 Baixar .json</button><button id="bApply" style="display:none">✔ Importar este texto</button><button id="bClose">Fechar</button></div></div></div>
+<script>
+"use strict";
+const DATA = /*DATA*/null;
+const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const KEY = "mesa_atelie_v1";
+let S = { dec: {}, it: {}, geral: "" };
+try { S = Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) { }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } count(); };
+const it = k => S.it[k] || (S.it[k] = { st: "", nota: "", mud: {}, img: null });
+const CAMPOS = [["nome", "Nome", 1], ["adv", "Adivinha (O que é, o que é?)", 2], ["fala", "Fala de chegada", 2], ["lenda", "Lenda", 3],
+  ["palavras", "Palavras escondidas (uma por linha: SÍ-LA-BAS emoji)", 5], ["fig", "Figurinha (SÍ-LA-BAS — curiosidade)", 2],
+  ["rima", "Rima: palavra", 1], ["rimaOk", "Rima certa (palavra emoji)", 1], ["rimaNo", "Rimas erradas (uma por linha)", 2], ["parlenda", "Parlenda (4 versos)", 4]];
+
+/* ---- decisões ---- */
+$("#decs").innerHTML = DATA.decisoes.map(d => `<div class="card" data-d="${d.id}"><b>${esc(d.q)}</b>${d.ops.map(([v, t, x]) =>
+  `<label class="op" style="text-transform:none;letter-spacing:0;color:inherit;font-size:15px;font-weight:400"><input type="radio" name="d_${d.id}" value="${v}"><div><b>${esc(t)}</b>${x ? `<span>${esc(x)}</span>` : ""}</div></label>`).join("")}
+  <label>Outra ideia / observação</label><input type="text" class="dn" placeholder="opcional"></div>`).join("");
+document.querySelectorAll("#decs .card").forEach(c => {
+  const id = c.dataset.d, s = S.dec[id] || {};
+  c.querySelectorAll("input[type=radio]").forEach(r => { r.checked = r.value === s.v; r.onchange = () => { (S.dec[id] ||= {}).v = r.value; mark(c); save(); }; });
+  const n = c.querySelector(".dn"); n.value = s.n || ""; n.oninput = () => { (S.dec[id] ||= {}).n = n.value; save(); }; mark(c);
+});
+function mark(c) { c.querySelectorAll(".op").forEach(o => o.classList.toggle("sel", o.querySelector("input").checked)); }
+$("#regs").innerHTML = DATA.regras.map(r => `<li>${esc(r)}</li>`).join("");
+$("#vz").innerHTML = `<tr><th>Motor</th><th>Custo</th><th>Como é</th></tr>` + DATA.voz.map(v => `<tr><td><b>${esc(v[0])}</b></td><td>${esc(v[1])}</td><td>${esc(v[2])}</td></tr>`).join("");
+
+/* ---- cartões de tela e avatar ---- */
+function imgSlot(k, nomeArq, quad) {
+  return `<label>Imagem: <code>${nomeArq}</code></label><div class="img"><div class="pv${quad ? " q" : ""}" id="pv_${k}">sem imagem</div>
+  <div class="info"><input type="file" accept="image/*" data-k="${k}" data-q="${quad ? 1 : 0}"><div id="ii_${k}" class="small"></div></div></div>`;
+}
+function card(t, av) {
+  const k = t.k, tx = t.textos;
+  const head = av ? `<span class="e">👧</span><span>${esc(t.quem)}<br><span class="tag">avatar-${k}.jpg · ${esc(t.tam)}</span></span>`
+    : `<span class="e">${t.e}</span><span>${esc(t.nome)}<br><span class="tag">${esc(t.regNome)}${t.ufNome ? ` · mora ${t.prep} ${esc(t.ufNome)}` : ""}${t.estado ? ` · ${t.estado}` : ""}</span></span>`;
+  let body = "";
+  if (tx) body += CAMPOS.map(([f, l, r]) => `<label>${l}</label>${r === 1 ? `<input type="text" data-f="${f}">` : `<textarea data-f="${f}" rows="${r}"></textarea>`}`).join("");
+  if (t.prompt) body += `<label>Prompt (${esc(t.tam)})</label><textarea class="prompt" data-f="prompt"></textarea><div class="btns"><button class="cp">📋 Copiar prompt</button></div>` + imgSlot(k, av ? `avatar-${k}.jpg` : `${k}.jpg`, av);
+  return `<details class="card" data-k="${k}"><summary>${head}<span class="st"></span></summary>${body}
+  <label>Observação</label><input type="text" class="nt" placeholder="opcional">
+  <div class="btns"><button class="a">✅ Aprovar</button><button class="r">🔁 Refazer</button></div></details>`;
+}
+const ORIG = {};
+function wire(root, list, av) {
+  list.forEach(t => {
+    const c = root.querySelector(`[data-k="${t.k}"]`), s = it(t.k), o = ORIG[t.k] = { ...(t.textos || {}), prompt: t.prompt };
+    c.querySelectorAll("[data-f]").forEach(e => {
+      const f = e.dataset.f; e.value = f in s.mud ? s.mud[f] : (o[f] ?? "");
+      const upd = () => { if (e.value === (o[f] ?? "")) delete s.mud[f]; else s.mud[f] = e.value; e.classList.toggle("mod", f in s.mud); paint(c, s); save(); };
+      e.oninput = upd; e.classList.toggle("mod", f in s.mud);
+    });
+    const cp = c.querySelector(".cp"); if (cp) cp.onclick = () => copiar(c.querySelector("[data-f=prompt]").value, cp);
+    const n = c.querySelector(".nt"); n.value = s.nota || ""; n.oninput = () => { s.nota = n.value; save(); };
+    c.querySelector("button.a").onclick = () => { s.st = s.st === "ok" ? "" : "ok"; paint(c, s); save(); };
+    c.querySelector("button.r").onclick = () => { s.st = s.st === "refazer" ? "" : "refazer"; paint(c, s); save(); };
+    if (s.img) showImg(t.k, null, s.img); paint(c, s);
+  });
+}
+function paint(c, s) {
+  const ed = Object.keys(s.mud).length > 0;
+  c.classList.toggle("aprovado", s.st === "ok"); c.classList.toggle("refazer", s.st === "refazer"); c.classList.toggle("editado", ed && !s.st);
+  c.querySelector("button.a").classList.toggle("on", s.st === "ok"); c.querySelector("button.r").classList.toggle("on", s.st === "refazer");
+  c.querySelector(".st").textContent = s.st === "ok" ? (ed ? "✅✏️" : "✅") : s.st === "refazer" ? "🔁" : ed ? "✏️" : "";
+}
+const telas = DATA.telas, grupos = [...new Set(telas.map(t => t.regNome))];
+$("#tls").innerHTML = grupos.map(g => `<h3>${esc(g)}</h3>` + telas.filter(t => t.regNome === g).map(t => card(t)).join("")).join("");
+wire($("#tls"), telas); $("#avs").innerHTML = DATA.avatares.map(a => card(a, true)).join(""); wire($("#avs"), DATA.avatares, true);
+
+/* ---- imagens: confere a proporção e o tamanho ---- */
+document.addEventListener("change", e => {
+  const inp = e.target; if (!inp.matches || !inp.matches("input[type=file]") || !inp.files[0]) return;
+  const f = inp.files[0], url = URL.createObjectURL(f), im = new Image();
+  im.onload = () => { const quad = inp.dataset.q === "1", r = im.width / im.height, alvo = quad ? 1 : 2 / 3;
+    const info = { nome: f.name, w: im.width, h: im.height, ok: Math.abs(r - alvo) < .03 && Math.min(im.width, im.height) >= 1000 };
+    it(inp.dataset.k).img = info; showImg(inp.dataset.k, url, info); save(); };
+  im.src = url;
+});
+function showImg(k, url, info) {
+  const pv = $("#pv_" + k); if (url) { pv.style.backgroundImage = `url(${url})`; pv.textContent = ""; }
+  $("#ii_" + k).innerHTML = `${esc(info.nome)}<br>${info.w} × ${info.h} ${info.ok ? `<span class="okk">✔ tamanho certo</span>` : `<span class="nok">✖ fora do tamanho</span>`}`;
+}
+
+/* ---- contagem ---- */
+function count() {
+  const ks = [...telas.map(t => t.k), ...DATA.avatares.map(a => a.k)], ok = ks.filter(k => S.it[k] && S.it[k].st).length, d = DATA.decisoes.filter(x => S.dec[x.id] && S.dec[x.id].v).length;
+  $("#cnt").textContent = `${d}/${DATA.decisoes.length} decisões · ${ok}/${ks.length} cartões`; $("#pg").style.width = ((ok + d) / (ks.length + DATA.decisoes.length) * 100) + "%";
+}
+$("#geral").value = S.geral || ""; $("#geral").oninput = () => { S.geral = $("#geral").value; save(); }; count();
+
+/* ---- exportar / importar ---- */
+function resumo() {
+  const out = { mesa: "atelie-brasil", decisoes: {}, cartoes: {}, geral: S.geral || "" };
+  DATA.decisoes.forEach(d => { const s = S.dec[d.id]; if (s && (s.v || s.n)) out.decisoes[d.id] = { escolha: s.v || "", obs: s.n || "" }; });
+  for (const [k, s] of Object.entries(S.it)) { if (!s.st && !s.nota && !Object.keys(s.mud).length && !s.img) continue;
+    out.cartoes[k] = { status: s.st || "", ...(s.nota ? { obs: s.nota } : {}), ...(Object.keys(s.mud).length ? { mudou: s.mud } : {}), ...(s.img ? { imagem: s.img } : {}) }; }
+  return JSON.stringify(out, null, 1);
+}
+const abrir = (tx, imp) => { $("#expTx").value = tx; $("#expT").textContent = imp ? "Cole aqui um resumo exportado antes" : "Copie e cole no chat"; $("#bApply").style.display = imp ? "" : "none"; $("#bCopy").style.display = $("#bDown").style.display = imp ? "none" : ""; $("#exp").classList.add("on"); };
+$("#bExp").onclick = $("#bExp2").onclick = () => abrir(resumo());
+$("#bImp").onclick = () => abrir("", true);
+$("#bClose").onclick = () => $("#exp").classList.remove("on");
+$("#bApply").onclick = () => { try { const j = JSON.parse($("#expTx").value); S = { dec: {}, it: {}, geral: j.geral || "" };
+  for (const [id, d] of Object.entries(j.decisoes || {})) S.dec[id] = { v: d.escolha, n: d.obs };
+  for (const [k, c] of Object.entries(j.cartoes || {})) S.it[k] = { st: c.status || "", nota: c.obs || "", mud: c.mudou || {}, img: c.imagem || null };
+  save(); location.reload(); } catch (e) { alert("Não consegui ler esse texto."); } };
+$("#bZera").onclick = () => { if (confirm("Apagar todas as marcações desta mesa?")) { S = { dec: {}, it: {}, geral: "" }; save(); location.reload(); } };
+function copiar(tx, b) {
+  const done = () => { const o = b.textContent; b.textContent = "✔ Copiado"; setTimeout(() => b.textContent = o, 1200); };
+  const fb = () => { const t = document.createElement("textarea"); t.value = tx; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch (e) { } t.remove(); };
+  try { navigator.clipboard.writeText(tx).then(done, fb); } catch (e) { fb(); }
+}
+$("#bCopy").onclick = () => { $("#expTx").select(); copiar($("#expTx").value, $("#bCopy")); };
+$("#bDown").onclick = () => { try { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([$("#expTx").value], { type: "application/json" })); a.download = "mesa-atelie.json"; a.click(); } catch (e) { } };
+</script></body></html>
