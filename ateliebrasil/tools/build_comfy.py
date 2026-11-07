@@ -5,7 +5,7 @@ import os, sys, re, json, subprocess, unicodedata
 sys.path.insert(0, os.path.dirname(__file__))
 from arte_spec import TAM, BASE, NEGATIVO, CENA, ART, AVATARES, BASE_AVATAR
 from textos_v2 import T, REGIOES
-from comfy_spec import MODELOS, VOZES, MODELO_VOZ, ANIM_CENA, ANIM_TELA, EFEITOS
+from comfy_spec import MODELOS, VOZES, MODELO_VOZ, TAG_CURTA, PRONUNCIA, ESTABILIDADE, ANIM_CENA, ANIM_TELA, EFEITOS
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 js = r'''const fs=require("fs");const g=s=>s.replace(/^(const|let) /gm,"global.");const R=process.argv[1];
@@ -27,10 +27,17 @@ def silabado(sil):  # "GOR-RO" -> "gor... ro... gorro!"
     p = [x.lower() for x in re.split(r"[- ]", sil) if x]; return "... ".join(p) + "... " + palavra(sil).lower().replace(" ", " ") + "!"
 
 falas, banco = [], {}
-def fala(id_, voz, texto, grupo, modelo=None, ritmo=None):
-    v = VOZES[voz]; modelo = modelo or MODELO_VOZ.get(voz, "eleven_v4"); falas.append({"id": id_, "arquivo": f"audio/{id_}.mp3", "grupo": grupo, "voz": voz, "texto": texto,
-        "eleven": {"modelo": modelo, "voz": v["preset"], "texto": f"{v['tag'] if not ritmo else v['tag'][:-1] + ', ' + ritmo + ']'} {texto}"},
-        "fish": {"modelo": "s2.1-pro", "buscar_voz": v["fish"], "texto": texto}})
+def falado(texto):
+    for a, b in PRONUNCIA.items(): texto = re.sub(r"(?<![\wÀ-ú])" + re.escape(a) + r"(?![\wÀ-ú])", b, texto)
+    return texto
+def fala(id_, voz, texto, grupo, modelo=None, ritmo=None, corte=None):
+    """ritmo: ignorado desde nov/2026 (as direções extras faziam a voz repetir). corte: fala tirada de um áudio maior."""
+    v = VOZES[voz]; modelo = modelo or MODELO_VOZ.get(voz, "eleven_v4")
+    f = {"id": id_, "arquivo": f"audio/{id_}.mp3", "grupo": grupo, "voz": voz, "texto": texto,
+         "eleven": {"modelo": modelo, "voz": v["preset"], "texto": f"{TAG_CURTA[voz]} {falado(texto)}", "estabilidade": ESTABILIDADE},
+         "fish": {"modelo": "s2.1-pro", "buscar_voz": v["fish"], "texto": texto}}
+    if corte: f["corte"] = corte
+    falas.append(f); return f
 def palavra_banco(sil):
     k = slug(palavra(sil))
     if k not in banco: banco[k] = sil; fala(f"palavra/{k}", "narradora", silabado(sil), "palavras", ritmo="slowly, syllable by syllable, then the whole word happily")
@@ -40,11 +47,13 @@ telas = []
 for t in J["telas"]:
     k = t["k"]; x = T[k]; uf = t["uf"] or UF_RASCUNHO.get(k, ""); reg = t["reg"]; v = x["voz"]
     ufn = J["uf"].get(uf, ""); moro = f"Eu moro {UF_PREP.get(uf, 'em')} {ufn}, na região {J['regnome'][reg].title().replace('-Oeste', '-Oeste')}!" if reg != "especial" else ""
-    fala(f"{k}/adv", "narradora", x["adv"], "telas")
+    fala(f"{k}/adv", v if k not in ("mapa", "grupo") else "narradora", x["adv"], "telas")
     fala(f"{k}/fala", v, x["fala"], "telas")
     if moro: fala(f"{k}/moro", v, moro, "telas")
     fala(f"{k}/lenda", v, x["lenda"], "telas")
-    for i, l in enumerate(x["parlenda"], 1): fala(f"{k}/parlenda_{i}", "narradora", l, "telas", ritmo="rhythmic nursery-rhyme chant")
+    # parlenda: gravada inteira de uma vez (fala corrida não repete) e cortada por linha com os tempos do Scribe
+    fala(f"{k}/parlenda", "narradora", " ".join(x["parlenda"]), "telas")
+    for i, l in enumerate(x["parlenda"], 1): fala(f"{k}/parlenda_{i}", "narradora", l, "telas", corte={"de": f"{k}/parlenda", "linha": i, "linhas": x["parlenda"]})
     fala(f"{k}/rima", "narradora", f"Agora me diga: o que rima com {x['rima']['w'].lower()}?", "telas")
     fala(f"{k}/rima_certa", "narradora", f"Isso! {x['rima']['w'].lower()} rima com {x['rima']['ok'][0].lower()}!", "telas")
     for i, f in enumerate(x["fig"], 1): fala(f"{k}/figurinha_{i}", "narradora", f"Figurinha nova! {f[1]}", "telas")
@@ -68,7 +77,11 @@ for c, p in J["paint"].items(): fala(f"cor/{c}", "narradora", p[1] + "!", "cores
 for c, (a, b) in J["recipes"].items():
     pa, pb, pc = J["paint"][a][1], J["paint"][b][1], J["paint"][c][1]
     fala(f"mistura/{c}", "narradora", f"{pa} com {pb} faz {pc}!", "cores", modelo="eleven_v4_turbo")
-for L, nome in J["letra"].items(): fala(f"letra/{slug(L)}", "narradora", nome + ".", "letras", modelo="eleven_v4_turbo")
+ACENTO = {"\u0301": "agudo", "\u0300": "crase", "\u0303": "til", "\u0302": "circunflexo", "\u0327": "cedilha", "\u0308": "trema"}
+def letra_id(L):
+    m = [ACENTO.get(c, "") for c in unicodedata.normalize("NFD", L)[1:]]
+    return slug(L) + ("_" + "_".join(x for x in m if x) if any(m) else "")
+for L, nome in J["letra"].items(): fala(f"letra/{letra_id(L)}", "narradora", nome + ".", "letras", modelo="eleven_v4_turbo")
 
 # falas do jogo (js/app.js): fixas viram áudio; as que têm nome da criança são gravadas para as 4 primas; as outras dinâmicas ficam listadas
 app = open(f"{ROOT}/js/app.js").read()
@@ -82,7 +95,10 @@ for s in sorted(lits):
     elif re.fullmatch(r"[^$]*(\$\{Nome\(\)\}[^$]*)+", s):
         for n in PRIMAS: fixas.append(s.replace("${Nome()}", n))
     else: dinam.append(s)
-for s in fixas: fala(f"jogo/{slug(s)[:48]}", "narradora", s, "jogo", modelo="eleven_v4_turbo")
+QUEM_FALA = {"Hihihi! Até eu, o Saci": "saci", "Hihihi! Te enganei! Meus pés": "curupira"}
+for s in fixas:
+    vz = next((q for a, q in QUEM_FALA.items() if s.startswith(a)), "narradora")
+    fala(f"jogo/{slug(s)[:48]}", vz, s, "jogo", modelo="eleven_v4_turbo" if vz == "narradora" else None)
 for n in PRIMAS: fala(f"nome/{slug(n)}", "narradora", f"{n}!", "nomes", modelo="eleven_v4_turbo")
 
 avatares = [{"k": a["k"], "arquivo": f"kids/avatar-{a['k']}.jpg", "tamanho": TAM["avatar"], "largura": 1024, "altura": 1024, "quem": a["quem"],
@@ -90,7 +106,7 @@ avatares = [{"k": a["k"], "arquivo": f"kids/avatar-{a['k']}.jpg", "tamanho": TAM
 capa = {"arquivo": "art/capa.jpg", "tamanho": TAM["capa"], "largura": 1024, "altura": 1536,
         "prompt": BASE.replace("Children's coloring-book illustration", "Children's game cover illustration").replace("SUBJECT", "") + "\n\nSUBJECT: " + ART["capa"], "negativo": NEGATIVO}
 
-def custo(modelo, chars): return round(chars / 1000 * {"eleven_v4": 24.14, "eleven_v4_turbo": 12.07, "eleven_v3": 50.64}[modelo], 1)
+def custo(modelo, chars): return round(chars / 1000 * {"eleven_v4": 24.14, "eleven_v4_turbo": 12.07, "eleven_v3": 50.64, "eleven_multilingual_v2": 50.64}[modelo], 1)
 cred_eleven = sum(custo(f["eleven"]["modelo"], len(f["eleven"]["texto"])) for f in falas)
 cred_fish = round(sum(len(f["texto"].encode()) for f in falas) / 1000 * 4.53, 1)
 out = {

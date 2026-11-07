@@ -77,7 +77,7 @@ T = {
   "lenda": "Na minha festa, todo mundo canta e bate tambor. Um dia eu dormi e acordei com a música: agora não paro de dançar!",
   "palavras": [["ES-TRE-LA", "⭐"], ["FI-TA", "🎀"], ["MAN-TA", "🟥"], ["CHI-FRE", "🐂"], ["FO-CI-NHO", "🐮"]],
   "fig": [["CA-ZUM-BÁ", "O Cazumbá é um mascarado que dança na festa do Bumba meu Boi, com uma roupa que gira e balança!"]],
-  "rima": {"w": "BOI", "ok": ["HERÓI", "🦸"], "no": [["CASA", "🏠"], ["PEIXE", "🐟"]]},
+  "rima": {"w": "BOI", "ok": ["FOI", "✅"], "no": [["CASA", "🏠"], ["PEIXE", "🐟"]]},
   "parlenda": ["Bumba, bumba, meu boi bumbá,", "dança, boizinho, vem pra cá!", "Fita vermelha, fita azul,", "dança no Norte, dança no Sul!"]},
  "fulozinha": {"voz": "fulozinha",
   "adv": "O que é, o que é? Sou uma menina da mata, de cabelo bem comprido, e dou nó no rabo dos cavalos!",

@@ -160,7 +160,7 @@ def rodar_um(j):
         except Exception: pass
     h = (h or {}).get(pid, h or {}); arqs = []
     for out in (h.get("outputs") or {}).values():
-        for kind in ("audio", "images", "svg", "gifs", "text"):
+        for kind in ("audio", "images", "svg", "gifs", "files", "text"):
             for a in out.get(kind, []) or []:
                 if isinstance(a, dict) and a.get("filename"): arqs.append(a)
     if not arqs: return j["id"], "sem arquivo de saída: " + json.dumps(h, ensure_ascii=False)[:400]

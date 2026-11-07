@@ -100,7 +100,7 @@ let TELAS = [
     lenda: "Na festa do Bumba meu Boi, eu danço com fitas e brilhos, e todo mundo canta e bate tambor. Um dia eu dormi... e acordei com a música! Agora não paro mais de dançar!",
     palavras: [["ES-TRE-LA", .45, .12, "⭐"], ["FI-TA", .1, .4, "🎀"], ["MAN-TA", .6, .7, "🟥"], ["CHI-FRE", .15, .05, "🐂"], ["FO-CI-NHO", .3, .42, "🐮"]],
     fig: [],
-    rima: { w: "BOI", ok: ["HERÓI", "🦸"], no: [["GATO", "🐱"], ["FLOR", "🌸"]] },
+    rima: { w: "BOI", ok: ["FOI", "✅"], no: [["GATO", "🐱"], ["FLOR", "🌸"]] },
     parlenda: ["Bumba, bumba, meu boi bumbá,", "dança, boizinho, vem pra cá!", "Fita vermelha, fita azul,", "dança no Norte, dança no Sul!"],
     vida: "hop", vidaE: ["🥁", "🎀", "⭐"], brilho: ["🎀", "✨"], som: "tambor", rosto: [.33, .3, .5] },
   { k: "fulozinha", nome: "COMADRE FULOZINHA", sil: "FU-LO-ZI-NHA", e: "🌸", reg: "nordeste", uf: "pe", voz: VOZ.fulozinha, musica: "baiao", amb: "birds",

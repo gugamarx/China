@@ -177,7 +177,7 @@ $("#nomeOk").onclick = async () => {
 };
 
 /* ================= ESCOLHER O RETRATO (qualquer avatar) ================= */
-function goAvatar() { UI.go("avatar", "#ff8fbf", renderAvatar); $("#avatar h2").innerHTML = `ESCOLHA O SEU RETRATO! ${rep([["Escolha o seu retrato! Toque na menina que parece com você, e depois em: essa sou eu!"]])}`; setTimeout(() => Voice.say(`${typed.charAt(0) + typed.slice(1).toLowerCase()}, agora escolha o seu retrato!`), 900); }
+function goAvatar() { UI.go("avatar", "#ff8fbf", renderAvatar); $("#avatar h2").innerHTML = `ESCOLHA O SEU RETRATO! ${rep([["Escolha o seu retrato! Toque na menina que parece com você, e depois em: Vamos brincar!"]])}`; setTimeout(() => Voice.say(`${typed.charAt(0) + typed.slice(1).toLowerCase()}, agora escolha o seu retrato!`), 900); }
 function renderAvatar() {
   $("#avNome").innerHTML = [...typed].map(c => `<div class="slot">${c}</div>`).join("");
   $("#avGrid").innerHTML = AVATARES.map(a => `<button class="avpick${a.k === avEsc ? " sel" : ""}" data-k="${a.k}">${avImg(a.k)}</button>`).join("");
@@ -588,7 +588,7 @@ function montar(t) {
   return new Promise(res => {
     let k = 0; const m = $("#monte"); Missao.res = res;
     m.innerHTML = `<b>MONTE O NOME! 🧩 ${rep([["Monte o nome! Toque nas sílabas na ordem certa:"], ...sy.map(x => [x.toLowerCase(), { rate: .7 }]), [palavra(t.sil).toLowerCase() + "!"]])}</b><div class="mw">${sy.map(() => `<div class="ms"></div>`).join("")}</div><div class="tiles">${shuffle(sy.map((s, i) => [s, i])).map(([s, i]) => `<button data-s="${s}" style="color:${SYLC[i % SYLC.length]}">${s}</button>`).join("")}</div>`;
-    m.classList.add("on"); setMissao(true); Voice.talk([["Agora monte o meu nome! Toque nas sílabas na ordem certa!"], ...sy.map(s => [s.toLowerCase(), { rate: .7 }])]);
+    m.classList.add("on"); setMissao(true); Voice.talk([["Agora monte o seu nome! Toque nas sílabas na ordem certa!"], ...sy.map(s => [s.toLowerCase(), { rate: .7 }])]);
     m.querySelectorAll(".tiles button").forEach(b => b.onclick = async () => {
       if (b.dataset.s === sy[k]) {
         const slot = m.querySelectorAll(".ms")[k]; slot.textContent = sy[k]; slot.style.color = SYLC[k % SYLC.length]; b.classList.add("used"); k++;

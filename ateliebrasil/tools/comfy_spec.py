@@ -123,3 +123,23 @@ MODELO_VOZ = {
  # Sul
  "boitata": "eleven_v4", "teiniagua": "eleven_v4", "ervamate": "eleven_v4", "gralha": "eleven_v4_turbo",
 }
+
+# Tags curtas (nov/2026, depois da revisão): as tags longas em inglês faziam o v4 repetir o começo das falas curtas
+# e às vezes o v3 lia a tag em voz alta. Teste A/B: tag curta = 7/7 falas limpas. Sem "ritmo" extra (chant, syllable by syllable).
+TAG_CURTA = {
+ "narradora": "[warm, clear storyteller]",
+ "curupira": "[cheeky boy, Amazonas accent]", "iara": "[sweet, melodic, Pará accent]", "boto": "[charming, gentle, Pará accent]",
+ "caipora": "[brave girl, northern Brazil accent]", "vitoria": "[dreamy, soft, Amazonas accent]", "mapinguari": "[deep friendly giant, Acre accent]",
+ "matinta": "[old granny, Pará accent]",
+ "boi": "[jolly, booming, Maranhão accent]", "fulozinha": "[giggly girl, Pernambuco accent]", "caboclo": "[calm river man, Bahia accent]",
+ "caju": "[cheerful boy, Rio Grande do Norte accent]", "maracatu": "[proud queen, Recife accent]", "ciranda": "[joyful woman, Pernambuco accent]",
+ "joaodebarro": "[cheerful worker, caipira accent]", "paidomato": "[wise old man, Mato Grosso accent]", "tuiuiu": "[proud calm bird, Pantanal accent]",
+ "cavalhadas": "[brave young knight, Goiás accent]", "pequi": "[sweet girl, Goiás accent]",
+ "saci": "[giggly boy, Minas Gerais accent]", "cuca": "[funny witch, caipira accent]", "lobisomem": "[shy, gruff, Minas Gerais accent]",
+ "mula": "[playful, Espírito Santo accent]", "junina": "[festive caller, caipira accent]",
+ "boitata": "[deep, warm, gaúcho accent]", "gralha": "[chatty, Paraná accent]", "teiniagua": "[mysterious princess, gaúcho accent]",
+ "ervamate": "[sweet calm girl, Santa Catarina accent]",
+}
+# Só no texto enviado à voz (a tela continua com a grafia certa): acento onde a voz erra a sílaba forte.
+PRONUNCIA = {"assobia": "assobía", "boizinho": "bôizinho", "bege": "béje", "Yasmin": "Yasmín", "O que é, o que é?": "O que é? O que é?"}
+ESTABILIDADE = 0.65

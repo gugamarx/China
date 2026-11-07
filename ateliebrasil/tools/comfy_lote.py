@@ -10,7 +10,7 @@ ct.OUT = f"{ct.ROOT}/comfy/out"
 D = ct.DATA
 IMG = {"model": "gpt-image-2.6-flare", "model.quality": "high", "model.background": "opaque"}
 USD_IMG = {"1024x1536": 0.0589, "1024x1024": 0.0753}
-USD_VOZ = {"eleven_v4": 0.1144, "eleven_v4_turbo": 0.0572, "eleven_v3": 0.24}
+USD_VOZ = {"eleven_v4": 0.1144, "eleven_v4_turbo": 0.0572, "eleven_v3": 0.24, "eleven_multilingual_v2": 0.24}
 EXTRA = {}  # id -> texto extra no prompt (comentários de refação)
 try: EXTRA = json.load(open(f"{ct.ROOT}/comfy/refazer.json"))
 except Exception: pass
@@ -30,9 +30,11 @@ def jobs():
         wf, usd = wf_img(it, "atelie/" + i.replace("/", "__"), EXTRA.get(i, ""))
         J.append(dict(id=i, tipo="imagem", ext=".png", usd=usd, wf=wf))
     for f in D["falas"]:
+        if f.get("corte"): continue          # parlenda_N: sai do corte da parlenda inteira (tools/corta_parlendas.py)
         e = f["eleven"]; i = os.path.splitext(f["arquivo"])[0]
-        J.append(dict(id=i, tipo="voz", ext=".mp3", usd=len(e["texto"]) / 1000 * USD_VOZ[e["modelo"]],
-                      wf=ct.wf_eleven(e["modelo"], e["voz"], e["texto"], "atelie/" + i.replace("/", "__"))))
+        wf = ct.wf_eleven(e["modelo"], e["voz"], e["texto"], "atelie/" + i.replace("/", "__"))
+        if "estabilidade" in e: wf["2"]["inputs"]["stability"] = e["estabilidade"]
+        J.append(dict(id=i, tipo="voz", ext=".mp3", usd=len(e["texto"]) / 1000 * USD_VOZ[e["modelo"]], wf=wf))
     return J
 
 if __name__ == "__main__":

@@ -44,6 +44,8 @@ summary small{color:var(--mut);font-size:13px;grid-column:1}
 .item[data-s="refazer"] .btns button.r{background:var(--no)}
 textarea{width:100%;font:14px var(--body);color:var(--fg);background:var(--card);border:1px solid var(--no);border-radius:8px;padding:8px;min-height:56px;resize:vertical}
 .falta{font-size:13px;color:var(--no);font-weight:600}
+.tag{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;vertical-align:1px}
+.tag.novo{background:var(--chip);color:var(--fg)} .tag.conf{background:var(--ok-bg);color:var(--ok)} .ouv{color:var(--no)}
 .barra{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:5}
 .barra div{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
 .barra .t{font-variant-numeric:tabular-nums;font-size:14px;flex:1;min-width:0}
@@ -55,8 +57,8 @@ button:focus-visible,summary:focus-visible,textarea:focus-visible{outline:3px so
 .esconde{display:none!important}
 </style>
 <main>
-<header><h1>Revisão do lote, <em>item por item</em></h1>
-<p class="intro">Toque em ✓ para aprovar ou em ↻ para refazer. Ao refazer, diga o que mudar. Suas marcações ficam salvas neste aparelho. No fim, toque em <b>Copiar avaliação</b> e cole no chat.</p></header>
+<header><h1>Revisão do lote, <em>segunda rodada</em></h1>
+<p class="intro">O que você aprovou na primeira rodada já vem marcado. Os itens refeitos aparecem como pendentes, com a etiqueta <b>refeito</b>; o selo <b>conferido ✓</b> quer dizer que a transcrição automática bateu com o texto. Use o filtro <b>Pendentes</b> para ver só o que falta. Ao refazer, diga o que mudar. As marcações ficam salvas neste aparelho. No fim, toque em <b>Copiar avaliação</b> e cole no chat.</p></header>
 <div class="filtros" role="group" aria-label="Mostrar">
 <button id="f-todos" data-f="todos" aria-pressed="true">Todos</button>
 <button id="f-pend" data-f="pend" aria-pressed="false">Pendentes</button>
@@ -69,7 +71,8 @@ button:focus-visible,summary:focus-visible,textarea:focus-visible{outline:3px so
 <textarea id="saida" readonly aria-label="Avaliação em Markdown"></textarea></div></div>
 <script>
 const SEC=/*DADOS*/[];
-const KEY="atelie_revisao_v1";let E={};try{E=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+const KEY="atelie_revisao_v2";let E=null;try{E=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+if(!E){E={};SEC.forEach(s=>s.itens.forEach(i=>{if(i.pre)E[i.id]={s:i.pre}}))}
 const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify(E))}catch(e){}};
 let filtro="todos";const packs={},audio=new Audio();let tocandoBtn=null;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -83,14 +86,14 @@ function itemHTML(it,sid){
    <div class="txt"><b>${esc(it.rotulo)}</b>${it.texto?`<small><br>${esc(it.texto)}</small>`:""}</div>${btns}</div>`;
   return `<div class="item" data-id="${esc(it.id)}" data-s="${s}"><div class="linha">
    <button class="play" data-sec="${esc(sid)}" aria-label="Ouvir ${esc(it.rotulo)}" ${it.ok?"":"disabled"}>▶</button>
-   <div class="txt"><b>${esc(it.rotulo)}</b><p>${esc(it.texto)}</p><small>${esc(it.meta)}${it.ok?"":' · <span class="falta">não gerou</span>'}</small></div></div>${btns}</div>`;
+   <div class="txt"><b>${esc(it.rotulo)}</b>${it.novo?'<span class="tag novo">refeito</span>':""}${it.conf==="ok"?'<span class="tag conf">conferido ✓</span>':""}<p>${esc(it.texto)}</p>${it.ouvido?`<small class="ouv">⚠ ouvido: ${esc(it.ouvido)}</small><br>`:""}<small>${esc(it.meta)}${it.ok?"":' · <span class="falta">não gerou</span>'}</small></div></div>${btns}</div>`;
 }
 function render(){
   const L=document.getElementById("lista"),abertos=new Set([...L.querySelectorAll("details[open]")].map(d=>d.dataset.sec));
   L.innerHTML=SEC.map(s=>{
     const imgs=s.itens.filter(i=>i.tipo==="imagem"),voz=s.itens.filter(i=>i.tipo==="voz");
     return `<details data-sec="${s.id}" ${abertos.has(s.id)?"open":""}><summary><h2>${esc(s.titulo)}</h2><small>${esc(s.sub)} · ${s.itens.length} itens</small><span class="placar"></span></summary>
-     <div class="corpo"><div class="acoes-sec"><button data-todos="${s.id}">✓ Aprovar o que falta nesta seção</button>${voz.length?`<button data-seq="${s.id}">▶ Ouvir a seção em sequência</button>`:""}</div>
+     <div class="corpo"><div class="acoes-sec"><button data-todos="${s.id}">✓ Aprovar o que falta nesta seção</button><button data-limpa="${s.id}">Limpar marcações</button>${voz.length?`<button data-seq="${s.id}">▶ Ouvir a seção em sequência</button>`:""}</div>
      ${imgs.length?`<div class="imgs">${imgs.map(i=>itemHTML(i,s.id)).join("")}</div>`:""}${voz.map(i=>itemHTML(i,s.id)).join("")}</div></details>`}).join("");
   atualiza();
 }
@@ -123,6 +126,8 @@ document.addEventListener("click",async e=>{
     if(filtro!=="todos")document.querySelectorAll("details").forEach(d=>d.open=true);atualiza()}
   else if(b.dataset.todos){const s=SEC.find(x=>x.id===b.dataset.todos);s.itens.forEach(i=>{if(!st(i.id))E[i.id]={s:"ok"}});salvar();
     document.querySelectorAll(`details[data-sec="${s.id}"] .item`).forEach(el=>{if(!el.dataset.s)el.dataset.s="ok"});atualiza()}
+  else if(b.dataset.limpa){const s=SEC.find(x=>x.id===b.dataset.limpa);s.itens.forEach(i=>delete E[i.id]);salvar();
+    document.querySelectorAll(`details[data-sec="${s.id}"] .item`).forEach(el=>{el.dataset.s="";el.querySelector("textarea").classList.add("esconde")});atualiza()}
   else if(b.dataset.seq){for(const p of document.querySelectorAll(`details[data-sec="${b.dataset.seq}"] .play:not([disabled])`)){
     if(p.closest(".item").classList.contains("esconde"))continue;p.scrollIntoView({block:"center",behavior:"smooth"});await toca(p);if(audio.error)break;
     if(!audio.ended)break}}
@@ -133,7 +138,7 @@ function md(){
   const all=SEC.flatMap(s=>s.itens.map(i=>({...i,sec:s.titulo})));
   const ok=all.filter(i=>st(i.id)==="ok"),ref=all.filter(i=>st(i.id)==="refazer"),pend=all.filter(i=>!st(i.id));
   const hoje=new Date().toLocaleDateString("pt-BR");
-  let t=`# Avaliação do lote: Ateliê Brasil (${hoje})\n\n- Aprovados: ${ok.length}\n- Refazer: ${ref.length}\n- Pendentes: ${pend.length}\n- Total: ${all.length}\n\n## Refazer\n\n`;
+  let t=`# Avaliação do lote: Ateliê Brasil, 2ª rodada (${hoje})\n\n- Aprovados: ${ok.length}\n- Refazer: ${ref.length}\n- Pendentes: ${pend.length}\n- Total: ${all.length}\n\n## Refazer\n\n`;
   t+=ref.length?ref.map(i=>`- \`${i.id}\` (${i.sec}, ${i.rotulo}${i.meta?", "+i.meta:""})${i.texto&&i.tipo==="voz"?`: "${i.texto}"`:""}\n  - Comentário: ${((E[i.id]||{}).c||"(sem comentário)").replace(/\n+/g," ")}`).join("\n"):"Nada a refazer.";
   if(pend.length){t+=`\n\n## Pendentes (sem avaliação)\n\n`;const por={};pend.forEach(i=>(por[i.sec]=por[i.sec]||[]).push(i.id));
     t+=Object.entries(por).map(([s,ids])=>`- ${s}: ${ids.length<=12?ids.map(x=>"`"+x+"`").join(", "):ids.length+" itens"}`).join("\n")}
