@@ -30,7 +30,7 @@ def page(mode):
 
 async def shots():
     async with async_playwright() as p:
-        b = await p.chromium.launch(executable_path="/usr/bin/google-chrome"); pg = await b.new_page(viewport={"width": W, "height": H})
+        b = await p.chromium.launch(executable_path=os.environ.get("CHROME", "/opt/pw-browsers/chromium-1243/chrome-linux64/chrome")); pg = await b.new_page(viewport={"width": W, "height": H})
         out = {}
         for m in ("ids", "lines", "orig"):
             await pg.set_content(page(m)); out[m] = await pg.screenshot(clip={"x": 0, "y": 0, "width": W, "height": H})

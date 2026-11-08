@@ -4,7 +4,7 @@ import os, json, shutil, zipfile, time
 from PIL import Image, ImageOps
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); D = f"{ROOT}/dist"
 shutil.rmtree(D, ignore_errors=True); os.makedirs(f"{D}/icons"); os.makedirs(f"{D}/kids"); os.makedirs(f"{D}/pages")
-for s in ["index.html", "js", "fonts", "netlify.toml"]:
+for s in ["index.html", "js", "fonts", "netlify.toml", "audio"]:
     (shutil.copytree if os.path.isdir(f"{ROOT}/{s}") else shutil.copy)(f"{ROOT}/{s}", f"{D}/{s}")
 import subprocess; subprocess.run(["python3", f"{ROOT}/tools/build_crops.py"], check=True)   # recortes redondos sempre em dia
 for f in os.listdir(f"{ROOT}/pages"):
@@ -21,7 +21,7 @@ for f in sorted(os.listdir(f"{ROOT}/kids")):
             s_ = int(W_ * .74); cx, cy = int(W_ * .61), int(H_ * .56); im = im.crop((cx - s_ // 2, cy - s_ // 2, cx - s_ // 2 + s_, cy - s_ // 2 + s_))
         ImageOps.fit(im, (320, 320), Image.LANCZOS).save(f"{D}/kids/{f[:-4]}.jpg", quality=86)
 festa = Image.open(f"{ROOT}/pages/grupo.orig.jpg").convert("RGB"); W, H = festa.size  # ícone: o Saci da Festa do Folclore
-sz_ = int(W * .3); cx, cy = int(W * .315), int(H * .27)
+sz_ = int(W * .3); cx, cy = int(W * .55), int(H * .7)
 face = festa.crop((max(0, cx - sz_ // 2), max(0, cy - sz_ // 2), max(0, cx - sz_ // 2) + sz_, max(0, cy - sz_ // 2) + sz_))
 for sz in (192, 512): ImageOps.fit(face, (sz, sz)).save(f"{D}/icons/icon-{sz}.png")
 json.dump({"name": "Ateliê Brasil", "short_name": "Ateliê Brasil", "start_url": "./index.html", "scope": "./", "display": "fullscreen",

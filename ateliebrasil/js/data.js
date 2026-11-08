@@ -26,8 +26,15 @@ function mix(a, b) {
 /* ============ AVATARES ============
    Qualquer pintora escolhe qualquer retrato. Para pôr mais um: salve kids/avatar-<chave>.jpg (quadrado) e acrescente aqui. */
 const AVATARES = [
-  { k: "julia", src: "kids/avatar-julia.jpg" }, { k: "elisa", src: "kids/avatar-elisa.jpg" },
-  { k: "yasmin", src: "kids/avatar-yasmin.jpg" }, { k: "valentina", src: "kids/avatar-valentina.jpg" },
+  { k: "a1", src: "kids/avatar-a1.jpg" },
+  { k: "a2", src: "kids/avatar-a2.jpg" },
+  { k: "a3", src: "kids/avatar-a3.jpg" },
+  { k: "a4", src: "kids/avatar-a4.jpg" },
+  { k: "a5", src: "kids/avatar-a5.jpg" },
+  { k: "a6", src: "kids/avatar-a6.jpg" },
+  { k: "a7", src: "kids/avatar-a7.jpg" },
+  { k: "a8", src: "kids/avatar-a8.jpg" },
+  { k: "a9", src: "kids/avatar-a9.jpg" },
 ];
 const MAX_PINTORAS = 8;
 /* piadinhas pelo nome escrito (tela -> fala extra) */

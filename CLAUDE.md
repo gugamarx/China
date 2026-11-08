@@ -57,3 +57,10 @@ Ilustrações "colorida | P&B" em `art/<k>.jpg` → `python3 tools/build_folk.py
 - Precisa no ambiente: secrets `COMFY_CLOUD_API_KEY` e `NETLIFY_AUTH_TOKEN`; rede liberada para cloud.comfy.org, api.comfy.org,
   api.netlify.com. Nunca pedir chave no chat.
 - Fora do git (privado): `art/` (13 ilustrações novas + old/), `kids/` (capas e avatares das primas), `pages/`, `dist/`.
+- **Nov/2026, versão 1 no ar: https://ateliebrasil.netlify.app** (site id 652f4409-787d-4e8b-8ab1-950451379c17; Team protection
+  ligada até o Gustavo trocar para Public). Arte nova única (GPT Image 2.6) em `art/<k>.jpg` (de `comfy/out/art`); `build_folk.py`
+  com UNICA=True tira o contorno da própria colorida. `tools/build_lendas.py` gera `js/lendas.js` dos textos v2 + coordenadas.
+  `tools/build_falas.py` gera `audio/` (64 kbps) e `js/falas.js` (texto → MP3); a Voice toca o MP3 e cai na voz do navegador se não achar.
+  9 avatares a1..a9 (fotos das primas guardadas em kids/fotos_primas, fora do site). Ordem: build_folk → build_mapa → build_lendas →
+  build_falas → build_site → deploy zip. Revisão de vozes: 2ª rodada em comfy/revisao (artifact), conferência por transcrição
+  (comfy_transcreve.py + confere_falas.py).

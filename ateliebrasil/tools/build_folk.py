@@ -16,7 +16,17 @@ from kidcolor import classify_rgb, NAMES
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = f"{ROOT}/pages"; os.makedirs(OUT, exist_ok=True)
 FORTE = {"grupo": 3}     # desenhos com muito detalhe: junta mais as áreas pequenas da mesma cor
-KEYS = ["curupira", "iara", "boto", "lobisomem", "cuca", "boi", "grupo", "vitoria", "caboclo", "joaodebarro", "matinta", "paidomato", "fulozinha", "mapinguari"]
+KEYS = ["curupira", "iara", "boto", "caipora", "vitoria", "mapinguari", "matinta", "boi", "fulozinha", "caboclo", "caju", "maracatu", "ciranda",
+        "joaodebarro", "paidomato", "tuiuiu", "cavalhadas", "pequi", "saci", "cuca", "lobisomem", "mula", "junina",
+        "boitata", "gralha", "teiniagua", "ervamate", "grupo"]
+UNICA = True   # nov/2026: arte nova é UMA imagem colorida com contorno preto grosso (Comfy, GPT Image 2.6); o traço sai dela mesma
+
+
+def single(img):
+    """arte única: o contorno é o preto da própria colorida; a colorida é o gabarito"""
+    dark = img.max(2) < 95
+    lin = np.where(dark[..., None], img, 255).astype(np.uint8)
+    return img, lin
 
 
 def halves(img):
@@ -127,12 +137,12 @@ def unleak(reg, n, cls, dark, A):
 
 def build(key, W=900):
     img = cv2.cvtColor(cv2.imread(f"{ROOT}/art/{key}.jpg"), cv2.COLOR_BGR2RGB)
-    col, lin = halves(img)
+    col, lin = single(img) if UNICA else halves(img)
     h, w = lin.shape[:2]; s = W / max(h, w); H, Wd = round(h * s), round(w * s)
     lin = cv2.resize(lin, (Wd, H), interpolation=cv2.INTER_AREA)
     col = cv2.resize(col, (Wd, H), interpolation=cv2.INTER_AREA)
     g = cv2.cvtColor(lin, cv2.COLOR_RGB2GRAY)
-    col = align(col, g)                                                      # encaixa a colorida exatamente sobre o traço
+    if not UNICA: col = align(col, g)                                        # encaixa a colorida exatamente sobre o traço
     line = g < 170                                                           # o traço do desenho (é o que aparece)
     bar = line | cv2.morphologyEx(line.astype(np.uint8), cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))).astype(bool)  # barreira: fecha frestas do traço
     reg, n = comps(~bar)

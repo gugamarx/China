@@ -157,7 +157,32 @@ const Voice = (() => {
   const load = () => { try { voices = S.getVoices() || []; } catch (e) { } }; if (OK) { load(); try { S.addEventListener ? S.addEventListener("voiceschanged", load) : (S.onvoiceschanged = load); } catch (e) { } }
   const find = l => voices.find(v => v.lang && v.lang.replace("_", "-").toLowerCase() === l.toLowerCase()) || voices.find(v => v.lang && v.lang.toLowerCase().startsWith(l.slice(0, 2)));
   const fail = () => { if (worked || warned) return; if (++fails >= 2) { warned = true; V.onFail && V.onFail(); } };
+  /* falas gravadas (js/falas.js): se o texto tem MP3, toca o MP3; senão, voz do navegador */
+  const norm = s => String(s || "").toLowerCase().normalize("NFC").replace(/[^\p{L}\p{N} ]+|_/gu, " ").replace(/\s+/g, " ").trim();
+  const F = typeof FALAS !== "undefined" ? FALAS : {};
+  const mp3Of = t => F[norm(t)];
+  let player = null;
+  function play(src) {
+    return new Promise(res => {
+      if (!Audio8.sfxOn) return res(true);
+      try {
+        if (player) { try { player.pause(); } catch (e) { } }
+        try { OK && S.cancel(); } catch (e) { }
+        const a = new Audio(src); player = a; let done = false;
+        const fin = ok => { if (!done) { done = true; Audio8.duck(false); res(ok); } };
+        a.onended = () => fin(true); a.onerror = () => fin(false); a.onpause = () => fin(true);
+        Audio8.duck(true); worked = true;
+        const p = a.play(); if (p && p.catch) p.catch(() => fin(false));
+        setTimeout(() => fin(true), 30000);
+      } catch (e) { res(false); }
+    });
+  }
   function speak(text, lang, o = {}) {
+    const src = mp3Of(text);
+    if (src) return play(src).then(ok => ok ? undefined : speakTTS(text, lang, o));
+    return speakTTS(text, lang, o);
+  }
+  function speakTTS(text, lang, o = {}) {
     return new Promise(res => {
       if (!OK) { fail(); return res(); }
       if (!Audio8.sfxOn || !text) return res();
@@ -178,14 +203,23 @@ const Voice = (() => {
   async function talk(items) {
     const g = ++gen;
     if (OK) { let busy = false; try { busy = S.speaking || S.pending; S.cancel(); } catch (e) { } if (busy) await sleep(120); }   // falar logo depois de cancelar se perde no Chrome
-    for (const [t, o] of items) { if (g !== gen) return false; await speak(t, "pt-BR", o || {}); }
+    if (player) { try { player.pause(); } catch (e) { } }
+    for (let i = 0; i < items.length; i++) {
+      if (g !== gen) return false;
+      // falas gravadas inteiras: junta itens seguidos quando o texto junto tem MP3 ("O que é, o que é?" + resto da adivinha)
+      let j = Math.min(items.length, i + 3);
+      for (; j > i + 1; j--) if (mp3Of(items.slice(i, j).map(x => x[0]).join(" "))) break;
+      await speak(items.slice(i, j).map(x => x[0]).join(" "), "pt-BR", items[i][1] || {}); i = j - 1;
+    }
     return g === gen;
   }
   const V = { ok: OK, talk, say: (t, o) => talk([[t, o]]), get gen() { return gen; }, get worked() { return worked; }, get failed() { return warned || !OK; }, onFail: null,
-    color: c => talk([[PAINT[c][1]]]),
+    color: c => F["cor/" + c] ? (gen++, play(F["cor/" + c])) : talk([[PAINT[c][1]]]),
     /* lê as sílabas devagar e depois a palavra inteira: "gor... ro... GORRO!" */
-    syl: (s, o) => talk([...silabas(s).map(p => [p.toLowerCase(), { rate: .7, ...(o || {}) }]), [palavra(s).toLowerCase() + "!", { rate: .95, ...(o || {}) }]]),
-    cancel() { gen++; try { OK && S.cancel(); } catch (e) { } Audio8.duck(false); },
+    syl: (s, o) => { const k = "palavra/" + palavra(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+      if (F[k]) { if (player) { try { player.pause(); } catch (e) { } } gen++; return play(F[k]); }
+      return talk([...silabas(s).map(p => [p.toLowerCase(), { rate: .7, ...(o || {}) }]), [palavra(s).toLowerCase() + "!", { rate: .95, ...(o || {}) }]]); },
+    cancel() { gen++; try { OK && S.cancel(); } catch (e) { } if (player) { try { player.pause(); } catch (e) { } } Audio8.duck(false); },
     /* no primeiro toque: uma fala muda "destrava" a voz em alguns celulares */
     unlock() { if (!OK || V._u) return; V._u = 1; try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "pt-BR"; S.speak(u); } catch (e) { } },
     has: l => { load(); return !!voices.find(v => v.lang && v.lang.toLowerCase().startsWith(l.slice(0, 2))); } };
