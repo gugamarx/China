@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NoelGame — O jogo de Natal com as fotos do seu filho</title>
+<meta name="description" content="Jogo de Natal personalizado com as fotos da sua criança: Peekaboo, Memória, Quebra-cabeça e mais. Teste grátis com 1 foto, que não sai do seu celular.">
+<meta name="theme-color" content="#B3121F">
+<link rel="alternate" hreflang="pt-BR" href="/">
+<link rel="alternate" hreflang="en" href="/?lang=en">
+<meta property="og:title" content="NoelGame — O jogo de Natal com as fotos do seu filho">
+<meta property="og:description" content="Seu filho é o protagonista do jogo de Natal. Teste grátis agora com 1 foto.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2B1B5A; --ink2:#4A3A80; --bg:#FFF9F0; --card:#fff;
+    --red:#D62839; --redd:#B3121F; --redx:#A3141F; --pine:#0F6B34; --green:#14915A;
+    --gold:#FFD23F; --snow:#F4F8FF; --blue:#2F7FE0; --pinkd:#C8146E;
+    --shadow:0 6px 0 rgba(43,27,90,.2);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Baloo 2',system-ui,sans-serif;color:var(--ink);background:var(--bg);
+    background-image:radial-gradient(rgba(214,40,57,.08) 2px,transparent 2px);background-size:22px 22px;
+    -webkit-font-smoothing:antialiased;line-height:1.5;font-size:17px}
+  .px{font-family:'Press Start 2P',ui-monospace,monospace;letter-spacing:.02em}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+  :focus-visible{outline:4px solid var(--gold);outline-offset:3px;border-radius:8px;box-shadow:0 0 0 7px var(--ink)}
+  .skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;z-index:99}
+  .skip:focus{left:8px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  [hidden]{display:none!important}
+  svg{display:block}
+
+  header{position:sticky;top:0;z-index:20;background:rgba(255,249,240,.95);backdrop-filter:blur(8px);border-bottom:3px solid var(--ink)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:10px}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);min-height:44px}
+  .logo i{width:34px;height:34px;display:block}
+  .logo b{font-size:12px}.logo b span{color:var(--redd)}
+  .hnav{display:flex;gap:6px;align-items:center}
+  .hnav a.mini{font-weight:800;color:var(--ink);text-decoration:none;min-height:44px;display:inline-flex;align-items:center;padding:0 8px}
+  .lang button{font:800 15px 'Baloo 2',system-ui,sans-serif;border:3px solid var(--ink);background:#fff;color:var(--ink);border-radius:12px;min-width:48px;min-height:44px;cursor:pointer}
+  .lang button[aria-pressed=true]{background:var(--ink);color:#fff}
+
+  /* hero */
+  .hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:56px 0 60px;
+    background:linear-gradient(170deg,#E5383B 0%,#A3141F 48%,#0F6B34 100%);border-bottom:4px solid var(--ink)}
+  .scan::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0 2px,transparent 2px 4px)}
+  .hero .wrap{position:relative;z-index:2}
+  .snow{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .snow i{position:absolute;top:-10px;width:6px;height:6px;background:#fff;opacity:.8;animation:fall linear infinite}
+  @keyframes fall{to{transform:translateY(110vh)}}
+  .bigsanta{width:120px;height:120px;margin:0 auto 18px;filter:drop-shadow(5px 5px 0 rgba(0,0,0,.3));animation:bob 3s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .hero h1{font-size:clamp(19px,5vw,42px);line-height:1.5;margin-bottom:18px;text-shadow:3px 3px 0 #5a0a12}
+  .hero h1 span{color:var(--gold)}
+  .hero .lead{font-size:clamp(18px,2.4vw,22px);font-weight:700;max-width:660px;margin:0 auto 28px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:800 18px 'Baloo 2',system-ui,sans-serif;text-decoration:none;border:3px solid var(--ink);border-radius:18px;padding:10px 22px;min-height:52px;box-shadow:var(--shadow);cursor:pointer;transition:transform .08s;color:var(--ink);background:#fff}
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(43,27,90,.2)}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .btn.play{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--redd);background:rgba(255,255,255,.96)}
+  .btn.gold{background:var(--gold)}
+  .btn.red{background:var(--redd);color:#fff}
+  .btn.ghost{background:transparent;color:#fff;border-color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+  .ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:22px;font-weight:800;font-size:15px}
+  .chips span{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.6);border-radius:999px;padding:2px 12px}
+
+  section{padding:48px 0}
+  h2{font-size:clamp(15px,3vw,22px);text-align:center;margin-bottom:12px;line-height:1.55}
+  .sub{text-align:center;font-weight:700;color:var(--ink2);margin:0 auto 26px;max-width:660px}
+
+  /* free test */
+  .test{background:#fff;border:4px solid var(--ink);border-radius:28px;box-shadow:0 10px 0 rgba(43,27,90,.2);overflow:hidden}
+  .test .bar{background:var(--ink);color:var(--gold);padding:12px 16px;font-size:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .test .bar b{color:#fff;font-size:11px}
+  .setup{padding:22px;display:grid;gap:14px;max-width:560px;margin:0 auto}
+  .field label{display:block;font-weight:800;margin-bottom:4px}
+  input[type=text],input[type=email]{width:100%;font:700 17px 'Baloo 2',system-ui,sans-serif;padding:10px 14px;min-height:52px;border-radius:14px;border:3px solid var(--ink);background:#fff;color:var(--ink)}
+  .note{font-size:15px;font-weight:600;color:var(--ink2)}
+  .photo{display:flex;gap:14px;align-items:center}
+  .thumb{width:72px;height:72px;border-radius:14px;border:3px dashed var(--ink2);flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--snow)}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .filebtn{position:relative;overflow:hidden}
+  .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+  .row2{display:flex;gap:10px;flex-wrap:wrap}
+  .row2 .btn{flex:1;min-width:200px}
+  .stage{position:relative;padding:18px 16px 22px;background:linear-gradient(170deg,#E5383B,#A3141F 50%,#0F6B34);color:#fff;text-align:center;overflow:hidden}
+  .stage>*{position:relative;z-index:2}
+  .hud{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--gold);margin-bottom:10px;gap:8px}
+  .msgline{font-size:clamp(11px,2.6vw,14px);line-height:1.6;min-height:46px;margin-bottom:12px;text-shadow:2px 2px 0 rgba(0,0,0,.35)}
+  .gifts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:420px;margin:0 auto}
+  .gift{aspect-ratio:1;border:0;background:rgba(255,255,255,.14);border-radius:16px;cursor:pointer;position:relative;padding:10%;min-height:44px}
+  .gift:hover .box{transform:translateY(-3px)}
+  .gift .box,.gift .in{position:absolute;inset:10%;transition:transform .25s}
+  .gift .in{opacity:0;transform:scale(.4)}
+  .gift.open .box{transform:translateY(-120%) rotate(-12deg);opacity:0;transition:transform .35s,opacity .35s .1s}
+  .gift.open .in{opacity:1;transform:scale(1)}
+  .gift .in img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:3px solid var(--gold)}
+  .gift.no{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .gift.hit{background:var(--gold)}
+  .found{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:5;background:rgba(43,27,90,.82);opacity:0;pointer-events:none;transition:opacity .2s}
+  .found.on{opacity:1;pointer-events:auto}
+  .found .nm{font-size:clamp(20px,6vw,36px);color:var(--gold);text-shadow:3px 3px 0 var(--redd);word-break:break-word;padding:0 10px}
+  .found .ph{width:120px;height:120px;border-radius:18px;border:4px solid var(--gold);overflow:hidden;animation:pop .5s}
+  .found .ph img,.found .ph svg{width:100%;height:100%;object-fit:cover}
+  @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
+  .done{padding:22px;text-align:center}
+  .done h3{font-size:clamp(14px,3.4vw,20px);line-height:1.6;color:var(--redd);margin-bottom:10px}
+
+  /* offer */
+  .feat{background:linear-gradient(135deg,#A3141F,#D62839 55%,#0F6B34);color:#fff;border:4px solid var(--ink);border-radius:28px;box-shadow:0 10px 0 rgba(43,27,90,.25);padding:28px;display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;position:relative;overflow:hidden}
+  .feat>*{position:relative;z-index:2}
+  .feat h2{text-align:left;color:var(--gold);text-shadow:3px 3px 0 rgba(0,0,0,.3)}
+  .feat p{font-weight:700;margin-bottom:14px}
+  .feat ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-weight:800}
+  .phones{justify-self:center;display:flex;gap:14px;align-items:center}
+  .phone{width:165px;aspect-ratio:9/17;background:var(--ink);border-radius:28px;padding:9px;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+  .phone.p1{transform:rotate(-4deg)}.phone.p2{transform:rotate(4deg) translateY(18px)}
+  .screen{width:100%;height:100%;border-radius:20px;background:linear-gradient(170deg,#E5383B,#0F6B34);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px;position:relative;overflow:hidden;color:#fff;text-align:center}
+  .screen .t{font-size:10px;color:var(--gold);text-shadow:2px 2px 0 rgba(0,0,0,.3)}
+  .pk{position:relative;width:100%;aspect-ratio:1;overflow:hidden}
+  .pk .face{position:absolute;inset:8%;animation:pp 4.4s steps(1) infinite}
+  .pk .face img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:3px solid var(--gold)}
+  .mit{position:absolute;width:46%;top:26%;animation:mitL 4.4s ease-in-out infinite}
+  .mit.l{left:6%}.mit.r{right:6%;animation-name:mitR}.mit.r svg{transform:scaleX(-1)}
+  .bubble{position:absolute;left:50%;top:0;transform:translateX(-50%);background:#fff;color:var(--red);font-size:8px;padding:6px 7px;border-radius:8px;border:2px solid var(--ink);white-space:nowrap;opacity:0;animation:bub 4.4s steps(1) infinite}
+  @keyframes mitL{0%,30%{transform:translateX(0)}42%,82%{transform:translate(-95%,20%)}94%,100%{transform:translateX(0)}}
+  @keyframes mitR{0%,30%{transform:translateX(0)}42%,82%{transform:translate(95%,20%)}94%,100%{transform:translateX(0)}}
+  @keyframes bub{0%,42%{opacity:0}43%,82%{opacity:1}83%,100%{opacity:0}}
+  @keyframes pp{0%,42%{transform:scale(1)}43%{transform:scale(1.08)}50%,100%{transform:scale(1)}}
+  .mem{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:100%}
+  .mc{aspect-ratio:3/4;perspective:400px}
+  .mc i{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .35s}
+  .mc.on i{transform:rotateY(180deg)}
+  .mc b,.mc em{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .mc b{background:var(--green);color:#fff;font:400 11px 'Press Start 2P',monospace}
+  .mc em{background:#fff;transform:rotateY(180deg);padding:3px}
+  .mc em img{width:100%;height:100%;object-fit:cover;border-radius:5px}
+  .mc.ok em{box-shadow:0 0 0 3px var(--gold)}
+  .win{font-size:8px;background:var(--gold);color:var(--ink);padding:6px 8px;border-radius:8px;visibility:hidden}
+  .win.on{visibility:visible}
+
+  /* pricing */
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+  .plan{position:relative;display:block;cursor:pointer}
+  .plan input{position:absolute;opacity:0}
+  .plan .pc{display:block;height:100%;background:#fff;border:3px solid var(--ink);border-radius:22px;padding:22px 18px;box-shadow:var(--shadow);text-align:center;transition:transform .1s}
+  .plan input:checked+.pc{background:#FFF4CC;box-shadow:0 0 0 4px var(--gold),var(--shadow);transform:translateY(-4px)}
+  .plan input:focus-visible+.pc{outline:4px solid var(--gold);outline-offset:4px}
+  .plan .tag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--redd);color:#fff;font-size:8px;padding:7px 9px;border-radius:8px;white-space:nowrap;border:2px solid var(--ink)}
+  .plan h3{font-size:13px;margin-bottom:8px}
+  .plan .ph{font-weight:800;font-size:20px}
+  .plan .tot{font-weight:600;color:var(--ink2);font-size:15px;margin-bottom:10px}
+  .plan .pr{font-size:clamp(18px,3vw,24px);color:var(--redd)}
+  .plan .old{font-weight:700;color:var(--ink2);text-decoration:line-through;min-height:24px}
+  .incl{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;font-weight:800;margin-bottom:26px}
+  .order{background:var(--ink);color:#fff;border-radius:28px;padding:28px 20px;border:4px solid var(--ink);box-shadow:0 10px 0 rgba(43,27,90,.25)}
+  .order h3{color:var(--gold);font-size:clamp(13px,2.6vw,18px);text-align:center;line-height:1.6;margin-bottom:18px}
+  .order form{max-width:540px;margin:0 auto;display:grid;gap:14px}
+  .order label.l{display:block;font-weight:800;margin-bottom:4px;color:#E4DCFF}
+  .order input[type=text],.order input[type=email]{border-color:#fff}
+  .sex{display:flex;gap:10px}
+  .sex label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border:3px solid #fff;border-radius:14px;font-weight:800;cursor:pointer}
+  .sex input{width:22px;height:22px;accent-color:var(--gold)}
+  .sex label:has(input:checked){background:#fff;color:var(--ink)}
+  details.cup summary{cursor:pointer;font-weight:800;color:#E4DCFF;min-height:44px;display:flex;align-items:center}
+  .cuprow{display:flex;gap:10px}
+  .cuprow input{flex:1;text-transform:uppercase}
+  .cuprow .btn{min-width:110px}
+  .cupmsg{font-weight:800;color:var(--gold);min-height:22px;margin-top:4px}
+  label.ck{display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:600;color:#E4DCFF;cursor:pointer;padding:4px 0}
+  label.ck input{margin-top:2px;width:24px;height:24px;flex:none;accent-color:var(--gold)}
+  label.ck a{color:#fff;font-weight:800}
+  .total{display:flex;justify-content:space-between;align-items:center;border-top:2px dashed rgba(255,255,255,.35);padding-top:12px;font-weight:800;font-size:18px}
+  .total .px{color:var(--gold);font-size:clamp(14px,3vw,18px)}
+  .order .btn{width:100%;background:var(--gold);color:var(--ink);border-color:#fff}
+  .omsg{font-weight:800;color:var(--gold);text-align:center;min-height:26px}
+  .pays{text-align:center;font-weight:600;color:#C9BFF0;font-size:14px}
+
+  /* misc */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .step{background:#fff;border:3px solid var(--ink);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+  .step .n{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;margin-bottom:12px;border:3px solid var(--ink)}
+  .step h3{font-size:20px;font-weight:800}
+  .step p{font-weight:600;color:var(--ink2)}
+  .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .trust div{background:#fff;border:3px solid var(--ink);border-radius:18px;padding:16px;text-align:center;font-weight:800}
+  .trust b{display:block;font-size:30px;margin-bottom:4px}
+  .faq{max-width:760px;margin:0 auto;display:grid;gap:10px}
+  .faq details{background:#fff;border:3px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 rgba(43,27,90,.15)}
+  .faq summary{cursor:pointer;font-weight:800;padding:12px 16px;min-height:52px;display:flex;align-items:center}
+  .faq details p{padding:0 16px 14px;font-weight:600;color:var(--ink2)}
+  footer{padding:36px 0 50px;text-align:center;font-weight:600;color:var(--ink2);font-size:15px}
+  footer .links{display:flex;gap:4px 8px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+  footer .links a{color:var(--ink);font-weight:800;display:inline-flex;align-items:center;min-height:44px;padding:0 8px}
+
+  @media (max-width:820px){
+    .feat{grid-template-columns:1fr;padding:22px}
+    .phone{width:min(150px,40vw)}
+    .plans,.steps{grid-template-columns:1fr}
+    .plans{gap:24px}
+    .trust{grid-template-columns:1fr 1fr}
+    .hnav a.mini{display:none}
+    .logo b{font-size:10px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.mit,.snow{display:none}.bubble{opacity:1}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-i="skip">Pular para o conteúdo</a>
+<header>
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="NoelGame"><i data-px="santa"></i><b class="px">Noel<span>Game</span></b></a>
+    <div class="hnav">
+      <a class="mini" href="#precos" data-i="navp">Preços</a>
+      <a class="mini" href="#faq" data-i="navf">Dúvidas</a>
+      <div class="lang" role="group" aria-label="Idioma / Language">
+        <button type="button" data-l="pt" lang="pt-BR" aria-label="Português">PT</button>
+        <button type="button" data-l="en" lang="en" aria-label="English">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="hero scan">
+    <div class="snow" id="snow" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="bigsanta" data-px="santa" aria-hidden="true"></div>
+      <h1 class="px"><span data-i="h1a">O jogo de Natal onde seu filho é o</span> <span data-i="h1b">protagonista</span></h1>
+      <p class="lead" data-i="lead">Peekaboo, Memória, Quebra-cabeça e mais, com as fotos e o nome da sua criança. Pronto na hora, num link para a família inteira jogar.</p>
+      <div class="ctas">
+        <a class="btn play" href="#teste" data-i="cta1">▶ TESTAR GRÁTIS</a>
+        <a class="btn ghost" href="#precos" data-i="cta2">🎁 Ver pacotes</a>
+      </div>
+      <div class="chips"><span data-i="c1">Sem app</span><span data-i="c2">Sem cadastro</span><span data-i="c3">Entrega na hora</span><span data-i="c4">Sem frete</span></div>
+    </div>
+  </div>
+
+  <!-- FREE TEST -->
+  <section id="teste">
+    <div class="wrap">
+      <h2 class="px" data-i="tt">Teste grátis: Peekaboo</h2>
+      <p class="sub" data-i="ts">Escolha 1 foto e jogue agora. A foto fica só no seu celular e não é enviada para nenhum servidor.</p>
+      <div class="test">
+        <div class="bar px"><span>PEEKABOO</span><b id="score">★ 0/3</b></div>
+        <div class="setup" id="setup">
+          <div class="field">
+            <label for="nome" data-i="nl">Nome da criança</label>
+            <input id="nome" type="text" maxlength="16" autocomplete="off" data-ph="nph" placeholder="Ex.: Julia">
+          </div>
+          <div class="photo">
+            <div class="thumb" id="thumb" aria-hidden="true">📷</div>
+            <div>
+              <label class="btn filebtn"><span data-i="pick">📷 Escolher 1 foto</span><input id="file" type="file" accept="image/*"></label>
+              <p class="note" id="fnote" data-i="fnote">Processada só no seu aparelho.</p>
+            </div>
+          </div>
+          <div class="row2">
+            <button class="btn red" type="button" id="start" data-i="start">▶ Jogar</button>
+            <button class="btn" type="button" id="startSanta" data-i="startS">🎅 Testar com o Papai Noel</button>
+          </div>
+        </div>
+        <div class="stage scan" id="stage" hidden>
+          <div class="hud px"><span data-i="hud">ACHE NOS PRESENTES!</span></div>
+          <p class="msgline px" id="ml" aria-live="polite"></p>
+          <div class="gifts" id="gifts"></div>
+          <div class="found" id="found" aria-hidden="true"><div class="ph" id="fph"></div><div class="nm px" id="fnm"></div></div>
+        </div>
+        <div class="done" id="done" hidden>
+          <h3 class="px" id="dt"></h3>
+          <p class="note" style="margin-bottom:16px" data-i="dp">Gostou? No jogo completo são 6 jogos, um álbum de 24 figurinhas e um estúdio de adesivos de Natal, tudo com as fotos da sua criança.</p>
+          <div class="ctas"><a class="btn red" href="#jogos" data-i="unlock">🎁 Desbloquear o jogo completo</a><button class="btn" type="button" id="again" data-i="again">↻ Jogar de novo</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU GET -->
+  <section id="jogos" style="padding-top:8px">
+    <div class="wrap">
+      <div class="feat scan">
+        <div>
+          <h2 class="px" data-i="ft">Os 6 jogos</h2>
+          <p data-i="fp">Todos com as fotos da sua criança, em qualquer celular, tablet ou computador.</p>
+          <ul>
+            <li>🙈 Peekaboo</li><li>🃏 <span data-i="g2">Jogo da memória</span></li>
+            <li>🧩 <span data-i="g3">Quebra-cabeça</span></li><li>🔀 Swap It</li>
+            <li>❄️ Catcher</li><li>🎨 Sticker Studio</li>
+            <li>📒 <span data-i="g7">Álbum de 24 figurinhas</span></li><li>📲 <span data-i="g8">Cópia para guardar</span></li>
+          </ul>
+        </div>
+        <div class="phones" role="img" aria-label="Demonstração do Peekaboo e do Jogo da Memória" data-al="demo">
+          <div class="phone p1"><div class="screen">
+            <div class="t px">PEEKABOO</div>
+            <div class="pk"><div class="face" id="pkface" data-px="santa"></div><div class="mit l" data-px="mitten"></div><div class="mit r" data-px="mitten"></div><div class="bubble px" data-i="found">ACHOU!</div></div>
+          </div></div>
+          <div class="phone p2"><div class="screen">
+            <div class="t px" data-i="memt">MEMÓRIA</div>
+            <div class="mem" id="mem"></div>
+            <div class="win px" id="win" data-i="win">PARABÉNS!</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="precos">
+    <div class="wrap">
+      <h2 class="px" data-i="pt">Escolha o pacote</h2>
+      <p class="sub" data-i="ps">Pagamento único. Sem assinatura, sem app e sem frete: o jogo fica pronto na hora.</p>
+      <div class="plans" role="radiogroup" aria-label="Pacotes">
+        <label class="plan"><input type="radio" name="plano" value="4"><span class="pc">
+          <h3 class="px" data-i="p1n">ESSENCIAL</h3><div class="ph" data-i="p1f">+3 fotos</div><div class="tot" data-i="p1t">4 fotos no total</div>
+          <div class="old" data-old="0"></div><div class="pr px" data-price="0">—</div></span></label>
+        <label class="plan"><input type="radio" name="plano" value="6" checked><span class="pc"><span class="tag px" data-i="best">⭐ MAIS ESCOLHIDO</span>
+          <h3 class="px" data-i="p2n">FAMÍLIA</h3><div class="ph" data-i="p2f">+5 fotos</div><div class="tot" data-i="p2t">6 fotos no total</div>
+          <div class="old" data-old="1"></div><div class="pr px" data-price="1">—</div></span></label>
+        <label class="plan"><input type="radio" name="plano" value="10"><span class="pc">
+          <h3 class="px" data-i="p3n">SUPER CEIA</h3><div class="ph" data-i="p3f">+9 fotos</div><div class="tot" data-i="p3t">10 fotos no total</div>
+          <div class="old" data-old="2"></div><div class="pr px" data-price="2">—</div></span></label>
+      </div>
+      <div class="incl"><span data-i="i1">✔ 6 jogos + álbum de figurinhas</span><span data-i="i2">✔ Link privado para a família</span><span data-i="i3">✔ Cópia para guardar</span><span data-i="i4">✔ Reembolso em 14 dias</span></div>
+
+      <div class="order">
+        <h3 class="px" data-i="ot">Quase lá!</h3>
+        <form id="of" novalidate>
+          <div><label class="l" for="oem" data-i="oel">Seu e-mail (para receber o link do jogo)</label><input id="oem" type="email" name="email" required autocomplete="email" data-ph="eph" placeholder="seu@email.com"></div>
+          <div><label class="l" for="onm" data-i="onl">Nome da criança</label><input id="onm" type="text" name="nome" maxlength="16" required autocomplete="off"></div>
+          <fieldset style="border:0"><legend class="l" style="font-weight:800;color:#E4DCFF;margin-bottom:4px" data-i="sxl">A criança é</legend>
+            <div class="sex"><label><input type="radio" name="sexo" value="M" required><span data-i="sm">Menino</span></label><label><input type="radio" name="sexo" value="F"><span data-i="sf">Menina</span></label></div>
+          </fieldset>
+          <details class="cup" id="cupd"><summary data-i="cups">🎟️ Tem um cupom?</summary>
+            <div class="cuprow"><label class="sr" for="cup" data-i="cupl">Cupom</label><input id="cup" type="text" name="cupom" maxlength="20" autocomplete="off"><button class="btn" type="button" id="cupb" data-i="cupb">Aplicar</button></div>
+            <div class="cupmsg" id="cupm" aria-live="polite"></div>
+          </details>
+          <label class="ck"><input type="checkbox" name="parental" required><span><span data-i="ck1">Sou pai, mãe ou responsável legal pela criança (ou tenho autorização deles) e autorizo o uso das fotos no jogo por 60 dias.</span> <a href="/privacidade" data-href-en="/en/privacy" data-i="ckp">Privacidade</a> · <a href="/termos" data-href-en="/en/terms" data-i="ckt">Termos</a></span></label>
+          <label class="ck"><input type="checkbox" name="marketing"><span data-i="ck2">Quero receber novidades e lançamentos da MyKidGame (opcional).</span></label>
+          <div class="total"><span data-i="tot">Total</span><span class="px" id="total">—</span></div>
+          <button class="btn" type="submit" id="pay" data-i="pay">🔒 Continuar para o pagamento</button>
+          <div class="omsg" id="om" role="status" aria-live="polite"></div>
+          <p class="pays" id="pays" data-i="paysBR">PIX ou cartão · pagamento seguro</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="px" data-i="howt">Como funciona</h2>
+      <p class="sub" data-i="hows">Pronto em minutos.</p>
+      <div class="steps">
+        <div class="step"><div class="n px" style="background:var(--redd)">1</div><h3 data-i="s1t">Escolha o pacote</h3><p data-i="s1p">Pague com PIX ou cartão. Leva 1 minuto.</p></div>
+        <div class="step"><div class="n px" style="background:var(--blue)">2</div><h3 data-i="s2t">Envie as fotos</h3><p data-i="s2p">Escolha as fotos favoritas direto da galeria do celular.</p></div>
+        <div class="step"><div class="n px" style="background:var(--green)">3</div><h3 data-i="s3t">Jogue em família</h3><p data-i="s3p">Receba o link na hora e mande para os avós pelo WhatsApp.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <h2 class="px" data-i="trt">Feito com cuidado</h2>
+      <p class="sub" data-i="trs">As fotos da sua criança são tratadas do jeito que tratamos as nossas.</p>
+      <div class="trust">
+        <div><b aria-hidden="true">📱</b><span data-i="tr0">Teste grátis sem enviar fotos</span></div>
+        <div><b aria-hidden="true">🔒</b><span data-i="tr1">Link privado, fora do Google</span></div>
+        <div><b aria-hidden="true">🗑️</b><span data-i="tr2">Fotos apagadas em 60 dias</span></div>
+        <div><b aria-hidden="true">🤖</b><span data-i="tr4">Fotos nunca usadas para treinar IA</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" style="padding-top:0">
+    <div class="wrap">
+      <h2 class="px" data-i="fqt">Dúvidas</h2>
+      <div class="faq">
+        <details><summary data-i="q1">Como recebo o jogo?</summary><p data-i="a1">Logo depois do pagamento você envia as fotos e o link do jogo aparece na tela. Também mandamos o link por e-mail.</p></details>
+        <details><summary data-i="q2">Funciona em iPhone e Android?</summary><p data-i="a2">Sim. Roda no navegador de qualquer celular, tablet ou computador, sem instalar nada.</p></details>
+        <details><summary data-i="q3">Por quanto tempo o link fica no ar?</summary><p data-i="a3">60 dias. Antes disso você pode baixar a cópia para guardar (no iPhone, adicionando o jogo à tela de início). Depois, as fotos são apagadas dos nossos servidores.</p></details>
+        <details><summary data-i="q4">Posso mandar para os avós?</summary><p data-i="a4">Pode. O link é privado, mas qualquer pessoa com quem você compartilhar consegue jogar.</p></details>
+        <details><summary data-i="q5">E se eu não gostar?</summary><p data-i="a5">Devolvemos 100% do valor em até 14 dias, sem precisar explicar o motivo.</p></details>
+        <details><summary data-i="q6">Quero fazer para dois filhos. Como faço?</summary><p data-i="a6">Cada jogo é de uma criança. Para um irmão ou irmã, é só fazer outra compra.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="px" style="font-size:12px;color:var(--ink)">Noel<span style="color:var(--redd)">Game</span></div>
+    <nav class="links" aria-label="Legal">
+      <a href="/termos" data-href-en="/en/terms" data-i="terms">Termos de Uso</a>
+      <a href="/privacidade" data-href-en="/en/privacy" data-i="priv">Política de Privacidade</a>
+      <a href="/reembolso" data-href-en="/en/refund" data-i="refund">Política de Reembolso</a>
+      <a href="mailto:gustavoomarques@gmail.com" data-i="contact">Contato</a>
+    </nav>
+    <div data-i="sig">Um jogo original MyKidGame: criando memórias interativas onde seu filho é o protagonista.</div>
+    <div style="margin-top:6px">© 2026 · Gustavo de Oliveira Marques · <span data-i="op">desenvolvedor autônomo · Goiânia - GO, Brasil</span></div>
+  </div>
+</footer>
+
+<script>
+/* ===== i18n ===== */
+const T={en:{skip:"Skip to content",navp:"Prices",navf:"FAQ",h1a:"The Christmas game where your kid is the",h1b:"star",
+ lead:"Peekaboo, Memory, Puzzle and more, with your child's photos and name. Ready instantly, on a link the whole family can play.",
+ cta1:"▶ TRY IT FREE",cta2:"🎁 See packages",c1:"No app",c2:"No sign-up",c3:"Instant delivery",c4:"No shipping",
+ tt:"Free trial: Peekaboo",ts:"Pick 1 photo and play now. The photo stays on your phone and is never uploaded to any server.",
+ nl:"Child's name",nph:"e.g. Julia",pick:"📷 Pick 1 photo",fnote:"Processed only on your device.",start:"▶ Play",startS:"🎅 Try with Santa",
+ hud:"FIND IN THE GIFTS!",dp:"Like it? The full game has 6 games, a 24-sticker album and a Christmas sticker studio, all with your child's photos.",
+ unlock:"🎁 Unlock the full game",again:"↻ Play again",ft:"The 6 games",fp:"All with your child's photos, on any phone, tablet or computer.",
+ g2:"Memory game",g3:"Puzzle",g7:"24-sticker album",g8:"Copy to keep",found:"FOUND YOU!",memt:"MEMORY",win:"WELL DONE!",
+ demo:"Demo of Peekaboo and the Memory game",
+ pt:"Pick your package",ps:"One-time payment. No subscription, no app, no shipping: the game is ready instantly.",
+ p1n:"ESSENTIAL",p1f:"+3 photos",p1t:"4 photos in total",p2n:"FAMILY",p2f:"+5 photos",p2t:"6 photos in total",p3n:"BIG FEAST",p3f:"+9 photos",p3t:"10 photos in total",best:"⭐ MOST POPULAR",
+ i1:"✔ 6 games + sticker album",i2:"✔ Private family link",i3:"✔ Copy to keep",i4:"✔ 14-day refund",
+ ot:"Almost there!",oel:"Your email (we'll send the game link)",eph:"you@email.com",onl:"Child's name",sxl:"The child is a",sm:"Boy",sf:"Girl",
+ cups:"🎟️ Have a coupon?",cupl:"Coupon",cupb:"Apply",
+ ck1:"I am the child's parent or legal guardian (or have their permission) and authorize the use of the photos in the game for 60 days.",ckp:"Privacy",ckt:"Terms",
+ ck2:"Send me news and launches from MyKidGame (optional).",tot:"Total",pay:"🔒 Continue to payment",paysBR:"PIX or card · secure payment",paysGL:"Card, Apple Pay, Google Pay · secure payment",
+ howt:"How it works",hows:"Ready in minutes.",s1t:"Pick a package",s1p:"Pay securely. It takes a minute.",s2t:"Upload photos",s2p:"Choose favorite photos straight from your phone's gallery.",
+ s3t:"Play as a family",s3p:"Get the link instantly and send it to the grandparents.",
+ trt:"Made with care",trs:"We treat your child's photos the way we treat our own.",tr0:"Free trial without uploading photos",tr1:"Private link, hidden from Google",tr2:"Photos deleted after 60 days",tr4:"Photos never used to train AI",
+ fqt:"FAQ",q1:"How do I get the game?",a1:"Right after payment you upload the photos and the game link appears on screen. We also email it to you.",
+ q2:"Does it work on iPhone and Android?",a2:"Yes. It runs in the browser of any phone, tablet or computer, nothing to install.",
+ q3:"How long does the link stay online?",a3:"60 days. Before that you can save your copy to keep (on iPhone, by adding the game to the home screen). After that, photos are deleted from our servers.",
+ q4:"Can I send it to the grandparents?",a4:"Yes. The link is private, but anyone you share it with can play.",
+ q5:"What if I don't like it?",a5:"We refund 100% within 14 days, no questions asked.",
+ q6:"I want one for two kids. How?",a6:"Each game is for one child. For a sibling, just make another purchase.",
+ terms:"Terms of Service",priv:"Privacy Policy",refund:"Refund Policy",contact:"Contact",
+ sig:"An original MyKidGame game: creating interactive memories where your child is the star.",op:"freelance developer · Goiânia - GO, Brazil",
+ /* dynamic */
+ where:n=>`WHERE IS ${n}?`,santaName:"SANTA",foundN:n=>`FOUND ${n}!`,miss:"NOT HERE… TRY AGAIN!",doneT:n=>`WELL DONE, ${n}! 🎉`,
+ badImg:"Couldn't read this photo. Try a JPG or PNG.",needPhoto:"Pick a photo or try with Santa 🎅",
+ cupOk:p=>`Coupon applied: ${p}% off 🎉`,cupBad:"Invalid coupon.",fill:"Fill in email, name, boy/girl and tick the parent box.",
+ soon:"Payments open in a few days! 🎄",soonM:"Payments open in a few days! We'll email you as soon as they do 🎄",soonAsk:"Payments open in a few days! Tick the news box and we'll email you.",
+ err:"Something went wrong. Please try again."}};
+const PT={};document.querySelectorAll('[data-i]').forEach(e=>{PT[e.dataset.i]=e.textContent});
+Object.assign(PT,{nph:"Ex.: Julia",eph:"seu@email.com",paysGL:"Cartão, Apple Pay, Google Pay · pagamento seguro",
+ where:n=>`ONDE ESTÁ ${n}?`,santaName:"O PAPAI NOEL",foundN:n=>`ACHOU ${n}!`,miss:"NÃO ESTÁ AQUI… TENTE OUTRO!",doneT:n=>`PARABÉNS, ${n}! 🎉`,
+ badImg:"Não deu para ler essa foto. Tente uma JPG ou PNG.",needPhoto:"Escolha uma foto ou teste com o Papai Noel 🎅",
+ cupOk:p=>`Cupom aplicado: ${p}% de desconto 🎉`,cupBad:"Cupom inválido.",fill:"Preencha e-mail, nome, menino/menina e marque a caixa do responsável.",
+ soon:"Os pagamentos abrem em poucos dias! 🎄",soonM:"Os pagamentos abrem em poucos dias! Avisamos você por e-mail assim que abrir 🎄",soonAsk:"Os pagamentos abrem em poucos dias! Marque a caixa de novidades que avisamos você por e-mail.",
+ err:"Algo deu errado. Tente de novo."});
+T.pt=PT;
+document.querySelectorAll('[data-href-en]').forEach(a=>a.dataset.hrefPt=a.getAttribute('href'));
+let L='pt';
+function setLang(l){
+  L=l==='en'?'en':'pt';document.documentElement.lang=L==='pt'?'pt-BR':'en';
+  document.querySelectorAll('[data-i]').forEach(e=>{const v=T[L][e.dataset.i];if(typeof v==='string')e.textContent=v});
+  document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=T[L][e.dataset.ph]);
+  document.querySelectorAll('[data-href-en]').forEach(a=>a.href=L==='en'?a.dataset.hrefEn:a.dataset.hrefPt);
+  document.querySelectorAll('[data-al]').forEach(e=>{e.dataset.alPt=e.dataset.alPt||e.getAttribute('aria-label');e.setAttribute('aria-label',L==='en'?T.en[e.dataset.al]:e.dataset.alPt)});
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));
+  document.title=L==='en'?"NoelGame — The Christmas game starring your child":"NoelGame — O jogo de Natal com as fotos do seu filho";
+  try{localStorage.setItem('ng_lang',L)}catch(e){}
+  renderPrices();
+}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+
+/* ===== pixel art ===== */
+const PAL={R:'#D62839',W:'#fff',S:'#FFC9A3',K:'#2B1B5A',P:'#FF8FB8',N:'#E5383B',G:'#14915A',Y:'#FFD23F',B:'#8B5A2B',D:'#A3141F',O:'#FF8A3D'};
+const ART={
+ santa:["......RRRR......",".....RRRRRR..WW.","....RRRRRRRRRWWW","...RRRRRRRRRR.W.","..WWWWWWWWWWWW..","..WWWWWWWWWWWW..","...SSSSSSSSSS...","...SSKSSSSKSS...","...SPSSSSSSPS...","..WWWWSNNSWWWW..","..WWWWWWWWWWWW..","..WWWWWKKWWWWW..","...WWWWWWWWWW...","....WWWWWWWW....",".....WWWWWW.....","......WWWW......"],
+ gift:["..YY..YY..","...YYYY...","RRRRYYRRRR","RRRRYYRRRR","DDDDYYDDDD","YYYYYYYYYY","RRRRYYRRRR","RRRRYYRRRR","RRRRYYRRRR","DDDDYYDDDD"],
+ tree:["....YY....","....GG....","...GGGG...","...GRGG...","..GGGGGG..","..GGGGYG..",".GGGGGGGG.",".GYGGGRGG.","GGGGGGGGGG","....BB...."],
+ snowman:["...KKKK...","...KKKK...","..KKKKKK..","..WWWWWW..","..WKWWKW..","..WWOOWW..","...WWWW...",".RRRRRRRR.","..WWKWWW..","..WWWWWW.."],
+ mitten:[".GGGG...","GGGGGG..","GGGGGGG.","GGGGGGGG","GGGGGGGG","GGGGGGG.","WWWWWW..","WWWWWW.."]
+};
+function pix(m){const w=m[0].length,h=m.length;let r='';m.forEach((row,y)=>[...row].forEach((c,x)=>{if(PAL[c])r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${PAL[c]}"/>`}));
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+document.querySelectorAll('[data-px]').forEach(e=>e.innerHTML=pix(ART[e.dataset.px]));
+// snow
+const sn=document.getElementById('snow');for(let i=0;i<26;i++){const s=document.createElement('i');s.style.left=Math.random()*100+'%';s.style.animationDuration=(6+Math.random()*8)+'s';s.style.animationDelay=(-Math.random()*12)+'s';if(i%3)s.style.width=s.style.height='4px';sn.appendChild(s)}
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ===== 8-bit sound (fallback until ElevenLabs MP3s land in /audio/<lang>/) ===== */
+const AUDIO_LINES=false; // set true when /audio/pt/achou.mp3 etc. exist
+let ac;function beep(notes){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();let t=ac.currentTime;
+  notes.forEach(([f,d])=>{const o=ac.createOscillator(),g=ac.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+d);t+=d*.9})}catch(e){}}
+function say(line){ if(AUDIO_LINES){const a=new Audio(`/audio/${L}/${line}.mp3`);a.play().catch(()=>jingle(line));return} jingle(line) }
+function jingle(line){ if(line==='achou')beep([[659,.12],[784,.12],[1047,.25]]); else if(line==='parabens')beep([[523,.12],[659,.12],[784,.12],[1047,.12],[784,.12],[1047,.35]]); else beep([[196,.15],[165,.2]]) }
+
+/* ===== free test: Peekaboo ===== */
+let photo=null; // dataURL, stays in memory only
+const $=id=>document.getElementById(id);
+$('file').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const url=URL.createObjectURL(f);const img=new Image();img.decoding='async';
+    await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=url});
+    const s=Math.min(img.naturalWidth,img.naturalHeight),c=document.createElement('canvas');c.width=c.height=512;
+    c.getContext('2d').drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,0,0,512,512);
+    URL.revokeObjectURL(url);photo=c.toDataURL('image/jpeg',.85);
+    $('thumb').innerHTML=`<img src="${photo}" alt="">`;$('fnote').textContent=T[L].fnote;
+  }catch(err){photo=null;$('fnote').textContent=T[L].badImg}
+});
+let target=0,score=0,useSanta=false,busy=false;
+const kidName=()=>{const n=$('nome').value.trim().slice(0,16);return n?n.toUpperCase():(L==='en'?'YOUR KID':'SUA CRIANÇA')};
+const hero=()=>useSanta?T[L].santaName:kidName();
+const heroHTML=()=>useSanta||!photo?pix(ART.santa):`<img src="${photo}" alt="">`;
+function startGame(santa){
+  useSanta=santa||!photo; if(!santa&&!photo){$('fnote').textContent=T[L].needPhoto;return}
+  if(!$('onm').value&&$('nome').value)$('onm').value=$('nome').value.trim();
+  score=0;$('setup').hidden=true;$('done').hidden=true;$('stage').hidden=false;round();
+  $('teste').scrollIntoView({block:'start'});carryOver();
+}
+function round(){
+  busy=false;target=Math.floor(Math.random()*6);
+  $("score").textContent=`★ ${score}/3`;
+  $('ml').textContent=T[L].where(hero());
+  const decoys=['tree','snowman'];
+  $('gifts').innerHTML=[...Array(6)].map((_,i)=>`<button type="button" class="gift" data-n="${i}" aria-label="${L==='en'?'Gift':'Presente'} ${i+1}"><span class="box">${pix(ART.gift)}</span><span class="in">${i===target?heroHTML():pix(ART[decoys[i%2]])}</span></button>`).join('');
+}
+$('gifts').addEventListener('click',e=>{
+  const b=e.target.closest('.gift');if(!b||busy||b.classList.contains('open'))return;
+  const i=+b.dataset.n;b.classList.add('open');
+  if(i!==target){b.classList.add('no');$('ml').textContent=T[L].miss;say('ops');return}
+  busy=true;b.classList.add('hit');score++;$("score").textContent=`★ ${score}/3`;
+  say('achou');$('fph').innerHTML=heroHTML();$('fnm').textContent=T[L].foundN(hero());
+  setTimeout(()=>$('found').classList.add('on'),350);
+  setTimeout(()=>{$('found').classList.remove('on');if(score<3)round();else finish()},1900);
+});
+function finish(){$('stage').hidden=true;$('done').hidden=false;$('dt').textContent=T[L].doneT(hero());say('parabens');try{sessionStorage.setItem('ng_test','1')}catch(e){}}
+$('start').onclick=()=>startGame(false);$('startSanta').onclick=()=>startGame(true);
+$('again').onclick=()=>{$('done').hidden=true;$('setup').hidden=false};
+
+/* ===== demo phones (carry the test photo over) ===== */
+const mem=$('mem'),win=$('win');let C=[];
+function buildMem(){
+  const face=photo&&!useSanta?`<img src="${photo}" alt="">`:pix(ART.santa);
+  const deck=[face,pix(ART.gift),pix(ART.tree),pix(ART.gift),face,pix(ART.tree)];
+  mem.innerHTML=deck.map(k=>`<div class="mc"><i><b>?</b><em>${k}</em></i></div>`).join('');C=[...mem.children];
+  if(reduce){C.forEach(c=>c.classList.add('on','ok'));win.classList.add('on')}
+}
+function carryOver(){buildMem();$('pkface').innerHTML=heroHTML()}
+buildMem();
+if(!reduce){
+  const on=(i,v=true)=>C[i]&&C[i].classList.toggle('on',v),ok=i=>C[i]&&C[i].classList.add('ok');
+  const steps=[[600,()=>on(0)],[700,()=>on(1)],[1000,()=>{on(0,false);on(1,false)}],[600,()=>on(2)],[700,()=>on(5)],[300,()=>{ok(2);ok(5)}],
+    [600,()=>on(0)],[700,()=>on(4)],[300,()=>{ok(0);ok(4)}],[600,()=>on(1)],[700,()=>on(3)],[300,()=>{ok(1);ok(3);win.classList.add('on')}],
+    [2200,()=>{C.forEach(c=>c.classList.remove('on','ok'));win.classList.remove('on')}]];
+  let s=0;(function run(){const [d,fn]=steps[s];setTimeout(()=>{fn();s=(s+1)%steps.length;run()},d)})();
+}
+
+/* ===== pricing (from /api/config-regiao, with offline fallback) ===== */
+let REG={moeda:'BRL',precos:[24.99,30.00,45.99],gateway:'disabled',regiao:'BR'},disc=0;
+function fmt(v){const loc=REG.moeda==='BRL'?'pt-BR':(L==='en'?'en-US':'pt-BR');return new Intl.NumberFormat(loc,{style:'currency',currency:REG.moeda}).format(v)}
+const net=v=>Math.round(v*(100-disc))/100;
+function sel(){const r=document.querySelector('input[name=plano]:checked');return r?[...document.querySelectorAll('input[name=plano]')].indexOf(r):1}
+function renderPrices(){
+  if(!REG)return;
+  document.querySelectorAll('[data-price]').forEach(e=>e.textContent=fmt(net(REG.precos[+e.dataset.price])));
+  document.querySelectorAll('[data-old]').forEach(e=>e.textContent=disc?fmt(REG.precos[+e.dataset.old]):'');
+  const t=$('total');if(t)t.textContent=fmt(net(REG.precos[sel()]));
+  const p=$('pays');if(p)p.textContent=REG.regiao==='BR'?T[L].paysBR:T[L].paysGL;
+}
+document.querySelectorAll('input[name=plano]').forEach(r=>r.addEventListener('change',renderPrices));
+fetch('/api/config-regiao').then(r=>r.ok?r.json():null).then(j=>{if(j&&j.precos){REG=j;renderPrices()}}).catch(()=>{});
+
+/* ===== coupon ===== */
+async function applyCoupon(code){
+  code=(code||'').trim().toUpperCase();if(!code)return;$('cup').value=code;
+  try{const r=await fetch('/api/validar-cupom?c='+encodeURIComponent(code));const j=await r.json();
+    if(j.ok){disc=j.desconto;$('cupm').textContent=T[L].cupOk(disc)}else{disc=0;$('cupm').textContent=T[L].cupBad}}
+  catch(e){disc=0;$('cupm').textContent=T[L].err}
+  renderPrices();
+}
+$('cupb').onclick=()=>applyCoupon($('cup').value);
+
+/* ===== checkout ===== */
+const of=$('of'),om=$('om');
+of.addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  const d=Object.fromEntries(new FormData(of));
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email||'')||!(d.nome||'').trim()||!d.sexo||!of.parental.checked){om.textContent=T[L].fill;return}
+  const b=$('pay');b.disabled=true;om.textContent='';
+  try{
+    const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      email:d.email,nome:d.nome.trim(),sexo:d.sexo,plano:+document.querySelector('input[name=plano]:checked').value,
+      cupom:disc?$('cup').value.trim().toUpperCase():'',idioma:L,consentimento_parental:true,consentimento_marketing:of.marketing.checked})});
+    const j=await r.json();
+    if(j.url){location.href=j.url;return}
+    if(j.status==='em_breve'){om.textContent=j.avisaremos?T[L].soonM:T[L].soonAsk;return}
+    throw 0;
+  }catch(e){om.textContent=T[L].err}finally{b.disabled=false}
+});
+
+/* ===== boot ===== */
+let saved=null;try{saved=localStorage.getItem('ng_lang')}catch(e){}
+const qs=new URLSearchParams(location.search);
+setLang(qs.get('lang')||saved||((navigator.language||'pt').slice(0,2)==='pt'?'pt':'en'));
+if(qs.get('cupom')){$('cupd').open=true;applyCoupon(qs.get('cupom'))}
+</script>
+</body>
+</html>

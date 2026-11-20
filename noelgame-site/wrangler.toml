@@ -1,0 +1,12 @@
+name = "noelgame"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-11-01"
+
+# Mesma lista de espera da MyKidGame (um único cadastro de marketing para a marca)
+[[kv_namespaces]]
+binding = "LISTA"
+id = "8c59237567f0449c812ec19391360ab0"
+
+[vars]
+GATEWAY_BR = "disabled"      # disabled | mercadopago | asaas | pix_manual
+GATEWAY_GLOBAL = "disabled"  # disabled | dodopayments | paddle

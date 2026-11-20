@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /j/
+Disallow: /api/
+
+Sitemap: https://noelgame-cvo.pages.dev/sitemap.xml
