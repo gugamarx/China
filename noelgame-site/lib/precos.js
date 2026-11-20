@@ -19,7 +19,7 @@ export function regiao(country) {
 
 // Interruptor de gateway por região, lido das variáveis de ambiente do Pages.
 // GATEWAY_BR: disabled | mercadopago | asaas | pix_manual
-// GATEWAY_GLOBAL: disabled | dodopayments | paddle
+// GATEWAY_GLOBAL: disabled | dodopayments
 export function gateway(env, reg) {
   return (reg === 'BR' ? env.GATEWAY_BR : env.GATEWAY_GLOBAL) || 'disabled';
 }

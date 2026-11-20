@@ -15,7 +15,7 @@ Site do NoelGame no Cloudflare Pages. HTML/CSS/JS puros, sem build.
 ## Plano para segunda
 1. **Supabase**: criar o projeto e rodar `sql/schema.sql`. Secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`.
 2. **Checkout**: em `functions/api/checkout.js`, criar o registro em `jogos` (status `pendente`) e implementar
-   `mercadoPago()` (preferência + `notification_url` → `/api/webhook-mp`), depois `dodo()`/`paddle()`.
+   `mercadoPago()` (preferência + `notification_url` → `/api/webhook-mp`), depois `dodo()`.
    Ligar com `wrangler.toml` → `GATEWAY_BR = "mercadopago"`. Secret: `MP_ACCESS_TOKEN`.
 3. **Webhooks idempotentes**: `webhook-mp.js` e `webhook-global.js` (upsert por `payment_id`).
 4. **Cupons**: trocar a lista fixa por `consumir_cupom` (inclui `VIP-NOEL01..20` com bypass → `criar.html`).

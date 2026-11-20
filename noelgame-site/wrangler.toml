@@ -9,4 +9,4 @@ id = "8c59237567f0449c812ec19391360ab0"
 
 [vars]
 GATEWAY_BR = "disabled"      # disabled | mercadopago | asaas | pix_manual
-GATEWAY_GLOBAL = "disabled"  # disabled | dodopayments | paddle
+GATEWAY_GLOBAL = "disabled"  # disabled | dodopayments

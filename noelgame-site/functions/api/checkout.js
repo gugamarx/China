@@ -34,7 +34,6 @@ export async function onRequestPost({ request, env }) {
     }
     case 'mercadopago':  return json(await mercadoPago(env, pedido, request), 200);
     case 'dodopayments': return json(await dodo(env, pedido, request), 200);
-    case 'paddle':       return json(await paddle(env, pedido, request), 200);
     default:             return json({ ok: false, erro: `gateway desconhecido: ${gw}` }, 500);
   }
 }
@@ -47,4 +46,3 @@ async function mercadoPago(env, pedido) {
   return { ok: false, erro: 'mercadopago ainda não implementado' };
 }
 async function dodo(env, pedido) { return { ok: false, erro: 'dodopayments ainda não implementado' }; }
-async function paddle(env, pedido) { return { ok: false, erro: 'paddle ainda não implementado' }; }
