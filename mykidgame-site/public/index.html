@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MyKidGame — Jogos onde seu filho é o protagonista</title>
+<meta name="description" content="Estúdio independente de jogos infantis personalizados com as fotos do seu filho. Primeiro lançamento: NoelGame, o jogo de Natal.">
+<meta name="theme-color" content="#FF3D9A">
+<link rel="canonical" href="/">
+<link rel="alternate" hreflang="pt-BR" href="/">
+<link rel="alternate" hreflang="en" href="/?lang=en">
+<meta property="og:title" content="MyKidGame — Jogos onde seu filho é o protagonista">
+<meta property="og:description" content="Jogos infantis personalizados com as fotos do seu filho. Primeiro lançamento: NoelGame, o jogo de Natal.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2B1B5A; --ink2:#4A3A80; --bg:#FFF6FB; --card:#FFFFFF;
+    --pink:#FF3D9A; --pinkd:#C8146E; --pinkl:#FF5FB0; --lil:#B44CFF; --purple:#7C3AED;
+    --yellow:#FFD23F; --blue:#2F7FE0; --green:#14915A; --red:#D62839; --pine:#0F6B34;
+    --shadow:0 6px 0 rgba(43,27,90,.2);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Baloo 2',system-ui,sans-serif;color:var(--ink);background:var(--bg);
+    background-image:radial-gradient(rgba(180,76,255,.09) 2px,transparent 2px);background-size:22px 22px;
+    -webkit-font-smoothing:antialiased;line-height:1.5;font-size:17px}
+  .px{font-family:'Press Start 2P',ui-monospace,monospace;letter-spacing:.02em}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+  a{color:inherit}
+  :focus-visible{outline:4px solid var(--yellow);outline-offset:3px;border-radius:8px;box-shadow:0 0 0 7px var(--ink)}
+  .skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;z-index:99}
+  .skip:focus{left:8px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* header */
+  header{position:sticky;top:0;z-index:10;background:rgba(255,246,251,.94);backdrop-filter:blur(8px);border-bottom:3px solid var(--ink)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:10px}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);min-height:44px}
+  .logo svg{width:32px;height:32px;flex:none}
+  .logo b{font-size:12px}
+  .logo .dot{color:var(--pinkd)}
+  .lang{display:flex;gap:6px}
+  .lang button{font:800 15px 'Baloo 2',system-ui,sans-serif;border:3px solid var(--ink);background:#fff;color:var(--ink);border-radius:12px;min-width:48px;min-height:44px;cursor:pointer}
+  .lang button[aria-pressed=true]{background:var(--ink);color:#fff}
+
+  /* hero (julia-pink vibe) */
+  .hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:64px 0 56px;
+    background:linear-gradient(170deg,#ff5fb0 0%,#ff3d9a 40%,#b44cff 100%);border-bottom:4px solid var(--ink)}
+  .hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.06) 0 2px,transparent 2px 4px)}
+  .hero .wrap{position:relative}
+  .hero .tag{display:inline-block;background:rgba(255,255,255,.92);color:var(--pinkd);border:3px solid var(--ink);border-radius:999px;padding:4px 14px;font-weight:800;font-size:15px;box-shadow:var(--shadow);margin-bottom:24px}
+  .hero h1{font-size:clamp(20px,5.2vw,44px);line-height:1.45;margin-bottom:20px;text-shadow:3px 3px 0 #8a1458,0 0 0 #000}
+  .hero h1 .c1{color:var(--yellow)}
+  .hero p.lead{font-size:clamp(18px,2.4vw,22px);font-weight:700;max-width:640px;margin:0 auto 30px;text-shadow:0 1px 0 rgba(90,0,50,.5)}
+  .sparks{position:absolute;inset:0;pointer-events:none}
+  .sparks span{position:absolute;opacity:.55;animation:float 6s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  .heart{width:96px;height:96px;margin:0 auto 22px;display:block;filter:drop-shadow(4px 4px 0 rgba(90,0,50,.35));animation:float 3s ease-in-out infinite}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:800 18px 'Baloo 2',system-ui,sans-serif;text-decoration:none;border:3px solid var(--ink);border-radius:18px;padding:12px 22px;min-height:52px;box-shadow:var(--shadow);cursor:pointer;transition:transform .08s}
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(43,27,90,.2)}
+  .btn.play{background:rgba(255,255,255,.95);color:var(--pinkd);font-family:'Press Start 2P',monospace;font-size:13px;letter-spacing:.04em}
+  .btn.ghost{background:transparent;color:#fff;border-color:#fff;box-shadow:0 6px 0 rgba(90,0,50,.35)}
+  .ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+  section{padding:48px 0}
+  h2{font-size:clamp(15px,3vw,22px);text-align:center;margin-bottom:12px;line-height:1.55}
+  .sub{text-align:center;font-weight:700;color:var(--ink2);margin-bottom:28px;max-width:640px;margin-left:auto;margin-right:auto}
+
+  /* featured */
+  .feat{background:linear-gradient(135deg,#A3141F,#D62839 55%,#0F6B34);color:#fff;border:4px solid var(--ink);border-radius:28px;box-shadow:0 10px 0 rgba(43,27,90,.25);padding:30px;display:grid;grid-template-columns:1.2fr 1fr;gap:26px;align-items:center;position:relative;overflow:hidden}
+  .feat::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0 2px,transparent 2px 4px)}
+  .feat > *{position:relative}
+  .feat .live{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--red);border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px;margin-bottom:14px}
+  .feat .live i{width:10px;height:10px;background:var(--red);animation:pulse 1.2s steps(2) infinite}
+  @keyframes pulse{50%{opacity:.25}}
+  .feat .ftitle{font-size:clamp(18px,3.4vw,28px);text-align:left;margin-bottom:14px;color:var(--yellow);text-shadow:3px 3px 0 rgba(0,0,0,.35)}
+  .feat p{font-weight:700;font-size:18px;margin-bottom:18px}
+  .feat ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-bottom:22px;font-weight:800}
+  .feat .btn{background:var(--yellow);color:var(--ink)}
+  .phone{justify-self:center;width:210px;aspect-ratio:9/17;background:var(--ink);border-radius:30px;padding:10px;box-shadow:0 10px 0 rgba(0,0,0,.25);transform:rotate(4deg)}
+  .screen{width:100%;height:100%;border-radius:22px;background:linear-gradient(170deg,#E5383B,#0F6B34);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;text-align:center;padding:12px;position:relative;overflow:hidden}
+  .screen::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.08) 0 2px,transparent 2px 4px)}
+  .screen .t{font-size:12px;line-height:1.6;color:var(--yellow);text-shadow:2px 2px 0 rgba(0,0,0,.3);position:relative}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;position:relative}
+  .grid4 div{background:#fff;border-radius:10px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid var(--yellow)}
+  .tap{font-size:8px;background:rgba(255,255,255,.85);color:var(--red);padding:8px 10px;border-radius:10px;animation:pulse 1.4s steps(2) infinite;position:relative}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .step{background:var(--card);border:3px solid var(--ink);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+  .step .n{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;margin-bottom:12px;border:3px solid var(--ink)}
+  .step h3{font-size:20px;font-weight:800;margin-bottom:4px}
+  .step p{font-weight:600;color:var(--ink2)}
+
+  /* soon */
+  .soon{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{border:3px solid var(--ink);border-radius:24px;padding:22px;box-shadow:var(--shadow);position:relative;background:var(--card)}
+  .card .em{font-size:44px;margin-bottom:6px;line-height:1.2}
+  .card h3{font-size:21px;font-weight:800}
+  .card p{font-weight:600;color:var(--ink2);font-size:16px}
+  .card .badge{position:absolute;top:14px;right:14px;font-size:8px;background:var(--ink);color:#fff;border-radius:8px;padding:6px 7px}
+  .c-bd{background:#FFE3F1}.c-ea{background:#FFF4CC}.c-he{background:#E1EEFF}.c-sc{background:#DDF7EA}.c-sa{background:#FFE6D3}.c-pr{background:#EEE5FF}
+
+  /* trust */
+  .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .trust div{background:#fff;border:3px solid var(--ink);border-radius:18px;padding:16px;text-align:center;font-weight:800}
+  .trust b{display:block;font-size:30px;margin-bottom:4px}
+  .about{max-width:720px;margin:28px auto 0;background:#fff;border:3px dashed var(--ink2);border-radius:18px;padding:18px 20px;font-weight:600;color:var(--ink2);text-align:center}
+
+  /* waitlist */
+  .wl{position:relative;overflow:hidden;background:linear-gradient(170deg,#3a2378,#2B1B5A);color:#fff;border-radius:28px;padding:34px 22px;text-align:center;border:4px solid var(--ink);box-shadow:0 10px 0 rgba(43,27,90,.25)}
+  .wl h2{color:var(--yellow)}
+  .wl .sub{color:#E4DCFF}
+  form{max-width:520px;margin:0 auto;display:grid;gap:12px;text-align:left}
+  .row{display:flex;gap:10px}
+  input[type=email],select{flex:1;font:700 17px 'Baloo 2',system-ui,sans-serif;padding:10px 14px;min-height:52px;border-radius:14px;border:3px solid #fff;background:#fff;color:var(--ink);min-width:0}
+  label.ck{display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:600;color:#E4DCFF;cursor:pointer;padding:6px 0}
+  label.ck input{margin-top:2px;width:24px;height:24px;flex:none;accent-color:var(--pink)}
+  label.ck a{color:#fff;font-weight:800}
+  .wl .btn{background:var(--pinkd);color:#fff;border-color:#fff;width:100%}
+  .msg{min-height:26px;text-align:center;font-weight:800;color:var(--yellow)}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+  footer{padding:36px 0 50px;text-align:center;font-weight:600;color:var(--ink2);font-size:15px}
+  footer .links{display:flex;gap:4px 8px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+  footer .links a{color:var(--ink);font-weight:800;display:inline-flex;align-items:center;min-height:44px;padding:0 8px}
+
+  [hidden]{display:none!important}
+  @media (max-width:820px){
+    .feat{grid-template-columns:1fr;padding:24px}
+    .phone{width:180px;transform:rotate(0)}
+    .steps,.soon{grid-template-columns:1fr}
+    .trust{grid-template-columns:1fr 1fr}
+    .row{flex-direction:column}
+    .logo b{font-size:10px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-i="skip">Pular para o conteúdo</a>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="MyKidGame">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2B1B5A" d="M2 4h12v1h1v6h-1v1h-3v-1H5v1H2v-1H1V5h1z"/><path fill="#FF3D9A" d="M2 5h12v6h-2v-1H4v1H2z"/><path fill="#fff" d="M4 6h1v1h1v1H5v1H4V8H3V7h1zM11 6h1v1h-1zM12 7h1v1h-1zM10 7h1v1h-1zM11 8h1v1h-1z"/></svg>
+      <b class="px">MyKid<span class="dot">Game</span></b>
+    </a>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button type="button" data-l="pt" lang="pt-BR" aria-label="Português">PT</button>
+      <button type="button" data-l="en" lang="en" aria-label="English">EN</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="hero">
+    <div class="sparks" aria-hidden="true">
+      <span style="left:8%;top:14%;font-size:26px">✨</span><span style="left:84%;top:10%;font-size:22px;animation-delay:1s">💖</span>
+      <span style="left:78%;top:62%;font-size:28px;animation-delay:2s">⭐</span><span style="left:12%;top:70%;font-size:20px;animation-delay:.5s">💜</span>
+      <span style="left:50%;top:86%;font-size:18px;animation-delay:1.5s">✨</span>
+    </div>
+    <div class="wrap">
+      <svg class="heart" viewBox="0 0 13 12" shape-rendering="crispEdges" aria-hidden="true">
+        <path fill="#2B1B5A" d="M2 0h3v1h1v1h1V1h1V0h3v1h1v1h1v4h-1v1h-1v1h-1v1H9v1H8v1H7v1H6v-1H5v-1H4V9H3V8H2V7H1V6H0V2h1V1h1z"/>
+        <path fill="#FF5FB0" d="M2 1h3v1h1v1h1V2h1V1h3v1h1v4h-1v1h-1v1H9v1H8v1H7v1H6v-1H5V9H4V8H3V7H2V6H1V2h1z"/>
+        <path fill="#fff" d="M2 2h2v1H3v1H2z"/><path fill="#FFD23F" d="M9 3h1v1h1v1h-1v1H9V5H8V4h1z"/>
+      </svg>
+      <div class="tag" data-i="tag">✨ Estúdio de jogos personalizados</div>
+      <h1 class="px"><span data-i="h1a">Jogos onde seu filho é o</span> <span class="c1" data-i="h1b">protagonista</span></h1>
+      <p class="lead" data-i="lead">Criamos jogos infantis com as fotos da sua criança. Ela se vê dentro do jogo, dá risada e quer jogar de novo. E a família inteira joga junto pelo celular.</p>
+      <div class="ctas">
+        <a class="btn play" href="#noelgame" data-i="cta1">▶ CONHECER</a>
+        <a class="btn ghost" href="#lista" data-i="cta2">💌 Avise-me dos lançamentos</a>
+      </div>
+    </div>
+  </div>
+
+  <section id="noelgame">
+    <div class="wrap">
+      <div class="feat">
+        <div>
+          <div class="live"><i></i><span data-i="live">CHEGANDO NESTE NATAL</span></div>
+          <h2 class="px ftitle">NoelGame</h2>
+          <p data-i="featp">O jogo de Natal estrelado pelas fotos do seu filho. Você vai poder testar grátis com 1 foto, que fica só no seu celular e não é enviada para nenhum servidor.</p>
+          <ul>
+            <li>🙈 Peekaboo</li><li>🃏 <span data-i="g2">Jogo da memória</span></li>
+            <li>🧩 <span data-i="g3">Quebra-cabeça</span></li><li>🔀 Swap It</li>
+            <li>❄️ Catcher</li><li>🎨 Sticker Studio</li>
+          </ul>
+          <a class="btn" href="#lista" data-tema="noelgame" data-i="cta3">🎁 Quero ser avisado</a>
+        </div>
+        <div class="phone" aria-hidden="true">
+          <div class="screen">
+            <div class="t px">NOEL<br>GAME</div>
+            <div class="grid4"><div>🎅</div><div>🎁</div><div>🦌</div><div>⛄</div></div>
+            <div class="tap px">TAP TO PLAY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="px" data-i="howt">Como funciona</h2>
+      <p class="sub" data-i="hows">Pronto em minutos. Sem app e sem cadastro.</p>
+      <div class="steps">
+        <div class="step"><div class="n px" style="background:var(--pinkd)">1</div><h3 data-i="s1t">Envie as fotos</h3><p data-i="s1p">Escolha as fotos favoritas e digite o nome da criança.</p></div>
+        <div class="step"><div class="n px" style="background:var(--blue)">2</div><h3 data-i="s2t">Receba o link</h3><p data-i="s2p">O jogo fica pronto na hora, num link privado só seu.</p></div>
+        <div class="step"><div class="n px" style="background:var(--green)">3</div><h3 data-i="s3t">Jogue em família</h3><p data-i="s3p">Mande para os avós pelo WhatsApp. Funciona em qualquer celular.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="px" data-i="soont">Em breve · 2027</h2>
+      <p class="sub" data-i="soons">Novos temas, a mesma magia: seu filho no centro da aventura.</p>
+      <div class="soon">
+        <div class="card c-bd"><span class="badge px" data-i="bd">BREVE</span><div class="em" aria-hidden="true">🎂</div><h3 data-i="t1">Aniversário</h3><p data-i="p1">O jogo da festa, com convite interativo para os amiguinhos.</p></div>
+        <div class="card c-ea"><span class="badge px" data-i="bd">BREVE</span><div class="em" aria-hidden="true">🐰</div><h3 data-i="t2">Caça aos Ovos</h3><p data-i="p2">A Páscoa com o coelhinho escondendo a criança.</p></div>
+        <div class="card c-he"><span class="badge px" data-i="bd">BREVE</span><div class="em" aria-hidden="true">🦸</div><h3 data-i="t3">Pequeno Herói</h3><p data-i="p3">Capa, máscara e missões para salvar a cidade.</p></div>
+        <div class="card c-pr"><span class="badge px" data-i="bd">BREVE</span><div class="em" aria-hidden="true">👑</div><h3 data-i="t4">Reino Encantado</h3><p data-i="p4">Castelo, coroa e um reino inteiro para a sua criança.</p></div>
+        <div class="card c-sa"><span class="badge px" data-i="bd">BREVE</span><div class="em" aria-hidden="true">🦁</div><h3 data-i="t5">Safári</h3><p data-i="p5">Explorando a selva ao lado dos bichos favoritos.</p></div>
+        <div class="card c-sc"><span class="badge px" data-i="bd">BREVE</span><div class="em" aria-hidden="true">🎒</div><h3 data-i="t6">Volta às Aulas</h3><p data-i="p6">Um jogo para começar o ano letivo animado.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="px" data-i="trt">Feito com cuidado</h2>
+      <p class="sub" data-i="trs">As fotos da sua criança são tratadas do jeito que tratamos as nossas.</p>
+      <div class="trust">
+        <div><b aria-hidden="true">🔒</b><span data-i="tr1">Link privado, fora do Google</span></div>
+        <div><b aria-hidden="true">🗑️</b><span data-i="tr2">Fotos apagadas em 60 dias</span></div>
+        <div><b aria-hidden="true">📵</b><span data-i="tr3">Sem anúncios no jogo</span></div>
+        <div><b aria-hidden="true">🤖</b><span data-i="tr4">Fotos nunca usadas para treinar IA</span></div>
+      </div>
+      <p class="about" data-i="about">A MyKidGame é um estúdio independente, criado por um desenvolvedor autônomo no Brasil que começou fazendo um jogo com as fotos da sobrinha. Os jogos são vendidos como produto digital, só para pais e responsáveis.</p>
+    </div>
+  </section>
+
+  <section id="lista">
+    <div class="wrap">
+      <div class="wl">
+        <h2 class="px" data-i="wlt">Seja o primeiro a jogar</h2>
+        <p class="sub" data-i="wls">Avisamos por e-mail quando um jogo novo sair. Sem spam.</p>
+        <form id="f" novalidate>
+          <div class="row">
+            <label class="sr" for="em" data-i="eml">E-mail</label>
+            <input id="em" type="email" name="email" required autocomplete="email" data-ph="em" placeholder="seu@email.com">
+            <label class="sr" for="tema" data-i="tml">Tema de interesse</label>
+            <select id="tema" name="tema">
+              <option value="todos" data-i="o0">Todos os temas</option>
+              <option value="noelgame">NoelGame</option>
+              <option value="aniversario" data-i="t1">Aniversário</option>
+              <option value="pascoa" data-i="t2">Caça aos Ovos</option>
+              <option value="heroi" data-i="t3">Pequeno Herói</option>
+              <option value="reino" data-i="t4">Reino Encantado</option>
+              <option value="safari" data-i="t5">Safári</option>
+              <option value="aulas" data-i="t6">Volta às Aulas</option>
+            </select>
+          </div>
+          <div class="hp" aria-hidden="true"><label>Site <input type="text" name="site" tabindex="-1" autocomplete="off"></label></div>
+          <label class="ck"><input type="checkbox" name="ok" required><span><span data-i="ck">Aceito receber e-mails da MyKidGame sobre novos jogos. Posso cancelar com 1 clique quando quiser.</span> <a href="/privacidade" data-href-en="/en/privacy" data-i="ckp">Política de Privacidade</a></span></label>
+          <button class="btn" type="submit" data-i="send">💌 Quero ser avisado</button>
+          <div class="msg" id="msg" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="px" style="font-size:12px;color:var(--ink)">MyKid<span style="color:var(--pinkd)">Game</span></div>
+    <nav class="links" aria-label="Legal">
+      <a href="/termos" data-href-en="/en/terms" data-i="terms">Termos de Uso</a>
+      <a href="/privacidade" data-href-en="/en/privacy" data-i="priv">Política de Privacidade</a>
+      <a href="/reembolso" data-href-en="/en/refund" data-i="refund">Política de Reembolso</a>
+      <a href="mailto:hohoho@noelgame.app">hohoho@noelgame.app</a>
+    </nav>
+    <div data-i="foot">Criando memórias interativas onde seu filho é o protagonista.</div>
+    <div style="margin-top:6px">© <span id="y">2026</span> MyKidGame · <span data-i="op">Projeto independente de desenvolvedor autônomo · Brasil</span></div>
+  </div>
+</footer>
+
+<script>
+const T={en:{skip:"Skip to content",tag:"✨ Personalized kids' game studio",h1a:"Games where your kid is the",h1b:"star",
+  lead:"We make kids' games with your child's photos. They see themselves inside the game, laugh, and want to play again. And the whole family plays along on their phones.",
+  cta1:"▶ DISCOVER",cta2:"💌 Tell me about new games",live:"COMING THIS CHRISTMAS",
+  featp:"The Christmas game starring your child's photos. You'll be able to try it free with 1 photo, which stays on your phone and is never uploaded to any server.",
+  g2:"Memory game",g3:"Puzzle",cta3:"🎁 Notify me",howt:"How it works",hows:"Ready in minutes. No app, no sign-up.",
+  s1t:"Upload photos",s1p:"Pick your favorite photos and type your child's name.",s2t:"Get your link",s2p:"The game is ready instantly, on a private link just for you.",
+  s3t:"Play as a family",s3p:"Send it to the grandparents on WhatsApp. Works on any phone.",
+  soont:"Coming · 2027",soons:"New themes, same magic: your child at the heart of the adventure.",bd:"SOON",
+  t1:"Birthday",p1:"The party game, with an interactive invite for friends.",t2:"Easter Egg Hunt",p2:"The Easter bunny hiding your little one.",
+  t3:"Little Hero",p3:"Cape, mask and missions to save the city.",t4:"Enchanted Kingdom",p4:"A castle, a crown and a whole kingdom for your child.",
+  t5:"Safari",p5:"Exploring the jungle with their favorite animals.",t6:"Back to School",p6:"A game to kick off the school year.",
+  trt:"Made with care",trs:"We treat your child's photos the way we treat our own.",tr1:"Private link, hidden from Google",tr2:"Photos deleted after 60 days",tr3:"No ads in the game",tr4:"Photos never used to train AI",
+  about:"MyKidGame is an independent studio, started by a freelance developer in Brazil who started by making a game with photos of a niece. Games are sold as digital products, for parents and legal guardians only.",
+  wlt:"Be the first to play",wls:"We'll email you when a new game launches. No spam.",eml:"Email",tml:"Theme you're interested in",em:"you@email.com",o0:"All themes",
+  ck:"I agree to receive MyKidGame emails about new games. I can unsubscribe with 1 click anytime.",ckp:"Privacy Policy",send:"💌 Notify me",
+  terms:"Terms of Service",priv:"Privacy Policy",refund:"Refund Policy",foot:"Creating interactive memories where your child is the star.",op:"Independent project by a freelance developer · Brazil",
+  ok:"You're in! We'll let you know 🎉",bad:"Check your email and tick the box.",err:"Couldn't send. Opening your email app…"}};
+const PT={};document.querySelectorAll('[data-i]').forEach(e=>{PT[e.dataset.i]=e.textContent});
+PT.em="seu@email.com";PT.ok="Pronto! Vamos te avisar 🎉";PT.bad="Confira o e-mail e marque a caixinha.";PT.err="Não foi possível enviar. Abrindo seu e-mail…";
+T.pt=PT;
+document.querySelectorAll('[data-href-en]').forEach(a=>a.dataset.hrefPt=a.getAttribute('href'));
+let L='pt';
+function setLang(l){
+  L=l==='en'?'en':'pt';document.documentElement.lang=L==='pt'?'pt-BR':'en';
+  document.querySelectorAll('[data-i]').forEach(e=>{const v=T[L][e.dataset.i];if(v!=null)e.textContent=v});
+  document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=T[L][e.dataset.ph]);
+  document.querySelectorAll('[data-href-en]').forEach(a=>a.href=L==='en'?a.dataset.hrefEn:a.dataset.hrefPt);
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));
+  document.title=L==='en'?"MyKidGame — Games where your kid is the star":"MyKidGame — Jogos onde seu filho é o protagonista";
+  try{localStorage.setItem('mkg_lang',L)}catch(e){}
+}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+let saved=null;try{saved=localStorage.getItem('mkg_lang')}catch(e){}
+const q=new URLSearchParams(location.search).get('lang');
+setLang(q||saved||((navigator.language||'pt').slice(0,2)==='pt'?'pt':'en'));
+document.getElementById('y').textContent=new Date().getFullYear();
+
+const f=document.getElementById('f'),msg=document.getElementById('msg');
+document.querySelectorAll('[data-tema]').forEach(a=>a.addEventListener('click',()=>{f.tema.value=a.dataset.tema;setTimeout(()=>f.email.focus({preventScroll:true}),400)}));
+f.addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  const d=Object.fromEntries(new FormData(f));
+  if(d.site)return;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email||'')||!f.ok.checked){msg.textContent=T[L].bad;return}
+  const b=f.querySelector('button');b.disabled=true;
+  try{
+    const r=await fetch('/api/lista-espera',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:d.email,tema:d.tema,idioma:L,consentimento:true,site:d.site||''})});
+    if(!r.ok)throw 0;
+    msg.textContent=T[L].ok;f.reset();
+  }catch(e){
+    msg.textContent=T[L].err;
+    setTimeout(()=>{location.href='mailto:hohoho@noelgame.app?subject='+encodeURIComponent('MyKidGame — '+d.tema)+'&body='+encodeURIComponent((L==='en'?'Please notify me: ':'Quero ser avisado: ')+d.email)},900);
+  }finally{b.disabled=false}
+});
+</script>
+</body>
+</html>
