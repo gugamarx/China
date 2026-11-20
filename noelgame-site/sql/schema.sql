@@ -119,3 +119,17 @@ begin
   );
 end;
 $$;
+
+-- ------------------------------------------------------------------
+-- Acesso: o site só fala com o banco pelas Functions do Cloudflare,
+-- usando a service_role key. Nada fica exposto para anon/authenticated.
+-- (Projeto criado com "Grant API access to new tables automatically" DESMARCADO.)
+-- ------------------------------------------------------------------
+grant usage on schema public to service_role;
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;
+grant execute on all functions in schema public to service_role;
+
+-- As funções security definer não podem ser chamadas pela chave pública (anon)
+revoke execute on function public.consumir_cupom(text) from public, anon, authenticated;
+revoke execute on function public.get_jogo_por_token(text) from public, anon, authenticated;
