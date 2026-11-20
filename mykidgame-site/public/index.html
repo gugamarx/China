@@ -89,7 +89,32 @@
   .feat p{font-weight:700;font-size:18px;margin-bottom:18px}
   .feat ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-bottom:22px;font-weight:800}
   .feat .btn{background:var(--yellow);color:var(--ink)}
-  .phone{justify-self:center;width:210px;aspect-ratio:9/17;background:var(--ink);border-radius:30px;padding:10px;box-shadow:0 10px 0 rgba(0,0,0,.25);transform:rotate(4deg)}
+  .phones{justify-self:center;display:flex;gap:14px;align-items:center}
+  .phone{width:175px;aspect-ratio:9/17;background:var(--ink);border-radius:28px;padding:9px;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+  .phone.p1{transform:rotate(-4deg)} .phone.p2{transform:rotate(4deg) translateY(18px)}
+  .px-art svg,[data-px] svg{width:100%;height:100%;display:block}
+  /* peekaboo */
+  .pk{position:relative;width:100%;aspect-ratio:1;overflow:hidden}
+  .santa{position:absolute;inset:6%;animation:pop 4.4s steps(1) infinite}
+  .mit{position:absolute;width:46%;top:26%;animation:mitL 4.4s ease-in-out infinite}
+  .mit.l{left:6%} .mit.r{right:6%;animation-name:mitR}
+  .mit.r svg{transform:scaleX(-1)}
+  .bubble{position:absolute;left:50%;top:2%;transform:translateX(-50%);background:#fff;color:var(--red);font-size:9px;padding:6px 8px;border-radius:8px;border:2px solid var(--ink);white-space:nowrap;opacity:0;animation:bub 4.4s steps(1) infinite}
+  @keyframes mitL{0%,30%{transform:translateX(0)}42%,82%{transform:translate(-95%,20%)}94%,100%{transform:translateX(0)}}
+  @keyframes mitR{0%,30%{transform:translateX(0)}42%,82%{transform:translate(95%,20%)}94%,100%{transform:translateX(0)}}
+  @keyframes bub{0%,42%{opacity:0}43%,82%{opacity:1}83%,100%{opacity:0}}
+  @keyframes pop{0%,42%{transform:scale(1)}43%{transform:scale(1.08)}50%,100%{transform:scale(1)}}
+  /* memory */
+  .mem{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;position:relative}
+  .mc{aspect-ratio:3/4;perspective:400px}
+  .mc i{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .35s}
+  .mc.on i{transform:rotateY(180deg)}
+  .mc b,.mc em{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center}
+  .mc b{background:var(--pinkl);color:#fff;font:400 12px 'Press Start 2P',monospace}
+  .mc em{background:#fff;transform:rotateY(180deg);padding:4px}
+  .mc.ok em{border-color:var(--yellow);box-shadow:0 0 0 2px var(--yellow)}
+  .win{font-size:9px;background:var(--yellow);color:var(--ink);padding:7px 9px;border-radius:8px;position:relative;visibility:hidden}
+  .win.on{visibility:visible}
   .screen{width:100%;height:100%;border-radius:22px;background:linear-gradient(170deg,#E5383B,#0F6B34);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;text-align:center;padding:12px;position:relative;overflow:hidden}
   .screen::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.08) 0 2px,transparent 2px 4px)}
   .screen .t{font-size:12px;line-height:1.6;color:var(--yellow);text-shadow:2px 2px 0 rgba(0,0,0,.3);position:relative}
@@ -140,13 +165,13 @@
   [hidden]{display:none!important}
   @media (max-width:820px){
     .feat{grid-template-columns:1fr;padding:24px}
-    .phone{width:180px;transform:rotate(0)}
+    .phone{width:min(160px,40vw)}
     .steps,.soon{grid-template-columns:1fr}
     .trust{grid-template-columns:1fr 1fr}
     .row{flex-direction:column}
     .logo b{font-size:10px}
   }
-  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.mit{display:none}.bubble{opacity:1}}
 </style>
 </head>
 <body>
@@ -202,11 +227,24 @@
           </ul>
           <a class="btn" href="#lista" data-tema="noelgame" data-i="cta3">🎁 Quero ser avisado</a>
         </div>
-        <div class="phone" aria-hidden="true">
-          <div class="screen">
-            <div class="t px">NOEL<br>GAME</div>
-            <div class="grid4"><div>🎅</div><div>🎁</div><div>🦌</div><div>⛄</div></div>
-            <div class="tap px">TAP TO PLAY</div>
+        <div class="phones" role="img" aria-label="Demonstração animada do Peekaboo e do Jogo da Memória com o Papai Noel" data-al="demo">
+          <div class="phone p1">
+            <div class="screen">
+              <div class="t px">PEEKABOO</div>
+              <div class="pk">
+                <div class="santa" data-px="santa"></div>
+                <div class="mit l" data-px="mitten"></div><div class="mit r" data-px="mitten"></div>
+                <div class="bubble px" data-i="found">ACHOU!</div>
+              </div>
+              <div class="tap px">TAP!</div>
+            </div>
+          </div>
+          <div class="phone p2">
+            <div class="screen">
+              <div class="t px" data-i="memt">MEMÓRIA</div>
+              <div class="mem" id="mem"></div>
+              <div class="win px" id="win" data-i="win">PARABÉNS!</div>
+            </div>
           </div>
         </div>
       </div>
@@ -316,7 +354,7 @@ const T={en:{skip:"Skip to content",tag:"✨ Personalized kids' game studio",h1a
   wlt:"Be the first to play",wls:"We'll email you when a new game launches. No spam.",eml:"Email",tml:"Theme you're interested in",em:"you@email.com",o0:"All themes",
   ck:"I agree to receive MyKidGame emails about new games. I can unsubscribe with 1 click anytime.",ckp:"Privacy Policy",send:"💌 Notify me",
   terms:"Terms of Service",priv:"Privacy Policy",refund:"Refund Policy",foot:"Creating interactive memories where your child is the star.",op:"Gustavo de Oliveira Marques · freelance developer · Goiânia - GO, Brazil",
-  ok:"You're in! We'll let you know 🎉",bad:"Check your email and tick the box.",err:"Couldn't send. Opening your email app…"}};
+  found:"FOUND YOU!",memt:"MEMORY",win:"WELL DONE!",demo:"Animated demo of Peekaboo and the Memory Game with Santa Claus",ok:"You're in! We'll let you know 🎉",bad:"Check your email and tick the box.",err:"Couldn't send. Opening your email app…"}};
 const PT={};document.querySelectorAll('[data-i]').forEach(e=>{PT[e.dataset.i]=e.textContent});
 PT.em="seu@email.com";PT.ok="Pronto! Vamos te avisar 🎉";PT.bad="Confira o e-mail e marque a caixinha.";PT.err="Não foi possível enviar. Abrindo seu e-mail…";
 T.pt=PT;
@@ -325,6 +363,7 @@ let L='pt';
 function setLang(l){
   L=l==='en'?'en':'pt';document.documentElement.lang=L==='pt'?'pt-BR':'en';
   document.querySelectorAll('[data-i]').forEach(e=>{const v=T[L][e.dataset.i];if(v!=null)e.textContent=v});
+  document.querySelectorAll('[data-al]').forEach(e=>{e.dataset.alPt=e.dataset.alPt||e.getAttribute('aria-label');e.setAttribute('aria-label',L==='en'?T.en[e.dataset.al]:e.dataset.alPt)});
   document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=T[L][e.dataset.ph]);
   document.querySelectorAll('[data-href-en]').forEach(a=>a.href=L==='en'?a.dataset.hrefEn:a.dataset.hrefPt);
   document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));
@@ -336,6 +375,33 @@ let saved=null;try{saved=localStorage.getItem('mkg_lang')}catch(e){}
 const q=new URLSearchParams(location.search).get('lang');
 setLang(q||saved||((navigator.language||'pt').slice(0,2)==='pt'?'pt':'en'));
 document.getElementById('y').textContent=new Date().getFullYear();
+
+// ---- pixel art + demo animations ----
+const PAL={R:'#D62839',W:'#fff',S:'#FFC9A3',K:'#2B1B5A',P:'#FF8FB8',N:'#E5383B',G:'#14915A',Y:'#FFD23F',B:'#8B5A2B',D:'#A3141F'};
+const ART={
+ santa:["......RRRR......",".....RRRRRR..WW.","....RRRRRRRRRWWW","...RRRRRRRRRR.W.","..WWWWWWWWWWWW..","..WWWWWWWWWWWW..","...SSSSSSSSSS...","...SSKSSSSKSS...","...SPSSSSSSPS...","..WWWWSNNSWWWW..","..WWWWWWWWWWWW..","..WWWWWKKWWWWW..","...WWWWWWWWWW...","....WWWWWWWW....",".....WWWWWW.....","......WWWW......"],
+ gift:["..YY..YY..","...YYYY...","RRRRYYRRRR","RRRRYYRRRR","DDDDYYDDDD","YYYYYYYYYY","RRRRYYRRRR","RRRRYYRRRR","RRRRYYRRRR","DDDDYYDDDD"],
+ tree:["....YY....","....GG....","...GGGG...","...GRGG...","..GGGGGG..","..GGGGYG..",".GGGGGGGG.",".GYGGGRGG.","GGGGGGGGGG","....BB...."],
+ mitten:[".GGGG...","GGGGGG..","GGGGGGG.","GGGGGGGG","GGGGGGGG","GGGGGGG.","WWWWWW..","WWWWWW.."]
+};
+function pix(m){const w=m[0].length,h=m.length;let r='';m.forEach((row,y)=>[...row].forEach((c,x)=>{if(PAL[c])r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${PAL[c]}"/>`}));
+  return `<svg viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+document.querySelectorAll('[data-px]').forEach(e=>e.innerHTML=pix(ART[e.dataset.px]));
+const mem=document.getElementById('mem'),win=document.getElementById('win');
+const deck=['santa','gift','tree','gift','santa','tree'];
+mem.innerHTML=deck.map(k=>`<div class="mc"><i><b>?</b><em>${pix(ART[k])}</em></i></div>`).join('');
+const C=[...mem.children];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduce){C.forEach(c=>c.classList.add('on','ok'));win.classList.add('on')}
+else{
+  const on=(i,v=true)=>C[i].classList.toggle('on',v), ok=i=>C[i].classList.add('ok');
+  const steps=[[600,()=>on(0)],[700,()=>on(1)],[1000,()=>{on(0,false);on(1,false)}],
+    [600,()=>on(2)],[700,()=>on(5)],[300,()=>{ok(2);ok(5)}],
+    [600,()=>on(0)],[700,()=>on(4)],[300,()=>{ok(0);ok(4)}],
+    [600,()=>on(1)],[700,()=>on(3)],[300,()=>{ok(1);ok(3);win.classList.add('on')}],
+    [2200,()=>{C.forEach(c=>c.classList.remove('on','ok'));win.classList.remove('on')}]];
+  let s=0;(function run(){const [d,fn]=steps[s];setTimeout(()=>{fn();s=(s+1)%steps.length;run()},d)})();
+}
 
 const f=document.getElementById('f'),msg=document.getElementById('msg');
 document.querySelectorAll('[data-tema]').forEach(a=>a.addEventListener('click',()=>{f.tema.value=a.dataset.tema;setTimeout(()=>f.email.focus({preventScroll:true}),400)}));
