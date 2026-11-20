@@ -27,6 +27,7 @@ Site do NoelGame no Cloudflare Pages. HTML/CSS/JS puros, sem build.
 
 ## Deploy
 ```bash
-export CLOUDFLARE_API_TOKEN=...   # nunca commitar
-wrangler pages deploy --project-name noelgame --branch main
+# O token da Cloudflare fica nos Network secrets do ambiente (injetado pelo proxy).
+CLOUDFLARE_API_TOKEN=proxy-injected CLOUDFLARE_ACCOUNT_ID=9df6fc1d6ad4008d0f7782295ce382bf \
+  wrangler pages deploy --project-name noelgame --branch main
 ```
