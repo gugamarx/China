@@ -133,3 +133,20 @@ grant execute on all functions in schema public to service_role;
 -- As funções security definer não podem ser chamadas pela chave pública (anon)
 revoke execute on function public.consumir_cupom(text) from public, anon, authenticated;
 revoke execute on function public.get_jogo_por_token(text) from public, anon, authenticated;
+
+-- ------------------------------------------------------------------
+-- Hardening (migração "hardening_acesso_publico", aplicada em 20/11/2026)
+-- ------------------------------------------------------------------
+revoke all on table public.jogos, public.cupons, public.eventos from anon, authenticated;
+revoke all on all sequences in schema public from anon, authenticated;
+alter function public.consumir_cupom(text) set search_path = public, pg_temp;
+alter function public.get_jogo_por_token(text) set search_path = public, pg_temp;
+-- rls_auto_enable() é criada pelo Supabase quando "Enable RLS automatically" está marcado
+do $$ begin
+  if exists (select 1 from pg_proc where proname = 'rls_auto_enable') then
+    revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+  end if;
+end $$;
+alter default privileges in schema public revoke all on tables from anon, authenticated;
+alter default privileges in schema public revoke all on sequences from anon, authenticated;
+alter default privileges in schema public revoke execute on functions from public, anon, authenticated;
