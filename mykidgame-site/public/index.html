@@ -292,10 +292,10 @@
       <a href="/termos" data-href-en="/en/terms" data-i="terms">Termos de Uso</a>
       <a href="/privacidade" data-href-en="/en/privacy" data-i="priv">Política de Privacidade</a>
       <a href="/reembolso" data-href-en="/en/refund" data-i="refund">Política de Reembolso</a>
-      <a href="mailto:hohoho@noelgame.app">hohoho@noelgame.app</a>
+      <a href="mailto:gustavoomarques@gmail.com">gustavoomarques@gmail.com</a>
     </nav>
     <div data-i="foot">Criando memórias interativas onde seu filho é o protagonista.</div>
-    <div style="margin-top:6px">© <span id="y">2026</span> MyKidGame · <span data-i="op">Projeto independente de desenvolvedor autônomo · Brasil</span></div>
+    <div style="margin-top:6px">© <span id="y">2026</span> MyKidGame · <span data-i="op">Gustavo de Oliveira Marques · desenvolvedor autônomo · Brasil</span></div>
   </div>
 </footer>
 
@@ -315,7 +315,7 @@ const T={en:{skip:"Skip to content",tag:"✨ Personalized kids' game studio",h1a
   about:"MyKidGame is an independent studio, started by a freelance developer in Brazil who started by making a game with photos of a niece. Games are sold as digital products, for parents and legal guardians only.",
   wlt:"Be the first to play",wls:"We'll email you when a new game launches. No spam.",eml:"Email",tml:"Theme you're interested in",em:"you@email.com",o0:"All themes",
   ck:"I agree to receive MyKidGame emails about new games. I can unsubscribe with 1 click anytime.",ckp:"Privacy Policy",send:"💌 Notify me",
-  terms:"Terms of Service",priv:"Privacy Policy",refund:"Refund Policy",foot:"Creating interactive memories where your child is the star.",op:"Independent project by a freelance developer · Brazil",
+  terms:"Terms of Service",priv:"Privacy Policy",refund:"Refund Policy",foot:"Creating interactive memories where your child is the star.",op:"Gustavo de Oliveira Marques · freelance developer · Brazil",
   ok:"You're in! We'll let you know 🎉",bad:"Check your email and tick the box.",err:"Couldn't send. Opening your email app…"}};
 const PT={};document.querySelectorAll('[data-i]').forEach(e=>{PT[e.dataset.i]=e.textContent});
 PT.em="seu@email.com";PT.ok="Pronto! Vamos te avisar 🎉";PT.bad="Confira o e-mail e marque a caixinha.";PT.err="Não foi possível enviar. Abrindo seu e-mail…";
@@ -352,7 +352,7 @@ f.addEventListener('submit',async ev=>{
     msg.textContent=T[L].ok;f.reset();
   }catch(e){
     msg.textContent=T[L].err;
-    setTimeout(()=>{location.href='mailto:hohoho@noelgame.app?subject='+encodeURIComponent('MyKidGame — '+d.tema)+'&body='+encodeURIComponent((L==='en'?'Please notify me: ':'Quero ser avisado: ')+d.email)},900);
+    setTimeout(()=>{location.href='mailto:gustavoomarques@gmail.com?subject='+encodeURIComponent('MyKidGame — '+d.tema)+'&body='+encodeURIComponent((L==='en'?'Please notify me: ':'Quero ser avisado: ')+d.email)},900);
   }finally{b.disabled=false}
 });
 </script>

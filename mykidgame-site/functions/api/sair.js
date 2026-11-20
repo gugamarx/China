@@ -51,10 +51,10 @@ function safeEqual(a, b) {
 const MSG = {
   ok:  { pt: ['Pronto, você saiu da lista', 'Seu e-mail foi removido e você não vai receber mais e-mails de novidades da MyKidGame.'],
          en: ["Done, you're unsubscribed", "Your email was removed and you won't receive any more MyKidGame news emails."] },
-  bad: { pt: ['Link inválido', 'Este link de descadastro não é válido. Escreva para hohoho@noelgame.app que removemos você manualmente.'],
-         en: ['Invalid link', "This unsubscribe link isn't valid. Email hohoho@noelgame.app and we'll remove you manually."] },
-  cfg: { pt: ['Erro temporário', 'Tente de novo em alguns minutos ou escreva para hohoho@noelgame.app.'],
-         en: ['Temporary error', 'Please try again in a few minutes or email hohoho@noelgame.app.'] },
+  bad: { pt: ['Link inválido', 'Este link de descadastro não é válido. Escreva para gustavoomarques@gmail.com que removemos você manualmente.'],
+         en: ['Invalid link', "This unsubscribe link isn't valid. Email gustavoomarques@gmail.com and we'll remove you manually."] },
+  cfg: { pt: ['Erro temporário', 'Tente de novo em alguns minutos ou escreva para gustavoomarques@gmail.com.'],
+         en: ['Temporary error', 'Please try again in a few minutes or email gustavoomarques@gmail.com.'] },
 };
 
 function reply(mode, status, en, key) {
