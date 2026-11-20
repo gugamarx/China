@@ -26,6 +26,11 @@ Site do NoelGame no Cloudflare Pages. HTML/CSS/JS puros, sem build.
 8. **Domínio**: adicionar `noelgame.app` em Custom domains e trocar `noelgame-cvo.pages.dev` no robots/sitemap.
 
 ## Deploy
+> **Atenção:** com o token nos *Network secrets* do ambiente, o `wrangler pages deploy` falha no upload de arquivos
+> (o proxy troca o header de autorização do upload). Para mudar só secrets/Functions use `tools/redeploy-sem-upload.sh`.
+> Para publicar arquivos novos, coloque o token como **variável de ambiente** `CLOUDFLARE_API_TOKEN` nas configurações
+> do ambiente (e remova o network secret de api.cloudflare.com).
+
 ```bash
 # O token da Cloudflare fica nos Network secrets do ambiente (injetado pelo proxy).
 CLOUDFLARE_API_TOKEN=proxy-injected CLOUDFLARE_ACCOUNT_ID=9df6fc1d6ad4008d0f7782295ce382bf \
